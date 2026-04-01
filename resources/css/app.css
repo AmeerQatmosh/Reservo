@@ -1,0 +1,266 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* Aligned with Blade layouts: slate + soft indigo wash, gray-900 accents */
+:root {
+    --background: oklch(0.984 0.003 264.5);
+    --foreground: oklch(0.208 0.042 265.8);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.208 0.042 265.8);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.208 0.042 265.8);
+    --primary: oklch(0.208 0.042 265.8);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.968 0.007 248);
+    --secondary-foreground: oklch(0.208 0.042 265.8);
+    --muted: oklch(0.968 0.007 248);
+    --muted-foreground: oklch(0.446 0.043 257.3);
+    --accent: oklch(0.93 0.03 264);
+    --accent-foreground: oklch(0.208 0.042 265.8);
+    --destructive: oklch(0.577 0.245 27.325);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(0.929 0.013 255.5);
+    --input: oklch(0.929 0.013 255.5);
+    --ring: oklch(0.208 0.042 265.8 / 0.25);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --radius: 0.75rem;
+    --sidebar: oklch(1 0 0 / 0.88);
+    --sidebar-foreground: oklch(0.208 0.042 265.8);
+    --sidebar-primary: oklch(0.208 0.042 265.8);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.968 0.007 248);
+    --sidebar-accent-foreground: oklch(0.208 0.042 265.8);
+    --sidebar-border: oklch(1 0 0 / 0.55);
+    --sidebar-ring: oklch(0.208 0.042 265.8 / 0.2);
+}
+
+.dark {
+    --background: oklch(0.145 0.01 265);
+    --foreground: oklch(0.97 0.01 264);
+    --card: oklch(0.18 0.02 265);
+    --card-foreground: oklch(0.97 0.01 264);
+    --popover: oklch(0.18 0.02 265);
+    --popover-foreground: oklch(0.97 0.01 264);
+    --primary: oklch(0.97 0.01 264);
+    --primary-foreground: oklch(0.18 0.02 265);
+    --secondary: oklch(0.22 0.02 265);
+    --secondary-foreground: oklch(0.97 0.01 264);
+    --muted: oklch(0.22 0.02 265);
+    --muted-foreground: oklch(0.72 0.02 256);
+    --accent: oklch(0.28 0.04 265);
+    --accent-foreground: oklch(0.97 0.01 264);
+    --destructive: oklch(0.396 0.141 25.723);
+    --destructive-foreground: oklch(0.985 0 0);
+    --border: oklch(0.32 0.02 265);
+    --input: oklch(0.32 0.02 265);
+    --ring: oklch(0.72 0.04 264 / 0.45);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.16 0.02 265 / 0.92);
+    --sidebar-foreground: oklch(0.97 0.01 264);
+    --sidebar-primary: oklch(0.97 0.01 264);
+    --sidebar-primary-foreground: oklch(0.18 0.02 265);
+    --sidebar-accent: oklch(0.24 0.03 265);
+    --sidebar-accent-foreground: oklch(0.97 0.01 264);
+    --sidebar-border: oklch(0.32 0.02 265);
+    --sidebar-ring: oklch(0.72 0.04 264 / 0.35);
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    html {
+        @apply min-h-dvh;
+    }
+
+    body {
+        @apply min-h-dvh;
+    }
+
+    /* Inertia root template only — Blade layouts use their own body background/text */
+    body:has(#app) {
+        @apply min-h-dvh;
+    }
+
+    #app {
+        @apply min-h-dvh min-w-0 bg-transparent text-foreground;
+    }
+
+    ::selection {
+        @apply bg-slate-900 text-white;
+    }
+}
+
+@layer components {
+    /* Native <details>/<summary>: consistent across Chrome, Firefox, Safari */
+    .reservo-details > summary {
+        list-style: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .reservo-details > summary::-webkit-details-marker {
+        display: none !important;
+    }
+
+    .reservo-details > summary::marker {
+        display: none;
+        content: '';
+    }
+
+    .reservo-dropdown-panel {
+        box-sizing: border-box;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    /* Inertia shell — same wash as Blade `layouts/app` */
+    .reservo-inertia-bg {
+        background-color: #f8fafc;
+        background-image:
+            radial-gradient(
+                circle at top,
+                rgba(15, 23, 42, 0.04),
+                transparent 32%
+            ),
+            linear-gradient(to bottom, #f8fafc, #eef2ff 42%, #f8fafc);
+    }
+
+    .reservo-shell [data-sidebar='sidebar'] {
+        border-right: 1px solid rgb(255 255 255 / 0.55);
+        background-color: rgb(255 255 255 / 0.85);
+        backdrop-filter: blur(20px);
+    }
+
+    .reservo-shell [data-slot='sidebar-inset'] {
+        background-color: transparent;
+    }
+
+    .reservo-shell-header {
+        @apply border-b border-white/60 bg-white/40 backdrop-blur-md;
+    }
+
+    .app-field {
+        @apply mt-1 min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-base text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 hover:border-gray-400 focus:border-gray-900 focus:ring-4 focus:ring-gray-900/10 sm:min-h-0 sm:text-sm;
+    }
+
+    /* Native selects: align Chrome / Firefox / Safari; tighter than text inputs */
+    select.app-field {
+        -webkit-appearance: none;
+        appearance: none;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 0.875rem;
+        min-height: 2.625rem;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 0.875rem 0.875rem;
+        padding-right: 1.875rem;
+    }
+
+    @media (width >= 40rem) {
+        select.app-field {
+            min-height: 2.25rem;
+            padding-top: 0.375rem;
+            padding-bottom: 0.375rem;
+            padding-right: 1.75rem;
+        }
+    }
+
+    .app-table-action {
+        @apply inline-flex min-h-10 min-w-[2.75rem] touch-manipulation items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 sm:min-h-0 sm:min-w-0 sm:py-1.5;
+    }
+
+    .app-table-action-danger {
+        @apply border-red-200 text-red-700 hover:border-red-300 hover:bg-red-50 hover:text-red-800;
+    }
+
+    .app-table-action-success {
+        @apply border-green-200 text-green-700 hover:border-green-300 hover:bg-green-50 hover:text-green-800;
+    }
+
+    /* Horizontal scroll for wide admin tables on small screens */
+    .app-table-scroll {
+        -webkit-overflow-scrolling: touch;
+        @apply -mx-3 overflow-x-auto px-3 pb-1 sm:mx-0 sm:px-0 sm:pb-0;
+    }
+
+    .app-table-scroll > table {
+        @apply min-w-[36rem] sm:min-w-0;
+    }
+
+    .app-table-scroll--wide > table {
+        @apply min-w-[48rem] sm:min-w-0;
+    }
+
+}
