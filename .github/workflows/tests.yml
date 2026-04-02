@@ -18,6 +18,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php-version: ['8.3', '8.4', '8.5']
 
@@ -31,6 +32,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
           coverage: xdebug
+          extensions: mbstring, dom, curl, xml, sqlite3, pdo_sqlite
 
       - name: Setup Node
         uses: actions/setup-node@v6
