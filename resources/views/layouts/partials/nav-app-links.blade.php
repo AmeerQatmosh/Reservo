@@ -21,6 +21,12 @@
         Rooms
     </a>
     @guest
+        @if (config('reservo.demo_enabled'))
+            <a href="{{ route('demo.index') }}" class="{{ request()->routeIs('demo.*') ? $mOn : $mOff }}">
+                <x-lucide name="calendar-plus" :class="request()->routeIs('demo.*') ? $iconMobileOn : $iconMobile" />
+                Free room
+            </a>
+        @endif
         <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? $mOn : $mOff }}">
             <x-lucide name="house" :class="request()->routeIs('home') ? $iconMobileOn : $iconMobile" />
             Home
@@ -71,6 +77,15 @@
         <x-lucide name="door-open" :class="$iconDesktop" />
         Rooms
     </a>
+
+    @guest
+        @if (config('reservo.demo_enabled'))
+            <a href="{{ route('demo.index') }}" class="{{ $linkClass }} {{ request()->routeIs('demo.*') ? $navActiveClass : $navInactiveClass }}">
+                <x-lucide name="calendar-plus" :class="$iconDesktop" />
+                Free room
+            </a>
+        @endif
+    @endguest
 
     @auth
         <a href="{{ route('reservations.my') }}" class="{{ $linkClass }} {{ request()->routeIs('reservations.my', 'reservations.edit') ? $navActiveClass : $navInactiveClass }}">

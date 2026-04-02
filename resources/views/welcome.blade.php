@@ -15,10 +15,15 @@
                 Reservo is a focused reservation system for teams who share meeting rooms, labs, and event spaces.
                 Real-time overlap checks mean no double bookings—ever.
             </p>
-            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <a href="{{ route('rooms.index') }}" class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-100">
                     Browse rooms
                 </a>
+                @if (! empty($demoEnabled))
+                    <a href="{{ route('demo.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/15 px-6 py-3.5 text-sm font-semibold text-amber-50 backdrop-blur transition hover:bg-amber-400/25">
+                        Free room (demo)
+                    </a>
+                @endif
                 @guest
                     <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">
                         Create an account

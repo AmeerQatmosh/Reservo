@@ -19,19 +19,21 @@ php artisan db:seed
 
 Visit the app URL. The **landing page** is `/`; **rooms** are at `/rooms`.
 
-### Demo accounts (after `db:seed`)
+### Seeded users (local development)
 
-> **Security — read before hosting**  
-> These emails and passwords are **documented in public** (this README and often the same values in other Laravel demos). **Anyone on the internet can sign in as admin or super admin** if your deployed database still contains these users—same as leaving a published username/password list on your site.
->
-> **Local / private learning:** fine to use as-is.  
-> **Public or shared hosting:** either **do not** run `php artisan db:seed` (or strip user seeders from production), or **immediately** change every demo password, remove demo users, and create real accounts. Treat the seeded users as **compromised by definition** once the app is reachable outside your machine.
+After `db:seed`, the database may contain users for each role. **Do not publish real passwords** in this README or in a public repository.
 
-| Role        | Email               | Password   |
-|------------|---------------------|------------|
-| User       | `test@example.com`  | `password` |
-| Admin      | `admin@example.com` | `password` |
-| Super admin| `owner@reservo.com` | `password` |
+- Set your own passwords with `php artisan tinker`, the database, or by customizing `Database/Seeders` before deploying anywhere reachable from the internet.
+- For **public demos**, prefer **`RESERVO_DEMO_ENABLED=true`** (see below) so visitors can try **`/demo`** without signing in—data stays in **session only**, not the database.
+
+### Guest demo (“Free room”, portfolio / try-it)
+
+- **Local:** demo is **on by default** when `APP_ENV=local` and `RESERVO_DEMO_ENABLED` is **not** set. You get **Free room** in the nav and **Free room (demo)** on the home hero (guests only see the hero button; everyone sees **Free room** in the nav).
+- **Production:** set `RESERVO_DEMO_ENABLED=true` on the host where you want the public sandbox; otherwise set `RESERVO_DEMO_ENABLED=false` (or rely on `APP_ENV=production` with the variable unset).
+
+Open **`/demo`**: choose **User**, **Admin**, or **Super admin**—session-only rooms and bookings (same overlap rules as production).
+
+**Leave `RESERVO_DEMO_ENABLED=false`** on private production installs where you only want real accounts.
 
 ### Presentation seed data
 
@@ -56,5 +58,6 @@ php artisan test
 
 - Run `npm run build` in CI or on the server before going live.
 - Set `APP_ENV=production`, `APP_DEBUG=false`, and a strong `APP_KEY`.
-- **Never deploy with seeded demo users unchanged** (see warning above). Use migrations only, or seed only non-auth data, or rotate/remove demo accounts before going public.
+- **Never deploy** with default seeded passwords unchanged on a public URL. Rotate or remove seeded users, or rely on **guest demo mode** instead of sharing login credentials.
+- Enable **`RESERVO_DEMO_ENABLED=true`** only on hosts where you intend to offer the public sandbox; keep it **false** for internal production.
 - Configure queue/mail only if you add notifications later.

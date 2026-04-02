@@ -4,6 +4,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Guest demo (session-only sandbox)
+    |--------------------------------------------------------------------------
+    |
+    | When true, /demo is available: portfolio visitors can try booking logic
+    | without accounts. Data lives in session only—not the database.
+    |
+    | If RESERVO_DEMO_ENABLED is not set in .env, defaults to ON in local and
+    | OFF in production so you see the Free room entry without extra config.
+    |
+    */
+    'demo_enabled' => env('RESERVO_DEMO_ENABLED') === null
+        ? env('APP_ENV', 'production') === 'local'
+        : filter_var(env('RESERVO_DEMO_ENABLED'), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+    |--------------------------------------------------------------------------
     | Booking day window
     |--------------------------------------------------------------------------
     |

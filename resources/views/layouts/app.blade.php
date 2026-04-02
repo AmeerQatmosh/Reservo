@@ -21,7 +21,8 @@
             $navInactiveClass = 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
             $navActiveClass = 'bg-gray-900 text-white shadow-sm';
         @endphp
-        <nav class="sticky top-0 z-40 overflow-visible border-b border-white/60 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85">
+        <header class="sticky top-0 z-40 overflow-visible shadow-[0_1px_0_rgba(15,23,42,0.06)]">
+        <nav class="overflow-visible border-b border-white/60 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85">
             <div class="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8 py-3 sm:py-3.5">
                 <div class="flex items-center gap-x-2 gap-y-2 sm:gap-x-3">
                     <a
@@ -99,6 +100,10 @@
                 </div>
             </div>
         </nav>
+        @if (config('reservo.demo_enabled') && \App\Support\DemoState::active() && request()->routeIs('demo.*'))
+            @include('layouts.partials.demo-sandbox-bar')
+        @endif
+        </header>
 
         <main class="mx-auto w-full min-w-0 max-w-7xl px-3 py-6 sm:px-4 sm:py-8 lg:px-8">
             @if (session('success'))

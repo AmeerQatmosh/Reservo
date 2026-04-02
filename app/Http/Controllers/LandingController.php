@@ -22,6 +22,7 @@ class LandingController extends Controller
 
         return view('welcome', [
             'featuredRooms' => $featuredRooms,
+            'demoEnabled' => (bool) config('reservo.demo_enabled'),
         ]);
     }
 }
