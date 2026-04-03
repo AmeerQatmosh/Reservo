@@ -37,7 +37,7 @@ class RoomFactory extends Factory
 
     public function definition(): array
     {
-        $faker = fake();
+        $faker = \fake();
         $photoId = $faker->randomElement(self::UNSPLASH_PHOTO_IDS);
         $label = $faker->randomElement([
             'Summit Room', 'Canvas North', 'Quartz Studio', 'Meridian Lounge',
