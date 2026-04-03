@@ -19,7 +19,8 @@ class RoomSeeder extends Seeder
 
         foreach ($rooms as $room) {
             if (! array_key_exists('hourly_rate', $room)) {
-                $room['hourly_rate'] = \fake()->randomFloat(2, 18, 52);
+                // No Faker here: production uses `composer install --no-dev` (faker is require-dev).
+                $room['hourly_rate'] = round(mt_rand(1800, 5200) / 100, 2);
             }
             Room::query()->updateOrCreate(
                 ['name' => $room['name']],
@@ -27,11 +28,13 @@ class RoomSeeder extends Seeder
             );
         }
 
-        $targetTotal = 14;
-        $shortfall = $targetTotal - Room::query()->count();
-
-        if ($shortfall > 0) {
-            Room::factory()->count($shortfall)->create();
+        // RoomFactory uses Faker; Faker is not installed with `composer install --no-dev`.
+        if (class_exists(\Faker\Factory::class)) {
+            $targetTotal = 14;
+            $shortfall = $targetTotal - Room::query()->count();
+            if ($shortfall > 0) {
+                Room::factory()->count($shortfall)->create();
+            }
         }
     }
 
