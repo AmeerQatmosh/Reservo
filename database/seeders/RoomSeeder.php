@@ -19,7 +19,7 @@ class RoomSeeder extends Seeder
 
         foreach ($rooms as $room) {
             if (! array_key_exists('hourly_rate', $room)) {
-                $room['hourly_rate'] = fake()->randomFloat(2, 18, 52);
+                $room['hourly_rate'] = \fake()->randomFloat(2, 18, 52);
             }
             Room::query()->updateOrCreate(
                 ['name' => $room['name']],
