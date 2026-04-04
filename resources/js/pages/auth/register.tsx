@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { AuthPrivacyNotice } from '@/components/auth-privacy-notice';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -13,6 +14,9 @@ export default function Register() {
     return (
         <>
             <Head title="Register" />
+
+            <AuthPrivacyNotice variant="register" className="mb-6" />
+
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
