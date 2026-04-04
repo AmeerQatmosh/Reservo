@@ -95,13 +95,24 @@ final class DemoRoomListing
                 }
             }
 
-            if ($location !== '' && (($room['location'] ?? '') !== $location)) {
-                return false;
+            if ($location !== '') {
+                $locRoom = (string) ($room['location'] ?? '');
+                if (! Str::contains(Str::lower($locRoom), Str::lower($location))) {
+                    return false;
+                }
             }
 
             if ($amenity !== '') {
                 $list = is_array($room['amenities'] ?? null) ? $room['amenities'] : [];
-                if (! in_array($amenity, $list, true)) {
+                $needle = Str::lower($amenity);
+                $matched = false;
+                foreach ($list as $item) {
+                    if (is_string($item) && Str::contains(Str::lower($item), $needle)) {
+                        $matched = true;
+                        break;
+                    }
+                }
+                if (! $matched) {
                     return false;
                 }
             }

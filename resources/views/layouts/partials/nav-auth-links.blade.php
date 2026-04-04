@@ -15,7 +15,7 @@
         @include('layouts.partials.account-menu', ['variant' => 'mobile'])
         <form method="POST" action="{{ route('logout') }}" class="mt-0.5 border-t border-gray-100 pt-1.5">
             @csrf
-            <button type="submit" class="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[15px] font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-200">
+            <button type="submit" class="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-[15px] font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-200" data-no-loading>
                 <x-lucide name="log-out" class="h-[18px] w-[18px] shrink-0 text-red-500 transition-colors group-hover:text-red-700 group-focus-visible:text-red-700" />
                 Sign out
             </button>
@@ -25,7 +25,7 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50">
+            <button type="submit" class="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:border-gray-300 hover:bg-gray-50" data-no-loading>
                 <x-lucide name="log-out" :class="$iconDesktop" />
                 Logout
             </button>

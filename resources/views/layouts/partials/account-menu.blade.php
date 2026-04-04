@@ -4,14 +4,13 @@
     $iconDesktop = 'h-4 w-4 shrink-0 text-gray-500 transition-colors group-hover:text-gray-800 group-focus-visible:text-gray-800';
     $accountOpen = request()->routeIs('settings.index', 'profile.*', 'security.*');
 
-    $itemClass = 'group box-border flex w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[15px] font-medium text-gray-900 transition hover:bg-gray-100 focus-visible:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/20';
-    $itemClassOn = 'group box-border flex w-full min-w-0 items-center gap-2.5 rounded-lg bg-gray-900 px-2.5 py-1.5 text-left text-[15px] font-medium text-white transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/35';
+    // Dropdown items: one style only (no route bg — looked like stuck focus). Sidebar shows current section.
+    $itemClass = 'group box-border flex w-full min-w-0 items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left text-[15px] font-medium text-gray-900 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/20';
 
     $iconMobile = 'h-[18px] w-[18px] shrink-0 text-gray-500 transition-colors group-hover:text-gray-800 group-focus-visible:text-gray-800';
-    $iconMobileOn = 'h-[18px] w-[18px] shrink-0 text-white opacity-90 transition-opacity group-hover:opacity-100';
 
-    $itemClassDesk = 'group box-border flex w-full min-w-0 items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-gray-700 transition hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/18';
-    $itemClassDeskOn = 'group box-border flex w-full min-w-0 items-center gap-2 rounded-md bg-gray-100 px-2.5 py-1.5 text-sm font-medium text-gray-900 transition hover:bg-gray-200/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/22';
+    // No focus-visible:bg-* so a focused row does not look selected when reopening the menu.
+    $itemClassDesk = 'group box-border flex w-full min-w-0 items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-gray-700 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/18';
 @endphp
 
 @if ($isMobile)
@@ -44,23 +43,26 @@
         <div class="reservo-dropdown-panel mt-1.5 flex flex-col gap-px rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
             <a
                 href="{{ route('settings.index') }}"
-                class="{{ request()->routeIs('settings.index') ? $itemClassOn : $itemClass }}"
+                class="{{ $itemClass }}"
+                @if (request()->routeIs('settings.index')) aria-current="page" @endif
             >
-                <x-lucide name="settings" :class="request()->routeIs('settings.index') ? $iconMobileOn : $iconMobile" />
+                <x-lucide name="settings" :class="$iconMobile" />
                 Settings
             </a>
             <a
                 href="{{ route('profile.edit') }}"
-                class="{{ request()->routeIs('profile.*') ? $itemClassOn : $itemClass }}"
+                class="{{ $itemClass }}"
+                @if (request()->routeIs('profile.*')) aria-current="page" @endif
             >
-                <x-lucide name="user" :class="request()->routeIs('profile.*') ? $iconMobileOn : $iconMobile" />
+                <x-lucide name="user" :class="$iconMobile" />
                 Profile
             </a>
             <a
                 href="{{ route('security.edit') }}"
-                class="{{ request()->routeIs('security.*') ? $itemClassOn : $itemClass }}"
+                class="{{ $itemClass }}"
+                @if (request()->routeIs('security.*')) aria-current="page" @endif
             >
-                <x-lucide name="lock" :class="request()->routeIs('security.*') ? $iconMobileOn : $iconMobile" />
+                <x-lucide name="lock" :class="$iconMobile" />
                 Security
             </a>
         </div>
@@ -96,24 +98,27 @@
             </div>
             <a
                 href="{{ route('settings.index') }}"
-                class="{{ request()->routeIs('settings.index') ? $itemClassDeskOn : $itemClassDesk }}"
+                class="{{ $itemClassDesk }}"
                 role="menuitem"
+                @if (request()->routeIs('settings.index')) aria-current="page" @endif
             >
                 <x-lucide name="settings" :class="$iconDesktop" />
                 Settings
             </a>
             <a
                 href="{{ route('profile.edit') }}"
-                class="{{ request()->routeIs('profile.*') ? $itemClassDeskOn : $itemClassDesk }}"
+                class="{{ $itemClassDesk }}"
                 role="menuitem"
+                @if (request()->routeIs('profile.*')) aria-current="page" @endif
             >
                 <x-lucide name="user" :class="$iconDesktop" />
                 Profile
             </a>
             <a
                 href="{{ route('security.edit') }}"
-                class="{{ request()->routeIs('security.*') ? $itemClassDeskOn : $itemClassDesk }}"
+                class="{{ $itemClassDesk }}"
                 role="menuitem"
+                @if (request()->routeIs('security.*')) aria-current="page" @endif
             >
                 <x-lucide name="lock" :class="$iconDesktop" />
                 Security

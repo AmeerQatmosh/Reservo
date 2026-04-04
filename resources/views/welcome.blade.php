@@ -19,11 +19,11 @@
                 <a href="{{ route('rooms.index') }}" class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-100">
                     Browse rooms
                 </a>
-                @if (! empty($demoEnabled))
+                {{-- @if (! empty($demoEnabled))
                     <a href="{{ route('demo.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/15 px-6 py-3.5 text-sm font-semibold text-amber-50 backdrop-blur transition hover:bg-amber-400/25">
                         Free room (demo)
                     </a>
-                @endif
+                @endif --}}
                 @guest
                     <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">
                         Create an account
@@ -33,6 +33,11 @@
                         My reservations
                     </a>
                 @endguest
+                @if (! empty($demoEnabled))
+                <a href="{{ route('demo.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/15 px-6 py-3.5 text-sm font-semibold text-amber-50 backdrop-blur transition hover:bg-amber-400/25">
+                    Guest Mode (Demo)
+                </a>
+            @endif
             </div>
         </div>
     </div>
@@ -111,7 +116,7 @@
     @endif
 
     <p class="mt-12 text-center text-xs leading-relaxed text-gray-500">
-        Room names, copy, and availability in this demo are sample data loaded from the app seeders.
+        Featured rooms use sample data for a fictional <span class="font-medium text-gray-700">Meridian House</span> campus (seeded from the app).
         Photos are served from
         <a href="https://unsplash.com" class="font-medium text-gray-700 underline hover:text-gray-900" target="_blank" rel="noopener noreferrer">Unsplash</a>
         under the

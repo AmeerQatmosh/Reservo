@@ -16,7 +16,7 @@
 
     <div>
         <label for="location" class="block text-sm font-medium text-gray-900">Location (optional)</label>
-        <input id="location" name="location" type="text" value="{{ old('location', $room?->location) }}" placeholder="e.g. North Tower · Floor 3" class="app-field">
+        <input id="location" name="location" type="text" value="{{ old('location', $room?->location) }}" placeholder="e.g. Meridian House · North Tower · Floor 3" class="app-field">
     </div>
 
     <div>

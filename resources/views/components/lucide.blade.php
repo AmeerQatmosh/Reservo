@@ -171,6 +171,19 @@
             <path d="M5 12h14" />
             <path d="M12 5v14" />
             @break
+        @case('search')
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+            @break
+        @case('arrow-up-down')
+            <path d="m21 16-4 4-4-4" />
+            <path d="M17 20V4" />
+            <path d="m3 8 4-4 4 4" />
+            <path d="M7 4v16" />
+            @break
+        @case('check')
+            <path d="M20 6 9 17l-5-5" />
+            @break
         @default
     @endswitch
 </svg>
