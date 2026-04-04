@@ -88,7 +88,11 @@
             </button>
         </form>
 
-        <div class="mt-6 rounded-2xl border border-gray-200 bg-gray-50/90 p-5">
+        <div
+            id="room-availability-results"
+            tabindex="-1"
+            class="scroll-mt-28 mt-6 rounded-2xl border border-gray-200 bg-gray-50/90 p-5 outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 focus-visible:ring-offset-2"
+        >
             <div class="text-sm font-medium text-gray-900">
                 Booked slots for {{ $selectedDate }}
             </div>
@@ -118,7 +122,7 @@
                     </div>
                 @endif
             </div>
-            <a href="{{ route('demo.reservations.my', ['room_id' => $room['id'], 'date' => $selectedDate]) }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
+            <a href="{{ route('demo.reservations.my', ['room_id' => $room['id'], 'date' => $selectedDate]) }}" class="reservo-loading-link inline-flex items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
                 <x-lucide name="calendar-check" class="h-4 w-4 shrink-0 opacity-90" />
                 Book this room
             </a>

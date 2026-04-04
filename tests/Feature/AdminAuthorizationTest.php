@@ -63,14 +63,14 @@ test('admins can view admin room detail with photo and metadata', function () {
 
     $room = Room::factory()->create([
         'name' => 'Executive Suite Admin View',
-        'image_url' => 'https://images.unsplash.com/photo-1544984243-ec57ea16fe25?w=400',
+        'image_url' => 'https://images.unsplash.com/photo-1637665662134-db459c1bbb46?w=400',
     ]);
 
     $response = $this->actingAs($admin)->get(route('admin.rooms.show', $room->id));
 
     $response->assertOk();
     $response->assertSee('Executive Suite Admin View', false);
-    $response->assertSee('photo-1544984243-ec57ea16fe25', false);
+    $response->assertSee('photo-1637665662134-db459c1bbb46', false);
 });
 
 test('admins can not update user roles', function () {

@@ -89,10 +89,14 @@ final class RoomListing
             $query->where('size_sqm', '<=', (int) $maxSize);
         }
         if ($location !== '') {
-            $query->where('location', $location);
+            $query->where('location', 'like', '%'.self::escapeLike($location).'%');
         }
         if ($amenity !== '') {
-            $query->whereJsonContains('amenities', $amenity);
+            $likeLower = '%'.self::escapeLike(Str::lower($amenity)).'%';
+            $cast = $query->getConnection()->getDriverName() === 'sqlite'
+                ? 'CAST(amenities AS TEXT)'
+                : 'CAST(amenities AS CHAR(10000))';
+            $query->whereRaw('LOWER('.$cast.') LIKE ?', [$likeLower]);
         }
         if ($hasPhoto) {
             $query->whereNotNull('image_url')->where('image_url', '!=', '');

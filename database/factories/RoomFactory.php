@@ -13,42 +13,38 @@ class RoomFactory extends Factory
     protected $model = Room::class;
 
     /**
-     * Curated Unsplash image IDs (offices / meeting spaces) for demo data.
+     * Slugs for extra seeded rooms only — disjoint from database/data/demo_rooms.php
+     * so factory rows never reuse a curated room’s hero image.
      *
      * @var list<string>
      */
-    /** IDs verified to return HTTP 200 from images.unsplash.com (some legacy Unsplash IDs now 404). */
-    public const UNSPLASH_PHOTO_IDS = [
-        '1544984243-ec57ea16fe25',
-        '1517245386807-bb43f82c33c4',
-        '1497215728101-856f4ea42174',
-        '1519389950473-47ba0277781c',
-        '1540575467063-178a50c2df87',
-        '1497366811353-6870744d04b2',
-        '1556761175-4b46a572b786',
-        '1604328698692-f76ea9498e76',
-        '1522071820081-009f0129c71c',
-        '1497366216548-37526070297c',
-        '1497366754035-f200968a6e72',
-        '1524758631624-e2822e304c36',
-        '1553877522-43269d4ea984',
-        '1521587760476-6c12a4b040da',
+    public const FACTORY_ONLY_PHOTO_IDS = [
+        '1685602729266-9fa302fd7121',
+        '1768225709733-18c9f264bc5f',
+        '1771147372634-976f022c0033',
+        '1765366417046-f46361a7f26f',
+        '1761912915676-74c7d63105a3',
+        '1770833942746-3cbacd9ea5b2',
+        '1758448511255-ac2a24a135d7',
+        '1763567823709-9df979a3b7b8',
+        '1760455311959-7118d4f11e41',
+        '1758800601486-75c3865cc9a5',
     ];
 
     public function definition(): array
     {
         $faker = \fake();
-        $photoId = $faker->randomElement(self::UNSPLASH_PHOTO_IDS);
+        $photoId = $faker->randomElement(self::FACTORY_ONLY_PHOTO_IDS);
         $label = $faker->randomElement([
-            'Summit Room', 'Canvas North', 'Quartz Studio', 'Meridian Lounge',
-            'Blueprint Lab', 'Cedar Conference', 'Orbit Huddle', 'Pulse Gallery',
+            'Meridian Huddle', 'Meridian Lounge', 'Annex Studio', 'Skydeck Breakout',
+            'Harbor Lab', 'Events Wing', 'Innovation Cell', 'North Tower Suite',
         ]);
 
         return [
             'name' => $label.' '.$faker->unique()->numerify('###'),
             'capacity' => $faker->numberBetween(4, 40),
-            'description' => $faker->paragraphs(3, true),
-            'location' => $faker->randomElement([
+            'description' => 'Meeting or event space at Meridian House. '.$faker->paragraph(2),
+            'location' => 'Meridian House · '.$faker->randomElement([
                 'North Tower · Floor '.$faker->numberBetween(2, 14),
                 'Annex · Level '.$faker->randomElement(['G', '1', '2']),
                 'Main campus · Wing '.$faker->randomElement(['A', 'B', 'C']),
@@ -59,7 +55,7 @@ class RoomFactory extends Factory
                 'HDMI / USB-C', 'Wireless casting', 'Whiteboard', 'Video bar',
                 'Natural light', 'Standing desks', 'Catering prep', 'Phone booth nearby',
             ], $faker->numberBetween(3, 6)),
-            'image_url' => "https://images.unsplash.com/photo-{$photoId}?auto=format&fit=crop&w=1600&q=85",
+            'image_url' => "https://images.unsplash.com/photo-{$photoId}?auto=format&fit=crop&w=2400&q=90",
         ];
     }
 }
