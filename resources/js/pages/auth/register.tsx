@@ -89,7 +89,7 @@ export default function Register() {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full"
+                                className="mt-2 h-11 w-full rounded-xl text-base font-semibold shadow-sm"
                                 tabIndex={5}
                                 data-test="register-user-button"
                             >
@@ -98,7 +98,7 @@ export default function Register() {
                             </Button>
                         </div>
 
-                        <div className="text-center text-sm text-muted-foreground">
+                        <div className="text-center text-sm text-gray-600">
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={6}>
                                 Log in
@@ -112,6 +112,7 @@ export default function Register() {
 }
 
 Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+    title: 'Join Reservo',
+    description:
+        'Create an account to explore rooms and book time that fits your team.',
 };

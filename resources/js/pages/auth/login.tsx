@@ -26,6 +26,15 @@ export default function Login({
         <>
             <Head title="Log in" />
 
+            {status ? (
+                <div
+                    className="mb-6 rounded-xl border border-emerald-200/90 bg-emerald-50/95 px-4 py-3 text-center text-sm font-medium text-emerald-900 shadow-sm"
+                    role="status"
+                >
+                    {status}
+                </div>
+            ) : null}
+
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
@@ -87,7 +96,7 @@ export default function Login({
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 h-11 w-full rounded-xl text-base font-semibold shadow-sm"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -98,8 +107,8 @@ export default function Login({
                         </div>
 
                         {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
+                            <div className="text-center text-sm text-gray-600">
+                                Don&apos;t have an account?{' '}
                                 <TextLink href={register()} tabIndex={5}>
                                     Sign up
                                 </TextLink>
@@ -108,17 +117,12 @@ export default function Login({
                     </>
                 )}
             </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
         </>
     );
 }
 
 Login.layout = {
-    title: 'Log in to your account',
-    description: 'Enter your email and password below to log in',
+    title: 'Good to see you again',
+    description:
+        'Sign in with your email to pick up your reservations and browse rooms.',
 };
