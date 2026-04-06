@@ -11,6 +11,8 @@
         </style>
 
         <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+        <link rel="icon" href="{{ asset('favicon-light.svg') }}" type="image/svg+xml" media="(prefers-color-scheme: light)">
+        <link rel="icon" href="{{ asset('favicon-dark.svg') }}" type="image/svg+xml" media="(prefers-color-scheme: dark)">
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
