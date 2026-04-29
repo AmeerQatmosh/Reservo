@@ -8,6 +8,7 @@ test('guests can browse rooms with extended filters', function () {
         'capacity' => 18,
         'location' => 'North Tower · Demo',
         'size_sqm' => 42,
+        'hourly_rate' => 45.5,
         'amenities' => ['Demo HDMI port'],
         'image_url' => 'https://images.unsplash.com/photo-1637665662134-db459c1bbb46?w=100',
     ]);
@@ -29,4 +30,12 @@ test('guests can browse rooms with extended filters', function () {
         'location' => 'North Tower',
         'amenity' => 'hdmi',
     ]))->assertOk()->assertSee('North Filter Room');
+
+    $this->get(route('rooms.index', [
+        'min_hourly_rate' => '10',
+        'max_hourly_rate' => '50',
+        'sort' => 'hourly_asc',
+    ]))->assertOk()->assertSee('North Filter Room');
+
+    $this->get(route('rooms.index', ['view' => 'list']))->assertOk()->assertSee('List', false);
 });

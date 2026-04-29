@@ -11,10 +11,11 @@ uses(RefreshDatabase::class);
 test('users can create a reservation when the slot is available', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     $response = $this->actingAs($user)->post(route('reservations.store'), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:00',
         'end_time' => '10:00',
     ]);
@@ -28,9 +29,10 @@ test('users can create a reservation when the slot is available', function () {
 test('users can not create overlapping reservations for the same room and date', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     makeReservation($user, $room, [
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:00:00',
         'end_time' => '10:00:00',
     ]);
@@ -39,7 +41,7 @@ test('users can not create overlapping reservations for the same room and date',
         ->from(route('reservations.my'))
         ->post(route('reservations.store'), [
             'room_id' => $room->id,
-            'date' => '2026-04-15',
+            'date' => $bookingDate,
             'start_time' => '09:30',
             'end_time' => '10:30',
         ]);
@@ -53,16 +55,17 @@ test('users can not create overlapping reservations for the same room and date',
 test('adjacent reservations are allowed for the same room and date', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     makeReservation($user, $room, [
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:00:00',
         'end_time' => '10:00:00',
     ]);
 
     $response = $this->actingAs($user)->post(route('reservations.store'), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '10:00',
         'end_time' => '11:00',
     ]);
@@ -76,10 +79,11 @@ test('adjacent reservations are allowed for the same room and date', function ()
 test('users cannot create reservations outside operating hours', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     $response = $this->actingAs($user)->post(route('reservations.store'), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '07:00',
         'end_time' => '08:00',
     ]);
@@ -92,10 +96,11 @@ test('users cannot create reservations outside operating hours', function () {
 test('users cannot create reservations on a time that does not align to slot steps', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     $response = $this->actingAs($user)->post(route('reservations.store'), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:15',
         'end_time' => '10:15',
     ]);
@@ -108,10 +113,11 @@ test('users cannot create reservations on a time that does not align to slot ste
 test('users can create reservations on half-hour boundaries inside operating hours', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     $response = $this->actingAs($user)->post(route('reservations.store'), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '08:30',
         'end_time' => '09:30',
     ]);
@@ -123,18 +129,19 @@ test('users can create reservations on half-hour boundaries inside operating hou
 test('users can keep legacy off-grid times when updating an existing reservation', function () {
     $user = makeUser();
     $room = makeRoom();
+    $bookingDate = now()->addDays(21)->toDateString();
 
     $reservation = Reservation::query()->create([
         'user_id' => $user->id,
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:15:00',
         'end_time' => '10:15:00',
     ]);
 
     $response = $this->actingAs($user)->from(route('reservations.edit', $reservation->id))->put(route('reservations.update', $reservation->id), [
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => $bookingDate,
         'start_time' => '09:15',
         'end_time' => '10:15',
     ]);
@@ -229,7 +236,7 @@ function makeReservation(User $user, Room $room, array $overrides = []): Reserva
     return Reservation::query()->create(array_merge([
         'user_id' => $user->id,
         'room_id' => $room->id,
-        'date' => '2026-04-15',
+        'date' => now()->addDays(21)->toDateString(),
         'start_time' => '09:00:00',
         'end_time' => '10:00:00',
     ], $overrides));

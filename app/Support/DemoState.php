@@ -287,7 +287,9 @@ final class DemoState
         }
 
         if (self::reservationOverlaps($roomId, $date, $startSec, $endSec, $ignoreId)) {
-            return ['overlap' => 'This time overlaps another booking in the demo.'];
+            $blocking = self::blockingReservationsOverlappingInterval($roomId, $date, $startSec, $endSec, $ignoreId);
+
+            return ['overlap' => ReservationOverlapMessaging::forSandboxRows($date, $startHi, $endHi, $blocking)];
         }
 
         $id = (int) Session::get(self::SESSION_KEY.'.next_reservation_id', 1);
@@ -324,6 +326,51 @@ final class DemoState
         }
 
         return $found;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function favoriteRoomIds(): array
+    {
+        $raw = Session::get(self::SESSION_KEY.'.favorite_room_ids');
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($raw as $v) {
+            if (is_numeric($v)) {
+                $ids[] = (int) $v;
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    public static function toggleFavoriteRoom(int $roomId): void
+    {
+        if (self::findRoom($roomId) === null) {
+            return;
+        }
+
+        $ids = self::favoriteRoomIds();
+        if (in_array($roomId, $ids, true)) {
+            $ids = array_values(array_filter($ids, static fn (int $id): bool => $id !== $roomId));
+        } else {
+            $ids[] = $roomId;
+        }
+
+        Session::put(self::SESSION_KEY.'.favorite_room_ids', $ids);
+    }
+
+    private static function removeFavoriteRoomId(int $roomId): void
+    {
+        $ids = array_values(array_filter(
+            self::favoriteRoomIds(),
+            static fn (int $id): bool => $id !== $roomId,
+        ));
+        Session::put(self::SESSION_KEY.'.favorite_room_ids', $ids);
     }
 
     /**
@@ -420,9 +467,14 @@ final class DemoState
             fn (array $row): bool => (int) ($row['room_id'] ?? 0) !== $id
         )));
 
+        self::removeFavoriteRoomId($id);
+
         return true;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
     public static function reservationsForRoomOnDate(int $roomId, string $date): array
     {
         return array_values(array_filter(
@@ -431,8 +483,12 @@ final class DemoState
         ));
     }
 
-    private static function reservationOverlaps(int $roomId, string $date, string $start, string $end, ?int $ignoreId): bool
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public static function blockingReservationsOverlappingInterval(int $roomId, string $date, string $start, string $end, ?int $ignoreId): array
     {
+        $hits = [];
         foreach (self::reservations() as $row) {
             if ((int) ($row['room_id'] ?? 0) !== $roomId) {
                 continue;
@@ -446,11 +502,16 @@ final class DemoState
             $rs = (string) ($row['start_time'] ?? '');
             $re = (string) ($row['end_time'] ?? '');
             if ($rs < $end && $re > $start) {
-                return true;
+                $hits[] = $row;
             }
         }
 
-        return false;
+        return $hits;
+    }
+
+    private static function reservationOverlaps(int $roomId, string $date, string $start, string $end, ?int $ignoreId): bool
+    {
+        return self::blockingReservationsOverlappingInterval($roomId, $date, $start, $end, $ignoreId) !== [];
     }
 
     public static function canUser(): bool

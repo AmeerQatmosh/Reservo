@@ -16,8 +16,12 @@ Route::middleware(['web', 'demo.enabled', 'throttle:demo'])
             Route::post('/role', [DemoController::class, 'switchRole'])->name('role');
 
             Route::get('/rooms', [DemoController::class, 'rooms'])->name('rooms');
+            Route::post('/rooms/{id}/favorite', [DemoController::class, 'toggleRoomFavorite'])->name('rooms.favorite.toggle');
+            Route::get('/rooms/{id}/book', [DemoController::class, 'quickBookRoom'])->name('rooms.quickBook');
             Route::get('/rooms/{id}', [DemoController::class, 'roomShow'])->name('room.show');
+            Route::get('/calendar', [DemoController::class, 'calendar'])->name('calendar');
             Route::get('/reservations/my', [DemoController::class, 'reservationsMy'])->name('reservations.my');
+            Route::get('/reservations/room-booked-slots', [DemoController::class, 'roomBookedSlots'])->name('reservations.roomBookedSlots');
             Route::post('/reservations', [DemoController::class, 'storeReservation'])->name('reservations.store');
             Route::delete('/reservations/{id}', [DemoController::class, 'destroyReservation'])->name('reservations.destroy');
 

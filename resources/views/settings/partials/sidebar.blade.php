@@ -1,5 +1,5 @@
 @php
-    $navBase = 'inline-flex w-full min-w-0 items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium no-underline outline-none transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2';
+    $navBase = 'inline-flex w-full min-w-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium no-underline outline-none transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2';
     $navOn = 'bg-gray-900 text-white shadow-sm hover:bg-gray-800 focus-visible:outline-white/70';
     $navOff = 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-gray-900';
 

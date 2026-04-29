@@ -6,15 +6,15 @@
     $iconMobileGuest = 'h-[18px] w-[18px] shrink-0 text-amber-700 transition-colors group-hover:text-amber-900 group-focus-visible:text-amber-900';
     $iconMobileGuestOn = 'h-[18px] w-[18px] shrink-0 text-white';
     $iconDesktop = 'h-4 w-4 shrink-0 opacity-90';
-    $iconDesktopGuest = 'h-4 w-4 shrink-0 text-amber-700';
+    $iconDesktopGuest = 'h-4 w-4 shrink-0 text-amber-400 hover:text-amber-500';
     $iconDesktopGuestActive = 'h-4 w-4 shrink-0 text-white';
     $m = 'group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-[15px] font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15';
     $mOn = $m.' bg-gray-900 text-white focus-visible:ring-white/25';
     $mOff = $m.' text-gray-900 hover:bg-gray-100';
     $mGuest = $m.' border border-amber-400/60 bg-gradient-to-br from-amber-50 to-orange-50 text-amber-950 shadow-sm ring-1 ring-amber-500/15 hover:border-amber-500 hover:from-amber-100 hover:to-amber-50 hover:ring-amber-500/25';
     $mGuestOn = $m.' border border-amber-600 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md ring-2 ring-amber-500/35 focus-visible:ring-white/30';
-    $guestModeDesktop = $navLinkClass.' border border-amber-400/60 bg-gradient-to-b from-amber-50 via-amber-50/90 to-orange-50/80 text-amber-950 shadow-sm ring-1 ring-amber-500/20 hover:border-amber-500 hover:from-amber-100 hover:shadow-md hover:ring-amber-400/35';
-    $guestModeDesktopActive = $navLinkClass.' border border-amber-600 bg-gradient-to-b from-amber-500 to-amber-600 text-white shadow-md ring-2 ring-amber-500/40 ring-offset-2 ring-offset-white';
+    $guestModeDesktop = $navLinkClass.' text-amber-400 hover:text-amber-500';
+    $guestModeDesktopActive = $navLinkClass.'border border-yellow-500 bg-yellow-400 rounded-xl text-white';
 @endphp
 
 @if ($isMobile)

@@ -18,7 +18,7 @@
 @endphp
 
 <div class="relative z-10 border-b border-amber-200/60 bg-amber-50/90 backdrop-blur-sm">
-    <div class="mx-auto max-w-7xl px-3 py-2.5 sm:px-4 lg:px-8 lg:py-2">
+    <div class="mx-auto max-w-[min(100%,85rem)] px-2.5 py-2.5 sm:px-3.5 lg:px-6 lg:py-2">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
             {{-- Mobile: Demo + Exit on one row; desktop: badge only in this cell --}}
             <div class="flex min-w-0 items-center justify-between gap-3 lg:contents">
@@ -48,7 +48,7 @@
             @if (\App\Support\DemoState::canUser())
                 <a href="{{ route('demo.reservations.my') }}" class="{{ request()->routeIs('demo.reservations.my') ? $pillOn : $pillOff }}">
                     <x-lucide name="calendar-days" class="h-3.5 w-3.5 opacity-90" />
-                    Bookings
+                    {{ __('My reservations') }}
                 </a>
             @endif
 

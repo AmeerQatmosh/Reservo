@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Room;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 final class RoomListing
@@ -12,7 +13,7 @@ final class RoomListing
     /**
      * Distinct locations and amenity labels from the database (for filter dropdowns).
      *
-     * @return array{locations: \Illuminate\Support\Collection<int, string>, amenities: \Illuminate\Support\Collection<int, string>}
+     * @return array{locations: Collection<int, string>, amenities: Collection<int, string>}
      */
     public static function filterOptions(bool $withTrashed = false): array
     {
@@ -58,6 +59,8 @@ final class RoomListing
         $maxSize = $request->input('max_size_sqm');
         $location = trim((string) $request->input('location', ''));
         $amenity = trim((string) $request->input('amenity', ''));
+        $minHourly = $request->input('min_hourly_rate');
+        $maxHourly = $request->input('max_hourly_rate');
         $hasPhoto = $request->boolean('has_photo');
         $sort = $request->input('sort', 'name');
 
@@ -98,6 +101,14 @@ final class RoomListing
                 : 'CAST(amenities AS CHAR(10000))';
             $query->whereRaw('LOWER('.$cast.') LIKE ?', [$likeLower]);
         }
+        if ($minHourly !== null && $minHourly !== '' && is_numeric($minHourly)) {
+            $query->whereNotNull('hourly_rate')
+                ->where('hourly_rate', '>=', (float) $minHourly);
+        }
+        if ($maxHourly !== null && $maxHourly !== '' && is_numeric($maxHourly)) {
+            $query->whereNotNull('hourly_rate')
+                ->where('hourly_rate', '<=', (float) $maxHourly);
+        }
         if ($hasPhoto) {
             $query->whereNotNull('image_url')->where('image_url', '!=', '');
         }
@@ -111,6 +122,8 @@ final class RoomListing
             'max_capacity' => $maxCap,
             'min_size_sqm' => $minSize,
             'max_size_sqm' => $maxSize,
+            'min_hourly_rate' => $minHourly,
+            'max_hourly_rate' => $maxHourly,
             'location' => $location,
             'amenity' => $amenity,
             'has_photo' => $hasPhoto,
@@ -128,6 +141,8 @@ final class RoomListing
             'capacity_desc' => $query->orderByDesc('capacity')->orderBy('name'),
             'size_asc' => $query->orderByRaw('COALESCE(size_sqm, 999999) ASC')->orderBy('name'),
             'size_desc' => $query->orderByRaw('COALESCE(size_sqm, 0) DESC')->orderBy('name'),
+            'hourly_asc' => $query->orderByRaw('COALESCE(hourly_rate, 999999) ASC')->orderBy('name'),
+            'hourly_desc' => $query->orderByRaw('COALESCE(hourly_rate, 0) DESC')->orderBy('name'),
             default => $query->orderBy('name'),
         };
     }
@@ -135,5 +150,15 @@ final class RoomListing
     private static function escapeLike(string $value): string
     {
         return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $value);
+    }
+
+    /**
+     * Public browse page layout: query `view` is `grid` (default) or `list`.
+     */
+    public static function browseView(Request $request): string
+    {
+        $v = $request->query('view', 'grid');
+
+        return in_array($v, ['grid', 'list'], true) ? $v : 'grid';
     }
 }

@@ -44,8 +44,11 @@
                     Browse Rooms
                 </a>
                 @if (\App\Support\DemoState::canUser())
+                    <a href="{{ route('demo.reservations.my', ['view' => 'calendar']) }}" class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 transition hover:border-gray-300 hover:bg-gray-50">
+                        {{ __('Calendar') }}
+                    </a>
                     <a href="{{ route('demo.reservations.my') }}" class="rounded-2xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 transition hover:border-gray-300 hover:bg-gray-50">
-                        My Reservations
+                        {{ __('History') }}
                     </a>
                 @endif
                 @if ($isAdmin)

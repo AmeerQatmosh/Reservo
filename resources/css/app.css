@@ -161,8 +161,30 @@
     }
 
     ::selection {
-        @apply bg-slate-900 text-white;
+        @apply bg-slate-500 text-white;
     }
+
+    /* Customized Nav Links */
+    .nav-link {
+        @apply relative transition-colors duration-200;
+      }
+    
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -16px; /* sits on navbar border */
+        width: 100%;
+        height: 3px;
+        background-color: #111827; /* gray-900 */
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+      }
+    
+      .nav-link.active::after {
+        transform: scaleX(1);
+      }
 }
 
 @layer components {
@@ -186,6 +208,67 @@
         box-sizing: border-box;
         -webkit-backface-visibility: hidden;
         backface-visibility: hidden;
+    }
+
+    .reservo-mobile-menu__backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        /* Dim only: no blur (keeps main content readable). */
+        background-color: rgb(15 23 42 / 0.18);
+        /* Pass scroll/taps through to the page — overlay is visual only. */
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease-out;
+    }
+
+    .reservo-mobile-menu[open] .reservo-mobile-menu__backdrop {
+        opacity: 1;
+    }
+
+    .reservo-mobile-menu__panel {
+        position: fixed;
+        /* Viewport-anchored: parent must not use backdrop-filter (see app nav layout). */
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: auto;
+        z-index: 101;
+        display: flex;
+        width: min(50dvw, 22rem);
+        min-width: 0;
+        height: 100dvh;
+        min-height: 0;
+        pointer-events: auto;
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .reservo-mobile-menu[open] .reservo-mobile-menu__panel {
+        animation: reservo-mobile-drawer-in 0.22s ease-out both;
+    }
+
+    /* Transform only — avoids jank from opacity + scrollbar/reflow. */
+    @keyframes reservo-mobile-drawer-in {
+        from {
+            transform: translate3d(100%, 0, 0);
+        }
+
+        to {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .reservo-mobile-menu[open] .reservo-mobile-menu__panel {
+            animation: none;
+            transform: none;
+        }
+
+        .reservo-mobile-menu__backdrop {
+            transition: opacity 0.15s ease;
+        }
     }
 
     /* Inertia shell — same wash as Blade `layouts/app` */
@@ -279,6 +362,30 @@
 
     .app-table-scroll--wide > table {
         @apply min-w-[48rem] sm:min-w-0;
+    }
+
+    @keyframes reservo-dashboard-in {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 10px, 0);
+        }
+
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    .reservo-dashboard-in {
+        animation: reservo-dashboard-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .reservo-dashboard-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+        }
     }
 
     /* Top bar + form busy — see resources/js/blade-ui.ts */

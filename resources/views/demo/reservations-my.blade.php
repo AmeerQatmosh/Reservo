@@ -6,8 +6,26 @@
     @php
         $selectedRoomId = old('room_id', $prefill['room_id'] ?? '');
         $selectedDate = old('date', $prefill['date'] ?? '');
+        $minDateStr = now()->toDateString();
+        $displayDate = $selectedDate !== '' ? max($selectedDate, $minDateStr) : '';
         $prefilledRoom = $selectedRoomId !== '' ? \App\Support\DemoState::findRoom((int) $selectedRoomId) : null;
+        $bookingSummaryInitiallyVisible = (bool) ($prefilledRoom || $displayDate);
         $timeSlots = \App\Support\ReservationBookingWindow::selectOptions([]);
+
+        $reservePrefillQs = array_filter([
+            'room_id' => request()->query('room_id'),
+            'date' => request()->query('date'),
+        ], fn ($v) => $v !== null && $v !== '');
+        $historyTabUrl = route('demo.reservations.my', $reservePrefillQs);
+
+        $calendarTabParams = array_merge(['view' => 'calendar'], $reservePrefillQs);
+        if (request()->filled('year')) {
+            $calendarTabParams['year'] = request()->query('year');
+        }
+        if (request()->filled('month')) {
+            $calendarTabParams['month'] = request()->query('month');
+        }
+        $calendarTabUrl = route('demo.reservations.my', $calendarTabParams);
     @endphp
 
     <div class="flex flex-col gap-8 lg:flex-row">
@@ -20,53 +38,67 @@
                 </p>
             </div>
 
-            @if ($prefilledRoom || $selectedDate)
-                <div class="mt-5 overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 shadow-sm">
-                    @if ($prefilledRoom)
-                        <div class="relative aspect-[2/1] max-h-36 w-full bg-gray-200 sm:aspect-[2.5/1]">
-                            @if (! empty($prefilledRoom['image_url']))
-                                <img src="{{ $prefilledRoom['image_url'] }}" alt="" class="h-full w-full object-cover" loading="lazy">
-                            @else
-                                <div class="flex h-full items-center justify-center text-xs text-gray-500">No photo</div>
-                            @endif
-                        </div>
-                    @endif
-                    <div class="p-5">
-                        <div class="text-sm font-medium text-blue-900">Booking summary</div>
-                        <div class="mt-2 space-y-1 text-sm text-blue-800">
-                            @if ($prefilledRoom)
-                                <div>
-                                    <span class="font-medium">Room:</span>
-                                    {{ $prefilledRoom['name'] }}
-                                </div>
-                                @if (! empty($prefilledRoom['location']))
-                                    <div class="text-blue-800/90">{{ $prefilledRoom['location'] }}</div>
-                                @endif
-                                <div class="text-xs text-blue-800/80">
-                                    Up to {{ $prefilledRoom['capacity'] }} people
+            <script type="application/json" id="rooms-booking-summary-meta">@json($roomsBookingSummaryMeta ?? [])</script>
+
+            <div
+                id="booking-summary-panel"
+                role="region"
+                aria-labelledby="booking-summary-heading"
+                class="mt-5 overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 shadow-sm {{ $bookingSummaryInitiallyVisible ? '' : 'hidden' }}"
+                aria-hidden="{{ $bookingSummaryInitiallyVisible ? 'false' : 'true' }}"
+            >
+                <div
+                    id="booking-summary-photo-wrap"
+                    class="relative aspect-[2/1] max-h-36 w-full bg-gray-200 sm:aspect-[2.5/1] {{ $prefilledRoom ? '' : 'hidden' }}"
+                >
+                    <img
+                        id="booking-summary-photo-img"
+                        src="{{ ! empty($prefilledRoom['image_url']) ? $prefilledRoom['image_url'] : '' }}"
+                        alt=""
+                        class="{{ ! empty($prefilledRoom['image_url']) ? 'h-full w-full object-cover' : 'hidden h-full w-full object-cover' }}"
+                        loading="lazy"
+                    >
+                    <div id="booking-summary-photo-empty" class="{{ $prefilledRoom && empty($prefilledRoom['image_url']) ? 'flex h-full items-center justify-center text-xs text-gray-500' : 'hidden flex h-full items-center justify-center text-xs text-gray-500' }}">{{ __('No photo') }}</div>
+                </div>
+
+                <div class="p-5">
+                    <div id="booking-summary-heading" class="text-sm font-medium text-blue-900">{{ __('Booking summary') }}</div>
+
+                    <div class="mt-2 space-y-1 text-sm text-blue-800">
+                        <div id="booking-summary-room-lines" class="{{ $prefilledRoom ? '' : 'hidden' }}">
+                            <div>
+                                <span class="font-medium">{{ __('Room:') }}</span>
+                                <span id="booking-summary-room-name">{{ $prefilledRoom['name'] ?? '' }}</span>
+                            </div>
+                            <div id="booking-summary-location-row" class="text-blue-800/90 {{ ! empty($prefilledRoom['location']) ? '' : 'hidden' }}">{{ $prefilledRoom['location'] ?? '' }}</div>
+                            <div id="booking-summary-stats-row" class="text-xs text-blue-800/80 {{ $prefilledRoom ? '' : 'hidden' }}">
+                                @if ($prefilledRoom)
+                                    @php $rateLbl = \App\Support\DemoState::hourlyRateLabel(isset($prefilledRoom['hourly_rate']) ? (float) $prefilledRoom['hourly_rate'] : null); @endphp
+                                    {{ __('Up to :capacity people', ['capacity' => $prefilledRoom['capacity'] ?? '']) }}
                                     @if (! empty($prefilledRoom['size_sqm']))
                                         · {{ $prefilledRoom['size_sqm'] }} m²
                                     @endif
-                                    @if ($lbl = \App\Support\DemoState::hourlyRateLabel(isset($prefilledRoom['hourly_rate']) ? (float) $prefilledRoom['hourly_rate'] : null))
-                                        · {{ $lbl }}
+                                    @if ($rateLbl !== null && $rateLbl !== '')
+                                        · {{ $rateLbl }}
                                     @endif
-                                </div>
-                            @endif
-                            @if ($selectedDate)
-                                <div>
-                                    <span class="font-medium">Date:</span>
-                                    {{ $selectedDate }}
-                                </div>
-                            @endif
+                                @endif
+                            </div>
                         </div>
-                        @if ($prefilledRoom)
-                            <a href="{{ route('demo.room.show', $prefilledRoom['id']) }}" class="mt-3 inline-block text-sm font-medium text-blue-900 underline decoration-blue-300 hover:text-blue-950">
-                                View full room details
-                            </a>
-                        @endif
+                        <div id="booking-summary-date-wrap" class="{{ $displayDate ? '' : 'hidden' }}">
+                            <span class="font-medium">{{ __('Date:') }}</span>
+                            <span id="booking-summary-date-value">{{ $displayDate }}</span>
+                        </div>
                     </div>
+
+                    <a
+                        id="booking-summary-room-link"
+                        href="{{ $prefilledRoom ? route('demo.room.show', $prefilledRoom['id']) : '#' }}"
+                        class="booking-summary-detail-link mt-3 inline-block text-sm font-medium text-blue-900 underline decoration-blue-300 hover:text-blue-950 {{ $prefilledRoom ? '' : 'hidden' }}"
+                    >
+                        {{ __('View full room details') }}
+                    </a>
                 </div>
-            @endif
+            </div>
 
             <div class="mt-5 rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm">
                 <div class="mb-5">
@@ -77,7 +109,17 @@
                     </p>
                 </div>
 
-                <form method="POST" action="{{ route('demo.reservations.store') }}" class="space-y-4" id="demoReservationForm" novalidate>
+                <form
+                    method="POST"
+                    action="{{ route('demo.reservations.store') }}"
+                    class="space-y-4"
+                    id="demoReservationForm"
+                    novalidate
+                    data-initial-booking-summary-visible="{{ $bookingSummaryInitiallyVisible ? '1' : '0' }}"
+                    data-room-booked-slots-url="{{ route('demo.reservations.roomBookedSlots') }}"
+                    data-overlap-warntext-intro="{{ __('This range is not available for the room on the date you chose. It overlaps booked time:') }}"
+                    data-overlap-warntext-cta="{{ __('Change your start and end times, or choose another date.') }}"
+                >
                     @csrf
                     <input type="hidden" name="after_store" value="my">
 
@@ -102,8 +144,7 @@
                     </div>
 
                     <div>
-                        <label for="date" class="block text-sm font-medium text-gray-900">Date</label>
-                        <input id="date" name="date" type="date" value="{{ $selectedDate }}" min="{{ now()->toDateString() }}" class="app-field">
+                        <x-reservation-date-mini-calendar :value="$displayDate" :min="$minDateStr" :bookings="$miniCalendarBookings ?? []" />
                         @error('date')
                             <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                         @enderror
@@ -147,6 +188,8 @@
                         </div>
                     @enderror
 
+                    <p id="demoReservationSlotConflictWarn" class="hidden rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950" role="alert"></p>
+
                     <p id="demoReservationEstimate" class="hidden rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-sm text-emerald-950" role="status"></p>
 
                     <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50" id="demoReservationSubmit">
@@ -158,13 +201,52 @@
         </div>
 
         <div class="min-w-0 flex-1">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-900">History</h2>
-                    <p class="mt-1 text-sm text-gray-600">Your sandbox bookings for this browser session.</p>
+                    <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">{{ __('Overview') }}</div>
+                    <h2 id="demo-bookings-overview" class="mt-2 text-xl font-semibold text-gray-900">{{ __('Bookings') }}</h2>
+                    @if (($viewMode ?? 'list') === 'calendar')
+                        <p class="mt-1 max-w-xl text-sm text-gray-600">
+                            {{ __('Your sandbox bookings by month. Select a reservation to jump to room details.') }}
+                            @if (! empty($calendarSubtitle ?? null))
+                                <span class="mt-2 block font-medium text-gray-800">{{ $calendarSubtitle }}</span>
+                            @endif
+                        </p>
+                    @else
+                        <p class="mt-1 text-sm text-gray-600">{{ __('Your sandbox bookings for this browser session.') }}</p>
+                    @endif
+                </div>
+                <div class="flex flex-wrap items-center gap-2 sm:justify-end">
+                    <x-reservation-view-tabs
+                        :viewMode="$viewMode ?? 'list'"
+                        :historyUrl="$historyTabUrl"
+                        :calendarUrl="$calendarTabUrl"
+                    />
+                    @if (($viewMode ?? 'list') === 'calendar')
+                        <a
+                            href="{{ $browseRoomsUrl ?? route('demo.rooms') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35"
+                        >
+                            <x-lucide name="door-open" class="h-4 w-4 opacity-90" aria-hidden="true" />
+                            {{ __('Browse rooms') }}
+                        </a>
+                    @endif
                 </div>
             </div>
 
+            @if (($viewMode ?? 'list') === 'calendar')
+                <div class="mt-8" aria-labelledby="demo-bookings-overview">
+                    @include('reservations.partials.user-month-calendar-board', [
+                        'calendarHeading' => $calendarHeading ?? '',
+                        'prevUrl' => $calendarPrevUrl ?? '#',
+                        'nextUrl' => $calendarNextUrl ?? '#',
+                        'todayUrl' => $calendarTodayUrl ?? '#',
+                        'weeks' => $weeks ?? [],
+                        'reservationsByDate' => $reservationsByDate ?? collect(),
+                        'calendarTip' => __('Click a sandbox booking for room detail. Switch to History to cancel or book more.'),
+                    ])
+                </div>
+            @else
             @if (count($reservations) === 0)
                 <div class="mt-5 rounded-3xl border border-white/70 bg-white/90 p-6 text-sm text-gray-700 shadow-sm">
                     You have no reservations in this sandbox yet.
@@ -210,6 +292,7 @@
                     @endforeach
                 </div>
             @endif
+            @endif
         </div>
     </div>
 
@@ -222,8 +305,288 @@
             const start = document.getElementById('start_time');
             const end = document.getElementById('end_time');
             const estimateEl = document.getElementById('demoReservationEstimate');
+            const warnEl = document.getElementById('demoReservationSlotConflictWarn');
 
             if (!form || !submit || !room || !date || !start || !end) return;
+
+            /** @type {string} */
+            let overlapFetchedKey = '';
+
+            /** @type {Array<{start: string, end: string}>} */
+            let overlapFetchedSlots = [];
+
+            /** @type Record<string, Record<string, unknown>> */
+            let roomsSummaryMeta = {};
+            const metaEl = document.getElementById('rooms-booking-summary-meta');
+            if (metaEl) {
+                try {
+                    roomsSummaryMeta = JSON.parse(metaEl.textContent || '{}');
+                } catch (_) {
+                    roomsSummaryMeta = {};
+                }
+            }
+
+            const bookingPanel = document.getElementById('booking-summary-panel');
+            const photoWrap = document.getElementById('booking-summary-photo-wrap');
+            const photoImg = document.getElementById('booking-summary-photo-img');
+            const photoEmpty = document.getElementById('booking-summary-photo-empty');
+            const roomLines = document.getElementById('booking-summary-room-lines');
+            const roomName = document.getElementById('booking-summary-room-name');
+            const locationRow = document.getElementById('booking-summary-location-row');
+            const statsRow = document.getElementById('booking-summary-stats-row');
+            const dateWrap = document.getElementById('booking-summary-date-wrap');
+            const dateValue = document.getElementById('booking-summary-date-value');
+            const roomLink = document.getElementById('booking-summary-room-link');
+
+            let roomDirty = false;
+
+            const setPanelVisible = function (on) {
+                if (!bookingPanel) return;
+                bookingPanel.classList.toggle('hidden', !on);
+                bookingPanel.setAttribute('aria-hidden', on ? 'false' : 'true');
+            };
+
+            /** @param {Record<string, unknown>} r */
+            const applyRoomMeta = function (r) {
+                if (!photoWrap || !photoImg || !photoEmpty || !roomLines || !roomName || !locationRow || !statsRow || !roomLink) return;
+                photoWrap.classList.remove('hidden');
+                const imgUrl = typeof r.image_url === 'string' ? r.image_url.trim() : '';
+                if (imgUrl) {
+                    photoImg.src = imgUrl;
+                    photoImg.classList.remove('hidden');
+                    photoImg.classList.add('h-full', 'w-full', 'object-cover');
+                    photoEmpty.classList.add('hidden');
+                    photoEmpty.classList.remove('flex');
+                } else {
+                    photoImg.removeAttribute('src');
+                    photoImg.classList.add('hidden');
+                    photoImg.classList.remove('h-full', 'w-full', 'object-cover');
+                    photoEmpty.classList.remove('hidden');
+                    photoEmpty.classList.add('flex', 'h-full', 'items-center', 'justify-center', 'text-xs', 'text-gray-500');
+                }
+                roomName.textContent = String(r.name ?? '');
+                const loc = typeof r.location === 'string' ? r.location.trim() : '';
+                if (loc) {
+                    locationRow.textContent = loc;
+                    locationRow.classList.remove('hidden');
+                } else {
+                    locationRow.textContent = '';
+                    locationRow.classList.add('hidden');
+                }
+                statsRow.textContent = typeof r.stats_summary === 'string' ? r.stats_summary : '';
+                statsRow.classList.remove('hidden');
+                roomLines.classList.remove('hidden');
+                const href = typeof r.show_url === 'string' ? r.show_url : '#';
+                roomLink.href = href;
+                roomLink.classList.remove('hidden');
+            };
+
+            const syncDateLine = function () {
+                if (!dateWrap || !dateValue || !date) return;
+                const v = (date.value || '').trim();
+                if (v) {
+                    dateValue.textContent = v;
+                    dateWrap.classList.remove('hidden');
+                } else {
+                    dateWrap.classList.add('hidden');
+                }
+            };
+
+            const refreshBookingSummary = function () {
+                if (!bookingPanel) return;
+                const id = room.value;
+                const initial = form.dataset.initialBookingSummaryVisible === '1';
+
+                if (id) {
+                    const row = roomsSummaryMeta[id];
+                    setPanelVisible(true);
+                    if (row) {
+                        applyRoomMeta(row);
+                    }
+                    syncDateLine();
+                    return;
+                }
+
+                if (roomDirty) {
+                    setPanelVisible(false);
+                    return;
+                }
+
+                if (initial) {
+                    syncDateLine();
+                } else {
+                    setPanelVisible(false);
+                }
+            };
+
+            room.addEventListener('change', function () {
+                overlapFetchedKey = '';
+                roomDirty = true;
+                refreshBookingSummary();
+            });
+
+            date.addEventListener('input', function () {
+                overlapFetchedKey = '';
+                syncDateLine();
+            });
+            date.addEventListener('change', function () {
+                overlapFetchedKey = '';
+                syncDateLine();
+            });
+
+            refreshBookingSummary();
+
+            const overlapSlotsUrl =
+                typeof form.dataset.roomBookedSlotsUrl === 'string'
+                    ? form.dataset.roomBookedSlotsUrl.trim()
+                    : '';
+            const overlapIntro =
+                typeof form.dataset.overlapWarntextIntro === 'string' ? form.dataset.overlapWarntextIntro : '';
+            const overlapCta =
+                typeof form.dataset.overlapWarntextCta === 'string' ? form.dataset.overlapWarntextCta : '';
+
+            /** @type {ReturnType<typeof setTimeout>|null} */
+            let overlapDebounceTimer = null;
+
+            /** @type {boolean} */
+            let overlapClientBlock = false;
+            let overlapWarnSeq = 0;
+
+            const overlapsInterval = function (pickStart, pickEnd, bookStart, bookEnd) {
+                return pickStart < bookEnd && pickEnd > bookStart;
+            };
+
+            const overlapsBookedStarts = function (pickStart, pickEnd, slots) {
+                /** @type {Array<{start: string, end: string}>} */
+                const hits = [];
+                for (let i = 0; i < slots.length; i++) {
+                    const s = slots[i];
+                    if (!s || typeof s.start !== 'string' || typeof s.end !== 'string') continue;
+                    if (overlapsInterval(pickStart, pickEnd, s.start, s.end)) hits.push(s);
+                }
+                return hits;
+            };
+
+            const hideOverlapWarn = function () {
+                overlapClientBlock = false;
+                if (!warnEl) return;
+                warnEl.textContent = '';
+                warnEl.classList.add('hidden');
+            };
+
+            const updateSubmitGate = function () {
+                const baseValid =
+                    !!room.value &&
+                    !!date.value &&
+                    !!start.value &&
+                    !!end.value &&
+                    end.value > start.value;
+
+                submit.disabled = !baseValid || overlapClientBlock;
+            };
+
+            const applyOverlapDecision = function (hitsLen, rangesSentence) {
+                if (!hitsLen || !rangesSentence) {
+                    hideOverlapWarn();
+                    updateSubmitGate();
+                    return;
+                }
+                if (!warnEl) return;
+                warnEl.textContent =
+                    overlapIntro.trim() + ' ' + rangesSentence + '. ' + overlapCta.trim();
+                warnEl.classList.remove('hidden');
+                overlapClientBlock = true;
+                updateSubmitGate();
+            };
+
+            const runOverlapWarn = async function () {
+                if (!overlapSlotsUrl || !warnEl) return;
+
+                if (
+                    !room.value ||
+                    !date.value ||
+                    !start.value ||
+                    !end.value ||
+                    end.value <= start.value
+                ) {
+                    hideOverlapWarn();
+                    updateSubmitGate();
+                    return;
+                }
+
+                overlapWarnSeq += 1;
+                const seq = overlapWarnSeq;
+
+                const fetchKey = String(room.value) + '|' + date.value;
+
+                try {
+                    if (fetchKey !== overlapFetchedKey) {
+                        const qs = new URLSearchParams({
+                            room_id: String(room.value),
+                            date: String(date.value),
+                        });
+                        const res = await fetch(overlapSlotsUrl + '?' + qs.toString(), {
+                            credentials: 'same-origin',
+                            headers: {
+                                Accept: 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                        });
+
+                        if (seq !== overlapWarnSeq) return;
+
+                        if (!res.ok) {
+                            hideOverlapWarn();
+                            updateSubmitGate();
+                            return;
+                        }
+
+                        const body = await res.json();
+
+                        if (seq !== overlapWarnSeq) return;
+
+                        overlapFetchedKey = fetchKey;
+                        overlapFetchedSlots = Array.isArray(body.slots) ? body.slots : [];
+                    }
+
+                    if (seq !== overlapWarnSeq) return;
+
+                    const hits = overlapsBookedStarts(start.value, end.value, overlapFetchedSlots);
+                    if (hits.length === 0) {
+                        hideOverlapWarn();
+                        updateSubmitGate();
+                        return;
+                    }
+
+                    const rangesSentence = hits
+                        .map(function (h) {
+                            return String(h.start) + '–' + String(h.end);
+                        })
+                        .join(', ');
+
+                    applyOverlapDecision(hits.length, rangesSentence);
+                } catch (_) {
+                    if (seq !== overlapWarnSeq) return;
+                    hideOverlapWarn();
+                    updateSubmitGate();
+                }
+            };
+
+            const scheduleOverlapCheck = function () {
+                if (!overlapSlotsUrl) {
+                    hideOverlapWarn();
+                    updateSubmitGate();
+                    return;
+                }
+
+                if (overlapDebounceTimer !== null) {
+                    window.clearTimeout(overlapDebounceTimer);
+                }
+                overlapDebounceTimer = window.setTimeout(function () {
+                    overlapDebounceTimer = null;
+                    void runOverlapWarn();
+                }, 280);
+            };
 
             const selectedHourlyRate = () => {
                 const opt = room.selectedOptions[0];
@@ -275,33 +638,25 @@
                 }
             };
 
-            const refreshSubmitState = () => {
-                const isValid =
-                    !!room.value &&
-                    !!date.value &&
-                    !!start.value &&
-                    !!end.value &&
-                    end.value > start.value;
-
-                submit.disabled = !isValid;
-            };
-
             start.addEventListener('change', () => {
                 refreshEndOptions();
-                refreshSubmitState();
+                updateSubmitGate();
                 refreshEstimate();
+                scheduleOverlapCheck();
             });
 
             for (const el of [room, date, start, end]) {
                 el.addEventListener('change', () => {
-                    refreshSubmitState();
+                    updateSubmitGate();
                     refreshEstimate();
+                    scheduleOverlapCheck();
                 });
             }
 
             refreshEndOptions();
-            refreshSubmitState();
+            updateSubmitGate();
             refreshEstimate();
+            scheduleOverlapCheck();
         })();
     </script>
 @endsection

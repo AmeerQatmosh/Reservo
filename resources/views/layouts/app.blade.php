@@ -32,14 +32,18 @@
         <div id="reservo-progress" data-state="idle" aria-hidden="true"></div>
         @include('layouts.partials.page-skeleton')
         @php
-            $navLinkClass = 'inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium transition';
-            $navInactiveClass = 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
-            $navActiveClass = 'bg-gray-900 text-white shadow-sm';
+            $navLinkClass = 'nav-link inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-sm font-semibold transition';
+            $navInactiveClass = 'text-gray-500 hover:text-gray-900';
+            $navActiveClass = 'text-gray-900 active text-lg';
         @endphp
         <header class="sticky top-0 z-40 overflow-visible shadow-[0_1px_0_rgba(15,23,42,0.06)]">
-        {{-- z-30: menu dropdown must stack above demo strip (backdrop-filter creates its own context at z-10). --}}
-        <nav class="relative z-30 overflow-visible border-b border-white/60 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85">
-            <div class="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8 py-3 sm:py-3.5">
+        {{-- z-30: must stack above demo strip. Frosted bar is a non-wrapping layer so the mobile `fixed` panel is not trapped by `backdrop-filter` (would jank / shake the whole view). --}}
+        <nav class="relative z-30 overflow-visible border-b border-gray-200">
+            <div
+                class="pointer-events-none absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85"
+                aria-hidden="true"
+            ></div>
+            <div class="relative mx-auto max-w-[min(100%,85rem)] px-2.5 sm:px-3.5 lg:px-6 py-3 sm:py-3.5">
                 {{-- Mobile: logo | menu. Desktop: 1fr | auto | 1fr so primary nav stays visually centered. --}}
                 <div class="flex w-full items-center justify-between gap-x-2 gap-y-2 sm:gap-x-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-x-6">
                     <a
@@ -84,37 +88,87 @@
                             ])
                         </div>
 
-                        <details class="reservo-details group relative shrink-0 overflow-visible lg:hidden">
+                        <details class="reservo-details reservo-mobile-menu group relative shrink-0 overflow-visible lg:hidden">
                         <summary
-                            class="relative flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-xl bg-gray-900 text-white shadow-md transition outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8fafc] hover:bg-gray-800 active:scale-[0.98] [&::-webkit-details-marker]:hidden"
-                            aria-label="Menu"
+                            class="relative flex h-11 w-11 min-h-[2.75rem] min-w-[2.75rem] cursor-pointer list-none select-none items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 text-slate-800 shadow-sm ring-1 ring-slate-900/[0.04] backdrop-blur-sm transition [touch-action:manipulation] outline-none supports-[backdrop-filter]:bg-white/80 hover:border-slate-300/90 hover:bg-white focus-visible:ring-2 focus-visible:ring-slate-400/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8fafc] active:scale-[0.97] [&::-webkit-details-marker]:hidden"
+                            aria-label="Open menu"
+                            aria-controls="reservo-mobile-menu-panel"
                         >
                             <x-lucide
                                 name="menu"
-                                class="h-[18px] w-[18px] transition-opacity duration-150 group-open:pointer-events-none group-open:opacity-0"
-                            />
-                            <x-lucide
-                                name="x"
-                                class="pointer-events-none absolute h-[18px] w-[18px] opacity-0 transition-opacity duration-150 group-open:pointer-events-auto group-open:opacity-100"
+                                class="h-5 w-5 text-slate-700"
                             />
                         </summary>
-                        <div class="reservo-dropdown-panel absolute left-auto right-0 z-50 mt-1.5 max-h-[min(28rem,78dvh)] w-[min(16rem,calc(100vw-1rem))] overflow-y-auto overscroll-contain rounded-lg border border-gray-200 bg-white py-1 shadow-[0_12px_40px_-10px_rgba(15,23,42,0.22)]">
-                            <div class="flex flex-col gap-px px-1">
-                                @include('layouts.partials.nav-app-links', [
-                                    'navLinkClass' => $navLinkClass,
-                                    'navActiveClass' => $navActiveClass,
-                                    'navInactiveClass' => $navInactiveClass,
-                                    'variant' => 'mobile',
-                                ])
-                            </div>
-                            <div class="mx-1.5 my-1 border-t border-gray-100"></div>
-                            <div class="flex flex-col gap-px px-1">
-                                @include('layouts.partials.nav-auth-links', [
-                                    'navLinkClass' => $navLinkClass,
-                                    'navActiveClass' => $navActiveClass,
-                                    'navInactiveClass' => $navInactiveClass,
-                                    'variant' => 'mobile',
-                                ])
+                        <div
+                            class="reservo-mobile-menu__backdrop"
+                            aria-hidden="true"
+                        ></div>
+                        <div
+                            id="reservo-mobile-menu-panel"
+                            class="reservo-dropdown-panel reservo-mobile-menu__panel"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Site menu"
+                        >
+                            <div
+                                class="reservo-mobile-menu__sheet flex h-full min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden rounded-l-2xl border-l border-slate-200/60 bg-white shadow-[-10px_0_48px_-16px_rgba(15,23,42,0.2)]"
+                            >
+                                <div
+                                    class="reservo-mobile-menu__header flex shrink-0 items-center justify-between border-b border-slate-200/80 bg-slate-50/80 px-3 pb-2.5 pl-3.5 pr-2.5 pt-[max(0.6rem,env(safe-area-inset-top))]"
+                                >
+                                    <span class="font-brand min-w-0 flex-1 truncate text-base font-bold tracking-[-0.02em] text-slate-900">
+                                        {{ config('app.name') }}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        class="reservo-mobile-menu__close -mr-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-600 transition [touch-action:manipulation] duration-200 ease-out hover:bg-slate-200/60 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400/40 active:scale-[0.97]"
+                                        aria-label="Close menu"
+                                    >
+                                        <x-lucide name="x" class="h-5 w-5" />
+                                    </button>
+                                </div>
+                                <div class="reservo-mobile-menu__body flex min-h-0 flex-1 flex-col">
+                                    @auth
+                                        <div
+                                            class="reservo-mobile-menu__top shrink-0 border-b border-slate-200/90 bg-slate-50/40 px-3 pb-4 pt-3"
+                                        >
+                                            @include('layouts.partials.account-menu', ['variant' => 'mobile'])
+                                        </div>
+                                    @endauth
+                                    <div
+                                        class="reservo-mobile-menu__scroll w-full min-h-0 max-h-[min(70dvh,calc(100dvh-7.5rem))] flex-1 overflow-y-auto overscroll-contain px-3 @auth pt-4 pb-3 @else py-3 @endauth"
+                                    >
+                                        <div>
+                                            <p
+                                                class="mb-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-slate-400"
+                                            >
+                                                @auth
+                                                    Main
+                                                @else
+                                                    Menu
+                                                @endauth
+                                            </p>
+                                            <nav class="flex flex-col gap-1.5" aria-label="Primary">
+                                                @include('layouts.partials.nav-app-links', [
+                                                    'navLinkClass' => $navLinkClass,
+                                                    'navActiveClass' => $navActiveClass,
+                                                    'navInactiveClass' => $navInactiveClass,
+                                                    'variant' => 'mobile',
+                                                ])
+                                            </nav>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="reservo-mobile-menu__footer mt-auto shrink-0 border-t border-slate-200/80 bg-slate-50/60 px-3 pt-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+                                    >
+                                        @include('layouts.partials.nav-auth-links', [
+                                            'navLinkClass' => $navLinkClass,
+                                            'navActiveClass' => $navActiveClass,
+                                            'navInactiveClass' => $navInactiveClass,
+                                            'variant' => 'mobile',
+                                        ])
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         </details>
@@ -127,10 +181,16 @@
         @endif
         </header>
 
-        <main class="mx-auto w-full min-w-0 max-w-7xl flex-1 px-3 py-6 sm:px-4 sm:py-8 lg:px-8">
+        <main class="mx-auto w-full min-w-0 max-w-[min(100%,85rem)] flex-1 px-2.5 py-6 sm:px-3.5 sm:py-8 lg:px-6">
             @if (session('success'))
                 <div class="mb-6 rounded-2xl border border-green-200 bg-green-50/90 px-4 py-3 text-sm text-green-800 shadow-sm sm:px-5 sm:py-4">
                     {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-900 shadow-sm sm:px-5 sm:py-4">
+                    {{ session('warning') }}
                 </div>
             @endif
 

@@ -52,11 +52,13 @@ final class DemoRoomListing
         $maxSize = $request->input('max_size_sqm');
         $location = trim((string) $request->input('location', ''));
         $amenity = trim((string) $request->input('amenity', ''));
+        $minHourly = $request->input('min_hourly_rate');
+        $maxHourly = $request->input('max_hourly_rate');
         $hasPhoto = $request->boolean('has_photo');
         $sort = $request->input('sort', 'name');
         $sortKey = is_string($sort) ? $sort : 'name';
 
-        $filtered = array_values(array_filter($rooms, function (array $room) use ($search, $minCap, $maxCap, $minSize, $maxSize, $location, $amenity, $hasPhoto): bool {
+        $filtered = array_values(array_filter($rooms, function (array $room) use ($search, $minCap, $maxCap, $minSize, $maxSize, $minHourly, $maxHourly, $location, $amenity, $hasPhoto): bool {
             $room = DemoState::normalizeRoom($room);
 
             if ($search !== '') {
@@ -124,6 +126,18 @@ final class DemoRoomListing
                 }
             }
 
+            $hr = $room['hourly_rate'] ?? null;
+            if ($minHourly !== null && $minHourly !== '' && is_numeric($minHourly)) {
+                if ($hr === null || (float) $hr < (float) $minHourly) {
+                    return false;
+                }
+            }
+            if ($maxHourly !== null && $maxHourly !== '' && is_numeric($maxHourly)) {
+                if ($hr === null || (float) $hr > (float) $maxHourly) {
+                    return false;
+                }
+            }
+
             return true;
         }));
 
@@ -136,6 +150,43 @@ final class DemoRoomListing
             $cb = (int) ($b['capacity'] ?? 0);
             $sa = $a['size_sqm'] ?? null;
             $sb = $b['size_sqm'] ?? null;
+            $ra = $a['hourly_rate'] ?? null;
+            $rb = $b['hourly_rate'] ?? null;
+            $fa = $ra !== null && $ra !== '' ? (float) $ra : null;
+            $fb = $rb !== null && $rb !== '' ? (float) $rb : null;
+
+            if ($sortKey === 'hourly_asc') {
+                if ($fa === null && $fb === null) {
+                    return $na <=> $nb;
+                }
+                if ($fa === null) {
+                    return 1;
+                }
+                if ($fb === null) {
+                    return -1;
+                }
+                if (($cmp = $fa <=> $fb) !== 0) {
+                    return $cmp;
+                }
+
+                return $na <=> $nb;
+            }
+            if ($sortKey === 'hourly_desc') {
+                if ($fa === null && $fb === null) {
+                    return $na <=> $nb;
+                }
+                if ($fa === null) {
+                    return 1;
+                }
+                if ($fb === null) {
+                    return -1;
+                }
+                if (($cmp = $fb <=> $fa) !== 0) {
+                    return $cmp;
+                }
+
+                return $na <=> $nb;
+            }
 
             return match ($sortKey) {
                 'capacity_asc' => $ca <=> $cb ?: $na <=> $nb,
@@ -154,6 +205,8 @@ final class DemoRoomListing
                 'max_capacity' => $maxCap,
                 'min_size_sqm' => $minSize,
                 'max_size_sqm' => $maxSize,
+                'min_hourly_rate' => $minHourly,
+                'max_hourly_rate' => $maxHourly,
                 'location' => $location,
                 'amenity' => $amenity,
                 'has_photo' => $hasPhoto,

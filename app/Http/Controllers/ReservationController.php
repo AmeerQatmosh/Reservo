@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Support\ReservationBookingWindow;
+use App\Support\ReservationDatePickerBookings;
+use App\Support\ReservationOverlapMessaging;
+use App\Support\UserReservationCalendar;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -32,16 +38,150 @@ class ReservationController extends Controller
         if ($request->filled('room_id')) {
             $prefilledRoom = $rooms->firstWhere('id', (int) $request->query('room_id'));
         }
+        if ($prefilledRoom === null && old('room_id')) {
+            $prefilledRoom = $rooms->firstWhere('id', (int) old('room_id'));
+        }
+
+        $myKeep = fn (array $extra) => array_merge(
+            $this->reservationsPrefillOnly($request),
+            $extra,
+        );
+
+        $rawView = $request->query('view', 'list');
+        $viewMode = $rawView === 'calendar' ? 'calendar' : 'list';
+
+        $calendarHeading = '';
+
+        /** @phpstan-ignore-next-line */
+        $weeks = [];
+
+        $reservationsByDate = collect();
+        $monthReservationCount = 0;
+        $calendarPrevUrl = '';
+        $calendarNextUrl = '';
+        $calendarTodayUrl = '';
+
+        $browseRoomsUrl = route('rooms.index');
+        $calendarSubtitle = '';
+
+        if ($viewMode === 'calendar') {
+            [$year, $month] = UserReservationCalendar::parseYearMonthFromRequest($request);
+            $grid = UserReservationCalendar::buildWeekGrid($year, $month);
+
+            /** @phpstan-ignore-next-line */
+            $weeks = $grid['weeks'];
+            /** @phpstan-ignore-next-line */
+            $calendarHeading = $grid['heading'];
+
+            $monthWindow = Reservation::query()
+                ->where('user_id', $request->user()->id)
+                ->whereBetween('date', [
+                    $grid['gridStart']->toDateString(),
+                    $grid['gridEnd']->toDateString(),
+                ])
+                ->with(['room' => fn ($q) => $q->withTrashed()])
+                ->orderBy('date')
+                ->orderBy('start_time')
+                ->get();
+
+            $reservationsByDate = $monthWindow->groupBy(fn (Reservation $r): string => Carbon::parse($r->date)->format('Y-m-d'))
+                ->map(fn ($group) => $group->map(fn (Reservation $r) => [
+                    'href' => route('reservations.edit', $r->id),
+                    'start' => substr((string) $r->start_time, 0, 5),
+                    'end' => substr((string) $r->end_time, 0, 5),
+                    'room_name' => $r->room?->name ?? __('Room'),
+                ]));
+
+            $monthReservationCount = $monthWindow->count();
+
+            /** @phpstan-ignore-next-line */
+            $monthCarbon = $grid['monthCarbon'];
+
+            /** @phpstan-ignore-next-line */
+            $prev = $monthCarbon->copy()->subMonth();
+
+            /** @phpstan-ignore-next-line */
+            $next = $monthCarbon->copy()->addMonth();
+
+            $calendarPrevUrl = route('reservations.my', $myKeep(['view' => 'calendar', 'year' => $prev->year, 'month' => $prev->month]));
+            $calendarNextUrl = route('reservations.my', $myKeep(['view' => 'calendar', 'year' => $next->year, 'month' => $next->month]));
+            $calendarTodayUrl = route('reservations.my', $myKeep(['view' => 'calendar', 'year' => now()->year, 'month' => now()->month]));
+
+            $calendarSubtitle = $monthReservationCount === 1
+                ? __('This month has one reservation.')
+                : __('This month has :count reservations.', ['count' => $monthReservationCount]);
+            if ($monthReservationCount === 0) {
+                $calendarSubtitle = __('No reservations in this month yet.');
+            }
+
+        }
+
+        $miniPickerReservationRows = Reservation::query()
+            ->where('user_id', $request->user()->id)
+            ->with(['room' => fn ($q) => $q->withTrashed()])
+            ->orderByDesc('date')
+            ->orderByDesc('start_time')
+            ->limit(500)
+            ->get();
+
+        $roomsBookingSummaryMeta = $rooms->mapWithKeys(function (Room $room): array {
+            $statsParts = [
+                __('Up to :capacity people', ['capacity' => $room->capacity]),
+            ];
+            if ($room->size_sqm !== null && $room->size_sqm !== '') {
+                $statsParts[] = $room->size_sqm.' m²';
+            }
+            if ($label = $room->hourlyRateLabel()) {
+                $statsParts[] = $label;
+            }
+
+            return [
+                (string) $room->id => [
+                    'name' => $room->name,
+                    'location' => $room->location,
+                    'capacity' => $room->capacity,
+                    'size_sqm' => $room->size_sqm,
+                    'hourly_rate_label' => $room->hourlyRateLabel(),
+                    'stats_summary' => implode(' · ', $statsParts),
+                    'image_url' => $room->image_url,
+                    'show_url' => route('rooms.show', $room->id),
+                ],
+            ];
+        })->all();
 
         return view('reservations.my', [
             'reservations' => $reservations,
             'rooms' => $rooms,
+            'roomsBookingSummaryMeta' => $roomsBookingSummaryMeta,
             'prefill' => [
                 'room_id' => $request->query('room_id'),
                 'date' => $request->query('date'),
             ],
             'prefilledRoom' => $prefilledRoom,
+            'viewMode' => $viewMode,
+            'calendarHeading' => $calendarHeading,
+            'weeks' => $weeks,
+            'reservationsByDate' => $reservationsByDate,
+            'monthReservationCount' => $monthReservationCount,
+            'calendarPrevUrl' => $calendarPrevUrl,
+            'calendarNextUrl' => $calendarNextUrl,
+            'calendarTodayUrl' => $calendarTodayUrl,
+            'browseRoomsUrl' => $browseRoomsUrl,
+            'calendarSubtitle' => $calendarSubtitle,
+            'miniCalendarBookings' => ReservationDatePickerBookings::forUserReservationModels($miniPickerReservationRows),
         ]);
+
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function reservationsPrefillOnly(Request $request): array
+    {
+        return array_filter([
+            'room_id' => $request->query('room_id'),
+            'date' => $request->query('date'),
+        ], fn ($v) => $v !== null && $v !== '');
     }
 
     public function edit(Request $request, int $id): View
@@ -98,8 +238,12 @@ class ReservationController extends Controller
         }, 5);
 
         if (! $created) {
+            $blocking = $this->overlappingReservationsForValidated($validated);
+
             return back()
-                ->withErrors(['overlap' => 'This time slot is already booked'])
+                ->withErrors([
+                    'overlap' => ReservationOverlapMessaging::forDatabaseReservations($validated, $blocking),
+                ])
                 ->withInput();
         }
 
@@ -125,8 +269,12 @@ class ReservationController extends Controller
         }, 5);
 
         if (! $updated) {
+            $blocking = $this->overlappingReservationsForValidated($validated, $reservation->id);
+
             return back()
-                ->withErrors(['overlap' => 'This time slot is already booked'])
+                ->withErrors([
+                    'overlap' => ReservationOverlapMessaging::forDatabaseReservations($validated, $blocking),
+                ])
                 ->withInput();
         }
 
@@ -152,8 +300,12 @@ class ReservationController extends Controller
         }, 5);
 
         if (! $updated) {
+            $blocking = $this->overlappingReservationsForValidated($validated, $reservation->id);
+
             return back()
-                ->withErrors(['overlap' => 'This time slot is already booked'])
+                ->withErrors([
+                    'overlap' => ReservationOverlapMessaging::forDatabaseReservations($validated, $blocking),
+                ])
                 ->withInput();
         }
 
@@ -215,6 +367,27 @@ class ReservationController extends Controller
         return back()->with('success', 'Reservation canceled.');
     }
 
+    public function roomBookedSlots(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'room_id' => ['required', 'integer', 'exists:rooms,id'],
+            'date' => ['required', 'date', 'after_or_equal:today'],
+        ]);
+
+        $slots = Reservation::query()
+            ->where('room_id', $validated['room_id'])
+            ->whereDate('date', $validated['date'])
+            ->orderBy('start_time')
+            ->get(['start_time', 'end_time']);
+
+        return response()->json([
+            'slots' => $slots->map(fn (Reservation $r): array => [
+                'start' => substr((string) $r->start_time, 0, 5),
+                'end' => substr((string) $r->end_time, 0, 5),
+            ])->values(),
+        ]);
+    }
+
     protected function validateReservationData(Request $request, ?Reservation $existing = null): array
     {
         $validated = $request->validate([
@@ -250,7 +423,7 @@ class ReservationController extends Controller
         return $validated;
     }
 
-    protected function reservationConflictExists(array $validated, ?int $ignoreReservationId = null): bool
+    protected function overlappingReservationsForValidated(array $validated, ?int $ignoreReservationId = null): Collection
     {
         return Reservation::query()
             ->when($ignoreReservationId, fn (Builder $query) => $query->whereKeyNot($ignoreReservationId))
@@ -261,7 +434,12 @@ class ReservationController extends Controller
                     ->where('start_time', '<', $validated['end_time'])
                     ->where('end_time', '>', $validated['start_time']);
             })
-            ->exists();
+            ->orderBy('start_time')
+            ->get(['start_time', 'end_time']);
+    }
+
+    protected function reservationConflictExists(array $validated, ?int $ignoreReservationId = null): bool
+    {
+        return $this->overlappingReservationsForValidated($validated, $ignoreReservationId)->isNotEmpty();
     }
 }
-

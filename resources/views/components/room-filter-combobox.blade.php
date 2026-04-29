@@ -5,6 +5,8 @@
     'value' => '',
     'options',
     'placeholder' => 'Type or pick a suggestion…',
+    /** "location" | "amenity" | null — shows shortened labels, full value in data-value + title */
+    'optionKind' => null,
 ])
 <div {{ $attributes->merge(['class' => 'min-w-0']) }}>
     <label for="{{ $id }}" class="block text-xs font-medium text-gray-700">{{ $label }}</label>
@@ -70,9 +72,16 @@
                         type="button"
                         role="option"
                         data-value="{{ $opt }}"
+                        title="{{ $opt }}"
                         class="reservo-combobox__opt w-full rounded-lg px-3 py-2.5 text-left text-sm break-words text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
                     >
-                        {{ $opt }}
+                        @if ($optionKind === 'location')
+                            {{ \App\Support\FilterDisplay::locationLabel($opt) }}
+                        @elseif ($optionKind === 'amenity')
+                            {{ \App\Support\FilterDisplay::amenityLabel($opt) }}
+                        @else
+                            {{ $opt }}
+                        @endif
                     </button>
                 @endforeach
             </div>

@@ -5,7 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Support\DemoRoomListing;
 use App\Support\DemoState;
+use App\Support\ReservationDatePickerBookings;
+use App\Support\RoomBookingDayAvailability;
+use App\Support\RoomListing;
+use App\Support\UserReservationCalendar;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -110,6 +115,9 @@ class DemoController extends Controller
             'rooms' => $rooms,
             'filters' => $applied['filters'],
             'filterOptions' => DemoRoomListing::filterOptionsFromRooms($normalized),
+            'browseView' => RoomListing::browseView($request),
+            'browseDate' => now()->toDateString(),
+            'favoriteRoomIds' => DemoState::favoriteRoomIds(),
         ]);
     }
 
@@ -151,14 +159,198 @@ class DemoController extends Controller
         $prefillRoomId = $request->query('room_id');
         $prefillDate = $request->query('date');
 
+        $prefill = [
+            'room_id' => $prefillRoomId !== null && $prefillRoomId !== '' ? (string) (int) $prefillRoomId : '',
+            'date' => is_string($prefillDate) ? $prefillDate : '',
+        ];
+
+        $myKeep = fn (array $extra): array => array_merge(
+            $this->demoReservationsPrefillOnly($request),
+            $extra,
+        );
+
+        $rawView = $request->query('view', 'list');
+        $viewMode = $rawView === 'calendar' ? 'calendar' : 'list';
+
+        $calendarHeading = '';
+        $weeks = [];
+        $reservationsByDate = collect();
+        $calendarPrevUrl = '';
+        $calendarNextUrl = '';
+        $calendarTodayUrl = '';
+        $browseRoomsUrl = route('demo.rooms');
+        $calendarSubtitle = '';
+
+        $roomsBookingSummaryMeta = collect($rooms)->mapWithKeys(function (array $room): array {
+            $id = (string) ($room['id'] ?? '');
+            $rate = $room['hourly_rate'] ?? null;
+            $rateLabel = DemoState::hourlyRateLabel($rate !== null && $rate !== '' ? (float) $rate : null);
+            $statsParts = [
+                __('Up to :capacity people', ['capacity' => $room['capacity'] ?? '']),
+            ];
+            $sqm = $room['size_sqm'] ?? null;
+            if ($sqm !== null && $sqm !== '') {
+                $statsParts[] = $sqm.' m²';
+            }
+            if ($rateLabel !== null) {
+                $statsParts[] = $rateLabel;
+            }
+
+            return [
+                $id => [
+                    'name' => (string) ($room['name'] ?? ''),
+                    'location' => (string) ($room['location'] ?? ''),
+                    'capacity' => $room['capacity'] ?? '',
+                    'size_sqm' => $room['size_sqm'] ?? null,
+                    'hourly_rate_label' => $rateLabel,
+                    'stats_summary' => implode(' · ', $statsParts),
+                    'image_url' => (string) ($room['image_url'] ?? ''),
+                    'show_url' => route('demo.room.show', ['id' => $room['id']]),
+                ],
+            ];
+        })->all();
+
+        if ($viewMode === 'calendar') {
+            [$year, $month] = UserReservationCalendar::parseYearMonthFromRequest($request);
+            $grid = UserReservationCalendar::buildWeekGrid($year, $month);
+
+            /** @phpstan-ignore-next-line */
+            $weeks = $grid['weeks'];
+
+            /** @phpstan-ignore-next-line */
+            $calendarHeading = $grid['heading'];
+
+            /** @phpstan-ignore-next-line */
+            $gridStart = $grid['gridStart']->toDateString();
+
+            /** @phpstan-ignore-next-line */
+            $gridEnd = $grid['gridEnd']->toDateString();
+
+            $inRange = array_values(array_filter(
+                DemoState::reservations(),
+                fn (array $r) => ($r['date'] ?? '') !== ''
+                    && $r['date'] >= $gridStart
+                    && $r['date'] <= $gridEnd,
+            ));
+
+            usort($inRange, function (array $a, array $b): int {
+                $ca = (($a['date'] ?? '').' '.($a['start_time'] ?? ''));
+                $cb = (($b['date'] ?? '').' '.($b['start_time'] ?? ''));
+
+                return strcmp($ca, $cb);
+            });
+
+            $reservationsByDate = collect($inRange)
+                ->groupBy(fn (array $r) => (string) ($r['date'] ?? ''))
+                ->map(function ($items) {
+                    return collect($items)->map(function (array $r) {
+                        $roomId = (int) ($r['room_id'] ?? 0);
+                        $room = DemoState::findRoom($roomId);
+                        $date = (string) ($r['date'] ?? '');
+                        $start = substr((string) ($r['start_time'] ?? '00:00:00'), 0, 5);
+                        $end = substr((string) ($r['end_time'] ?? '00:00:00'), 0, 5);
+
+                        return [
+                            'href' => route('demo.room.show', ['id' => $roomId, 'date' => $date]),
+                            'start' => $start,
+                            'end' => $end,
+                            'room_name' => $room['name'] ?? __('Room'),
+                        ];
+                    });
+                });
+
+            $monthReservationCount = count($inRange);
+
+            /** @phpstan-ignore-next-line */
+            $monthCarbon = $grid['monthCarbon'];
+            /** @phpstan-ignore-next-line */
+            $prev = $monthCarbon->copy()->subMonth();
+            /** @phpstan-ignore-next-line */
+            $next = $monthCarbon->copy()->addMonth();
+
+            $calendarPrevUrl = route('demo.reservations.my', $myKeep(['view' => 'calendar', 'year' => $prev->year, 'month' => $prev->month]));
+            $calendarNextUrl = route('demo.reservations.my', $myKeep(['view' => 'calendar', 'year' => $next->year, 'month' => $next->month]));
+            $calendarTodayUrl = route('demo.reservations.my', $myKeep(['view' => 'calendar', 'year' => now()->year, 'month' => now()->month]));
+
+            $calendarSubtitle = $monthReservationCount === 1
+                ? __('This month has one reservation.')
+                : __('This month has :count reservations.', ['count' => $monthReservationCount]);
+            if ($monthReservationCount === 0) {
+                $calendarSubtitle = __('No reservations in this month yet.');
+            }
+        }
+
         return view('demo.reservations-my', [
             'rooms' => $rooms,
             'reservations' => $reservations,
-            'prefill' => [
-                'room_id' => $prefillRoomId !== null && $prefillRoomId !== '' ? (string) (int) $prefillRoomId : '',
-                'date' => is_string($prefillDate) ? $prefillDate : '',
-            ],
+            'roomsBookingSummaryMeta' => $roomsBookingSummaryMeta,
+            'prefill' => $prefill,
+            'viewMode' => $viewMode,
+            'calendarHeading' => $calendarHeading,
+            'weeks' => $weeks,
+            'reservationsByDate' => $reservationsByDate,
+            'calendarPrevUrl' => $calendarPrevUrl,
+            'calendarNextUrl' => $calendarNextUrl,
+            'calendarTodayUrl' => $calendarTodayUrl,
+            'browseRoomsUrl' => $browseRoomsUrl,
+            'calendarSubtitle' => $calendarSubtitle,
+            'miniCalendarBookings' => ReservationDatePickerBookings::forDemoSandbox(DemoState::reservations()),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function demoReservationsPrefillOnly(Request $request): array
+    {
+        return array_filter([
+            'room_id' => $request->query('room_id'),
+            'date' => $request->query('date'),
+        ], fn ($value) => $value !== null && $value !== '');
+    }
+
+    public function calendar(Request $request): RedirectResponse
+    {
+        if (! DemoState::canUser()) {
+            abort(403);
+        }
+
+        return redirect()->route('demo.reservations.my', array_merge(
+            ['view' => 'calendar'],
+            array_filter(
+                $request->only(['year', 'month', 'room_id', 'date']),
+                fn ($value) => $value !== null && $value !== '',
+            ),
+        ));
+    }
+
+    public function roomBookedSlots(Request $request): JsonResponse
+    {
+        if (! DemoState::canUser()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'room_id' => ['required', 'integer'],
+            'date' => ['required', 'date', 'after_or_equal:today'],
+        ]);
+
+        $roomId = (int) $validated['room_id'];
+        if (DemoState::findRoom($roomId) === null) {
+            abort(404);
+        }
+
+        $rows = DemoState::reservationsForRoomOnDate($roomId, $validated['date']);
+
+        $slots = [];
+        foreach ($rows as $r) {
+            $slots[] = [
+                'start' => substr((string) ($r['start_time'] ?? ''), 0, 5),
+                'end' => substr((string) ($r['end_time'] ?? ''), 0, 5),
+            ];
+        }
+
+        return response()->json(['slots' => $slots]);
     }
 
     public function storeReservation(Request $request): RedirectResponse
@@ -398,6 +590,54 @@ class DemoController extends Controller
                 'search' => $search,
                 'role' => $role,
             ],
+        ]);
+    }
+
+    public function toggleRoomFavorite(Request $request, int $id): RedirectResponse
+    {
+        if (! DemoState::canUser()) {
+            abort(403);
+        }
+
+        if (DemoState::findRoom($id) === null) {
+            abort(404);
+        }
+
+        DemoState::toggleFavoriteRoom($id);
+
+        return back();
+    }
+
+    public function quickBookRoom(Request $request, int $id): RedirectResponse
+    {
+        if (! DemoState::canUser()) {
+            abort(403);
+        }
+
+        if (DemoState::findRoom($id) === null) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'date' => ['nullable', 'date', 'after_or_equal:today'],
+        ]);
+
+        $dateString = isset($validated['date'])
+            ? (string) $validated['date']
+            : now()->toDateString();
+
+        if (! RoomBookingDayAvailability::hasAnyBookableSlotDemo($id, $dateString)) {
+            return back()->with(
+                'warning',
+                __('This room has no available time window on :date—you can choose another date in My reservations or open the room details to browse other days.', [
+                    'date' => $dateString,
+                ]),
+            );
+        }
+
+        return redirect()->route('demo.reservations.my', [
+            'room_id' => $id,
+            'date' => $dateString,
         ]);
     }
 
