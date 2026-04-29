@@ -3,10 +3,17 @@
 @section('title', 'Admin · '.$room->name)
 
 @section('content')
+    <x-page-breadcrumbs
+        class="mb-4"
+        :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Admin · Rooms', 'url' => route('admin.rooms.index')],
+            ['label' => $room->name],
+        ]"
+    />
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-            <a href="{{ route('admin.rooms.index') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">← Admin rooms</a>
-            <div class="mt-3 flex flex-wrap items-center gap-3">
+            <div class="flex flex-wrap items-center gap-3">
                 <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room->name }}</h1>
                 @if ($room->trashed())
                     <span class="rounded-full bg-gray-200 px-3 py-1 text-xs font-medium text-gray-800">Deleted (archived)</span>

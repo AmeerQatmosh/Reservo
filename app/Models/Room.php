@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -43,7 +44,12 @@ class Room extends Model
 
     public function reservations(): HasMany
     {
-        return $this->hasMany(\App\Models\Reservation::class);
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function favoredByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'room_favorites')->withTimestamps();
     }
 
     /**
@@ -65,4 +71,3 @@ class Room extends Model
         return $lines === [] ? null : $lines;
     }
 }
-

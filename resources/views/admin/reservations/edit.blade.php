@@ -11,13 +11,18 @@
         $timeSlots = \App\Support\ReservationBookingWindow::selectOptions([$currentStart, $currentEnd]);
     @endphp
 
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Admin</div>
-            <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
-            <p class="mt-2 text-sm text-gray-600">Update this reservation while keeping the same validation and conflict rules.</p>
-        </div>
-        <a href="{{ route('admin.reservations.index') }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Back to Admin Reservations</a>
+    <x-page-breadcrumbs
+        class="mb-4"
+        :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Admin · Reservations', 'url' => route('admin.reservations.index')],
+            ['label' => 'Edit reservation'],
+        ]"
+    />
+    <div>
+        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Admin</div>
+        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
+        <p class="mt-2 text-sm text-gray-600">Update this reservation while keeping the same validation and conflict rules.</p>
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:items-start">

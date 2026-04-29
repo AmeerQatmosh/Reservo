@@ -1,5 +1,5 @@
 @php
-    $f = 'text-sm text-slate-600 transition hover:text-slate-900';
+    $f = 'text-sm text-slate-600 transition hover:text-slate-900 hover:underline';
     $fh = 'text-xs font-semibold uppercase tracking-wider text-slate-400';
     $footerGrid = 'grid min-w-0 flex-1 grid-cols-1 gap-8 sm:grid-cols-2';
     if (auth()->check() && auth()->user()->isAdmin()) {
@@ -8,7 +8,7 @@
 @endphp
 
 <footer class="mt-auto border-t border-slate-200/80 bg-white/60 py-10 text-slate-600 backdrop-blur-sm supports-[backdrop-filter]:bg-white/50" aria-label="Site footer">
-    <div class="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8">
+    <div class="mx-auto max-w-[min(100%,85rem)] px-2.5 sm:px-3.5 lg:px-6">
         <div class="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
             <a
                 href="{{ auth()->check() ? route('dashboard') : route('home') }}"
@@ -74,7 +74,7 @@
                             <li>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="{{ $f }} cursor-pointer bg-transparent p-0 text-left underline-offset-2 hover:underline" data-no-loading>
+                                    <button type="submit" class="{{ $f }} cursor-pointer bg-transparent p-0 text-left underline-offset-2 hover:text-yellow-500" data-no-loading>
                                         Log out
                                     </button>
                                 </form>

@@ -10,16 +10,33 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $query = Room::query();
-        $filters = RoomListing::applyRequestFilters($query, request());
+        $filters = RoomListing::applyRequestFilters($query, $request);
         $filterOptions = RoomListing::filterOptions();
 
+        $rooms = $query->paginate(12)->withQueryString();
+
+        $browseDate = now()->toDateString();
+
+        $favoriteRoomIds = [];
+        if ($request->user() && $rooms->isNotEmpty()) {
+            $favoriteRoomIds = $request->user()
+                ->favoriteRooms()
+                ->whereIn('rooms.id', $rooms->pluck('id')->all())
+                ->pluck('rooms.id')
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
         return view('rooms.index', [
-            'rooms' => $query->paginate(12)->withQueryString(),
+            'rooms' => $rooms,
             'filters' => $filters,
             'filterOptions' => $filterOptions,
+            'browseView' => RoomListing::browseView($request),
+            'browseDate' => $browseDate,
+            'favoriteRoomIds' => $favoriteRoomIds,
         ]);
     }
 
@@ -164,4 +181,3 @@ class RoomController extends Controller
             ->with('success', 'Room restored.');
     }
 }
-

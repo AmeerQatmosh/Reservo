@@ -430,10 +430,59 @@ function bindRoomFilterComboboxes(): void {
     document.querySelectorAll<HTMLElement>('[data-reservo-combobox]').forEach(bindRoomFilterCombobox);
 }
 
+function bindReservoMobileMenu(): void {
+    const menu = document.querySelector<HTMLDetailsElement>('.reservo-mobile-menu');
+
+    if (!menu) {
+        return;
+    }
+
+    const closers = menu.querySelectorAll<HTMLButtonElement>('.reservo-mobile-menu__close');
+    const summary = menu.querySelector<HTMLElement>('summary');
+
+    const close = (): void => {
+        if (menu.open) {
+            menu.removeAttribute('open');
+        }
+    };
+
+    menu.addEventListener('toggle', () => {
+        /* Do not lock body scroll: lets the page scroll with the menu open, and avoids scrollbar "shake". */
+        summary?.setAttribute('aria-expanded', menu.open ? 'true' : 'false');
+
+        if (menu.open) {
+            window.requestAnimationFrame(() => {
+                closers[0]?.focus({ preventScroll: true });
+            });
+        } else {
+            summary?.focus({ preventScroll: true });
+        }
+    });
+
+    /* Backdrop is pointer-events: none (see app.css) so the page can scroll; close with X or Escape. */
+
+    closers.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            close();
+        });
+    });
+
+    const onDocKey = (e: KeyboardEvent): void => {
+        if (e.key === 'Escape' && menu.open) {
+            e.preventDefault();
+            close();
+        }
+    };
+
+    document.addEventListener('keydown', onDocKey, true);
+}
+
 function boot(): void {
     bindNavigationProgress();
     bindFormBusy();
     bindRoomFilterComboboxes();
+    bindReservoMobileMenu();
     finishNavProgress();
     scrollRoomAvailabilityResultsIntoView();
 }

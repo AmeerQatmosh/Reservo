@@ -42,9 +42,5 @@
                 <button type="submit" class="mt-6 w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800">Start as super admin</button>
             </form>
         </div>
-
-        <p class="mt-10 text-center text-sm text-gray-500">
-            <a href="{{ route('home') }}" class="font-medium text-gray-700 underline decoration-gray-300 underline-offset-2 hover:text-gray-900">Back to home</a>
-        </p>
     </div>
 @endsection

@@ -3,9 +3,14 @@
 @section('title', 'Admin Users')
 
 @section('content')
-    <div class="flex items-center justify-between">
-        <h1 class="text-xl font-semibold sm:text-2xl">Admin · Users</h1>
-    </div>
+    <x-page-breadcrumbs
+        class="mb-4"
+        :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Admin · Users'],
+        ]"
+    />
+    <h1 class="text-xl font-semibold sm:text-2xl">Admin · Users</h1>
 
     <div class="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm leading-relaxed text-blue-900">
         Public registration always creates a normal <span class="font-medium">User</span> account.

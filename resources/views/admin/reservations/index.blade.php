@@ -3,6 +3,13 @@
 @section('title', 'Admin Reservations')
 
 @section('content')
+    <x-page-breadcrumbs
+        class="mb-4"
+        :items="[
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Admin · Reservations'],
+        ]"
+    />
     <h1 class="text-xl font-semibold sm:text-2xl">Admin · Reservations</h1>
 
     <div class="mt-6 rounded-2xl border border-white/70 bg-white/90 p-5 shadow-sm">
@@ -62,7 +69,7 @@
                         <th class="px-4 py-3">Date</th>
                         <th class="px-4 py-3">Time</th>
                         <th class="px-4 py-3 w-24">Est.</th>
-                        <th class="px-4 py-3"></th>
+                        <th class="px-4 py-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
