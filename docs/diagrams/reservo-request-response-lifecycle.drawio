@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-05T12:00:00.000Z" agent="Reservo" version="24.7.8" type="device" pages="2">
+  <diagram id="req-lifecycle" name="1 - Reservo request → response">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1780" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="t1" value="Reservo — request → response (Laravel 13, `laravel/framework` ^13.0)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="80" y="16" width="960" height="32" as="geometry"/>
+        </mxCell>
+        <mxCell id="t2" value="Single entry (`public/index.php`), `Application::configure()` in `bootstrap/app.php`, `web` middleware, then Reservo routes &amp; controllers — not a generic tutorial." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="80" y="46" width="960" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="n1" value="HTTP client → Reservo&#xa;(browser: Blade forms, Inertia, demo sandbox)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="340" y="82" width="420" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n1" target="n2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n2" value="public/index.php&#xa;Autoload → `bootstrap/app.php` → `$app-&gt;handleRequest()`" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="320" y="148" width="460" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n2" target="n3r">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n3r" value="bootstrap/app.php — withRouting()&#xa;• web: routes/web.php&#xa;• commands: routes/console.php&#xa;• health: `/up`&#xa;• then: `require base_path(&#039;routes/demo.php&#039;)` → `/demo/*` + `throttle:demo`" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="218" width="700" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2b" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n3r" target="n3m">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n3m" value="bootstrap/app.php — withMiddleware() &amp; withExceptions()&#xa;• encryptCookies(except: `appearance`, `sidebar_state`)&#xa;• alias: `admin`, `super_admin`, `blade_full_page`, `demo.enabled`, `demo.session`&#xa;• web(append): HandleAppearance, HandleInertiaRequests, AddLinkHeadersForPreloadedAssets&#xa;• withExceptions: HTTP 403 → `resources/views/errors/403.blade.php`" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="160" y="318" width="780" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n3m" target="n4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n4" value="Framework `web` middleware group (Laravel 13)&#xa;Session, CSRF verification, cookie queue, route substitution — applies before Reservo’s appended middleware" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="220" y="428" width="660" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n4" target="n5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n5" value="Reservo-appended `web` middleware&#xa;HandleAppearance · HandleInertiaRequests (`$rootView = app` → resources/views/app.blade.php) · AddLinkHeadersForPreloadedAssets" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="496" width="700" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n5" target="n7">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n7" value="Route match (this codebase)&#xa;• routes/web.php — `/`, `/rooms`, `/dashboard`, `/my-reservations`, `/admin/*`, … + `require settings.php`&#xa;• routes/demo.php — `/demo/*` (middleware `demo.enabled`, `demo.session` on inner group)&#xa;• Laravel Fortify — login, register, 2FA, password reset (FortifyServiceProvider + config/fortify.php)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="160" y="568" width="780" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n7" target="n8">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n8" value="Route middleware on Reservo routes (examples)&#xa;`blade_full_page` on public + many Blade pages · `auth` + `verified` for bookings · `admin` for `/admin/*` rooms/reservations/users · `super_admin` for `admin.users.update-role` · `throttle:6,1` on password update (settings)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="668" width="820" height="72" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n8" target="n9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n9" value="app/Http/Controllers/* — thin controllers&#xa;LandingController · RoomController · ReservationController · DashboardController · DemoController · UserManagementController · Settings/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="220" y="752" width="660" height="56" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n9" target="n10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n10" value="Controller → domain (Reservo)&#xa;• ReservationController: `validateReservationData` + ReservationBookingWindow (`config/reservo.php`); `reservationConflictExists` + DB::transaction for overlap rule&#xa;• RoomController: RoomListing filters; Room SoftDeletes; admin withTrashed&#xa;• DemoController: DemoState (session), same overlap idea; no DB writes&#xa;• Settings: ProfileController / SecurityController — Form requests + Fortify flows&#xa;• UserManagementController: super_admin-only role changes (see controller guards)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce5cd;strokeColor=#d79b00;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="120" y="820" width="860" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n10" target="n11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n11" value="Views / responses&#xa;Blade: `resources/views/rooms/*`, `reservations/*`, `demo/*`, `settings/*`, `layouts/*`, `errors/403.blade.php`&#xa;Inertia + React: `resources/js/pages/*` (dashboard, auth, settings) + Wayfinder `resources/js/routes/*` · Vite → `public/build/*`" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2ff;strokeColor=#4d88c4;align=left;spacingLeft=10;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="140" y="932" width="820" height="76" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;endFill=1;" edge="1" parent="1" source="n11" target="n12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="n12" value="HTTP response&#xa;HTML (Blade compiled / Inertia JSON + root `app.blade.php`) · redirects + session flash (`success`, validation `overlap`) · 403 custom view" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="1020" width="700" height="64" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg" value="Reservo concepts tied to this pipeline&#xa;────────────&#xa;• CSRF: `web` stack — POST `/reservations`, Fortify forms, `/demo/*` posts.&#xa;• Session: demo data in `DemoState`; appearance/sidebar cookies excluded from encryption.&#xa;• Providers: `bootstrap/providers.php` → AppServiceProvider, FortifyServiceProvider.&#xa;• Booking window: `ReservationBookingWindow` + `.env` / `config/reservo.php`.&#xa;• Tests: `tests/Feature/*` (ReservationRulesTest, DemoModeTest, AdminAuthorizationTest, …)." style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#fafafa;strokeColor=#999999;fontSize=10;spacingLeft=10;spacingTop=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1100" width="1020" height="120" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="mvc-reservo" name="2 - Reservo MVC &amp; folders">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="980" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="mt" value="Reservo — MVC mapping (rooms &amp; reservations app)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="180" y="16" width="740" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="m" value="Model (`app/Models`)&#xa;────────────&#xa;User — role helpers, Fortify fields&#xa;Room — SoftDeletes, amenities cast, reservations()&#xa;Reservation — user/room FKs, overlap enforced in controller&#xa;DB: migrations for users, rooms, reservations, 2FA, roles…&#xa;Seeders: AdminSeeder, RoomSeeder, DemoDataSeeder, …" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#d5e8d4;strokeColor=#82b366;spacingLeft=12;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="54" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="c" value="Controller (`app/Http/Controllers`)&#xa;────────────&#xa;RoomController — index/show (public); admin CRUD + restore&#xa;ReservationController — my, store/update, destroy; admin list; overlap + transactions&#xa;DemoController — hub, rooms, reservations, admin views (session)&#xa;UserManagementController — index; updateRole (guards)&#xa;Settings/* — hub, profile, security&#xa;LandingController, DashboardController" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#f8cecc;strokeColor=#b85450;spacingLeft=12;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="390" y="54" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="v" value="View (Blade + Inertia)&#xa;────────────&#xa;Blade: rooms, reservations, demo, settings, errors&#xa;Inertia pages: dashboard, auth, settings (React)&#xa;`resources/views/app.blade.php` — Inertia root&#xa;`resources/css/app.css` + Vite (`vite.config.ts`)&#xa;Wayfinder-generated `resources/js/actions/*` for typed actions" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#dae8fc;strokeColor=#6c8ebf;spacingLeft=12;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="54" width="320" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="c" target="m">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="ar2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;dashed=1;dashPattern=8 8;" edge="1" parent="1" source="c" target="v">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="lbl1" value="Eloquent" style="text;html=1;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="300" y="110" width="80" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="lbl2" value="return view / Inertia" style="text;html=1;fontSize=9;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="680" y="110" width="120" height="16" as="geometry"/>
+        </mxCell>
+        <mxCell id="x" value="Cross-cutting (Reservo)&#xa;────────────&#xa;• `routes/web.php`, `routes/demo.php`, `routes/settings.php`, `routes/console.php`&#xa;• `app/Http/Middleware/*` — EnsureAdmin, EnsureSuperAdmin, EnsureDemo*, EnsureBladeFullPageForInertia, HandleInertiaRequests, HandleAppearance&#xa;• `app/Http/Requests/Settings/*` — profile/password/2FA validation&#xa;• `app/Support/*` — ReservationBookingWindow, RoomListing, DemoRoomListing, DemoState&#xa;• `app/Actions/Fortify/*` — CreateNewUser, ResetUserPassword&#xa;• `config/reservo.php` — demo toggle, booking hours/slots&#xa;• `bootstrap/app.php` — routing `then:` demo routes, middleware aliases, 403 render" style="rounded=1;whiteSpace=wrap;html=1;align=left;fillColor=#fff2cc;strokeColor=#d6b656;spacingLeft=12;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="1020" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="t3" value="Laravel 13 application layout in this repository" style="text;html=1;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="420" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="t4" value="• `app/` — controllers, models, middleware, requests, providers, Support, Fortify actions&#xa;• `bootstrap/` — `app.php`, `providers.php` (App + Fortify)&#xa;• `config/` — app, auth, fortify, inertia, reservo, session…&#xa;• `database/` — migrations, seeders, factories, `database.sqlite` (local)&#xa;• `public/` — `index.php`, favicon, images, Vite `build/`&#xa;• `resources/views` + `resources/js` + `resources/css`&#xa;• `routes/` — web, demo, settings, console&#xa;• `storage/` — logs, framework cache/views/sessions&#xa;• `tests/` — Pest (`Pest.php`, Feature/*)" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#f5f5f5;strokeColor=#999999;spacingLeft=14;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="456" width="500" height="220" as="geometry"/>
+        </mxCell>
+        <mxCell id="t5" value="Concrete Reservo flows (named routes)&#xa;────────────&#xa;• `home` GET `/` → LandingController@index (Blade + `blade_full_page`)&#xa;• `rooms.index` / `rooms.show` — public catalog + room day view&#xa;• `reservations.store` POST — overlap + `ReservationBookingWindow`&#xa;• `admin.rooms.*`, `admin.reservations.*`, `admin.users.*` — `admin` middleware&#xa;• `admin.users.update-role` — `super_admin` only&#xa;• `demo.*` — `EnsureDemoEnabled`, session routes under `demo.session`&#xa;• `dashboard` — Inertia (`DashboardController`)&#xa;• Fortify — `/login`, `/register`, 2FA challenge (see `routes` from Fortify)" style="rounded=0;whiteSpace=wrap;html=1;align=left;fillColor=#e6f2ff;strokeColor=#4d88c4;spacingLeft=14;spacingTop=8;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="560" y="456" width="500" height="220" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
