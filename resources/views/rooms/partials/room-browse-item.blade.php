@@ -26,7 +26,7 @@
         $roomPk = (int) $room->id;
     }
     $hourlyLabel = $hourlyLabel ?? null;
-    $photoGrad = $isArr ? 'from-slate-100 to-indigo-50' : 'from-gray-100 to-gray-200';
+    $photoGrad = $isArr ? 'from-slate-100 to-teal-50' : 'from-gray-100 to-gray-200';
     $showBrowseActions = $showBrowseActions ?? false;
     $browseDate = $browseDate ?? now()->toDateString();
     $favoriteRoomIds = isset($favoriteRoomIds) && is_array($favoriteRoomIds) ? $favoriteRoomIds : [];
@@ -75,13 +75,13 @@
                                 @csrf
                                 <button
                                     type="submit"
-                                    class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-500 ring-1 ring-gray-200/80 transition hover:bg-amber-50 hover:text-amber-700 hover:ring-amber-200 {{ $isFavorited ? '!text-amber-700 !ring-amber-200' : '' }}"
+                                    class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-gray-500 ring-1 ring-gray-200/80 transition hover:bg-yellow-50 hover:text-yellow-600 hover:ring-yellow-200 {{ $isFavorited ? '!text-yellow-400 !ring-yellow-200 hover:!text-yellow-400' : '' }}"
                                     title="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                     aria-label="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                     aria-pressed="{{ $isFavorited ? 'true' : 'false' }}"
                                 >
                                     <x-lucide
-                                        name="bookmark"
+                                        name="star"
                                         class="h-[1.125rem] w-[1.125rem] {{ $isFavorited ? 'fill-current' : '' }}"
                                         aria-hidden="true"
                                     />
@@ -89,7 +89,7 @@
                             </form>
                             <a
                                 href="{{ $bookUrl }}"
-                                class="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-gray-900 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800"
+                                class="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-teal-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700"
                             >
                                 {{ __('Book') }}
                             </a>
@@ -100,11 +100,11 @@
                                 title="{{ __('Sign in to save favourites') }}"
                                 aria-label="{{ __('Sign in to save favourites') }}"
                             >
-                                <x-lucide name="bookmark" class="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
+                                <x-lucide name="star" class="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
                             </a>
                             <a
                                 href="{{ $bookUrl }}"
-                                class="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-gray-900 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-gray-800"
+                                class="inline-flex h-9 items-center whitespace-nowrap rounded-full bg-teal-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700"
                             >
                                 {{ __('Book') }}
                             </a>
@@ -184,13 +184,13 @@
                             @csrf
                             <button
                                 type="submit"
-                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-gray-600 shadow-sm ring-1 ring-gray-200/90 backdrop-blur-sm transition hover:bg-white hover:text-amber-700 hover:ring-amber-200 {{ $isFavorited ? '!text-amber-700 !ring-amber-200' : '' }}"
+                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-gray-600 shadow-sm ring-1 ring-gray-200/90 backdrop-blur-sm transition hover:bg-yellow-50 hover:text-yellow-600 hover:ring-yellow-200 {{ $isFavorited ? '!text-yellow-400 !ring-yellow-200 hover:!text-yellow-400' : '' }}"
                                 title="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                 aria-label="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                 aria-pressed="{{ $isFavorited ? 'true' : 'false' }}"
                             >
                                 <x-lucide
-                                    name="bookmark"
+                                    name="star"
                                     class="h-[1.125rem] w-[1.125rem] {{ $isFavorited ? 'fill-current' : '' }}"
                                     aria-hidden="true"
                                 />
@@ -198,7 +198,7 @@
                         </form>
                         <a
                             href="{{ $bookUrl }}"
-                            class="inline-flex h-9 items-center rounded-full bg-gray-900 px-3 text-xs font-semibold text-white shadow-sm ring-1 ring-gray-900/10 transition hover:bg-gray-800"
+                            class="inline-flex h-9 items-center rounded-full bg-teal-600 px-3 text-xs font-semibold text-white shadow-sm ring-1 ring-teal-600/20 transition hover:bg-teal-700"
                         >
                             {{ __('Book') }}
                         </a>
@@ -209,11 +209,11 @@
                             title="{{ __('Sign in to save favourites') }}"
                             aria-label="{{ __('Sign in to save favourites') }}"
                         >
-                            <x-lucide name="bookmark" class="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
+                            <x-lucide name="star" class="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
                         </a>
                         <a
                             href="{{ $bookUrl }}"
-                            class="inline-flex h-9 items-center rounded-full bg-gray-900 px-3 text-xs font-semibold text-white shadow-sm ring-1 ring-gray-900/10 transition hover:bg-gray-800"
+                            class="inline-flex h-9 items-center rounded-full bg-teal-600 px-3 text-xs font-semibold text-white shadow-sm ring-1 ring-teal-600/20 transition hover:bg-teal-700"
                         >
                             {{ __('Book') }}
                         </a>

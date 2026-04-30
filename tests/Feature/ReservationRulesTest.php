@@ -176,6 +176,46 @@ test('users can not edit another users reservation', function () {
     $response->assertNotFound();
 });
 
+test('users can not open edit screen for past reservations', function () {
+    $user = makeUser();
+    $room = makeRoom();
+    $pastDate = now()->subDay()->toDateString();
+    $reservation = makeReservation($user, $room, [
+        'date' => $pastDate,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('reservations.edit', $reservation->id));
+
+    $response->assertRedirect(route('reservations.my'));
+    $response->assertSessionHasErrors(['booking']);
+});
+
+test('users can not update past reservations', function () {
+    $user = makeUser();
+    $room = makeRoom();
+    $pastDate = now()->subDay()->toDateString();
+    $reservation = makeReservation($user, $room, [
+        'date' => $pastDate,
+        'start_time' => '09:00:00',
+        'end_time' => '10:00:00',
+    ]);
+
+    $tomorrow = now()->addDay()->toDateString();
+
+    $response = $this->actingAs($user)->from(route('reservations.my'))->put(route('reservations.update', $reservation->id), [
+        'room_id' => $room->id,
+        'date' => $tomorrow,
+        'start_time' => '09:00',
+        'end_time' => '10:00',
+    ]);
+
+    $response->assertRedirect(route('reservations.my'));
+    $response->assertSessionHasErrors(['booking']);
+
+    $reservation->refresh();
+    expect($reservation->date)->toBe($pastDate);
+});
+
 test('users can not cancel another users reservation', function () {
     $owner = makeUser('owner@example.com');
     $otherUser = makeUser('other@example.com');

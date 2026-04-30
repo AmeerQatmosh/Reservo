@@ -7,22 +7,37 @@
         class="mb-4"
         :items="[
             ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Admin · Rooms', 'url' => route('admin.rooms.index')],
+            ['label' => 'Admin'],
+            ['label' => 'Rooms', 'url' => route('admin.rooms.index')],
             ['label' => 'Edit room'],
         ]"
     />
     <div>
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Admin</div>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Edit room</h1>
-        <p class="mt-2 text-sm text-gray-600">Update the room details below and save your changes.</p>
+        <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Edit room</h1>
     </div>
 
-    <div class="mt-8 rounded-3xl border border-white/70 bg-white/90 p-7 shadow-sm">
-        <form method="POST" action="{{ route('admin.rooms.update', $room->id) }}">
-            @csrf
-            @method('PUT')
-            @include('admin.rooms._form', ['submitLabel' => 'Save', 'room' => $room])
-        </form>
+    <div class="mt-8 grid gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
+        <div class="min-w-0 lg:col-span-7 xl:col-span-8">
+            <div class="rounded-3xl border border-white/70 bg-white/90 p-6 shadow-sm sm:p-7">
+                <form
+                    method="POST"
+                    action="{{ route('admin.rooms.update', $room->id) }}"
+                    id="admin-room-form"
+                    data-admin-room-form
+                >
+                    @csrf
+                    @method('PUT')
+                    @include('admin.rooms._form', [
+                        'submitLabel' => __('Save'),
+                        'room' => $room,
+                        'cancelUrl' => route('admin.rooms.show', $room),
+                    ])
+                </form>
+            </div>
+        </div>
+        <aside class="min-w-0 lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24 lg:self-start">
+            @include('admin.rooms.partials.form-preview')
+        </aside>
     </div>
 @endsection
 

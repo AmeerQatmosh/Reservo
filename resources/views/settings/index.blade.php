@@ -3,11 +3,7 @@
 @section('title', 'Account')
 
 @section('settings_header')
-    <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Account</div>
-    <h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Your account</h1>
-    <p class="mt-2 text-sm text-gray-600">
-        Manage how you show up in Reservo and protect your sign-in.
-    </p>
+    <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Your account</h1>
 @endsection
 
 @section('settings_body_class', 'mt-8 grid gap-4 sm:grid-cols-2')

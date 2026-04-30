@@ -13,12 +13,52 @@
 
     @if ($includeStatus)
         <div class="mt-3 min-w-0 max-lg:mt-0">
-            <label for="status" class="block text-xs font-medium text-gray-700">Status</label>
-            <select id="status" name="status" class="app-field">
-                <option value="all" @selected(($f['status'] ?? 'all') === 'all')>All</option>
-                <option value="active" @selected(($f['status'] ?? '') === 'active')>Active only</option>
-                <option value="deleted" @selected(($f['status'] ?? '') === 'deleted')>Deleted only</option>
-            </select>
+            @php
+                $st = (string) ($f['status'] ?? 'all');
+            @endphp
+            <x-reservo-form-select
+                name="status"
+                hidden-id="status"
+                trigger-id="status_trigger"
+                listbox-id="status_listbox"
+                label="Status"
+                placeholder="Status"
+                :value="$st"
+            >
+                <button
+                    type="button"
+                    role="option"
+                    data-value="all"
+                    @class([
+                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                        'bg-gray-100 font-medium text-gray-900' => $st === 'all',
+                        'text-gray-900' => $st !== 'all',
+                    ])
+                    aria-selected="{{ $st === 'all' ? 'true' : 'false' }}"
+                >All</button>
+                <button
+                    type="button"
+                    role="option"
+                    data-value="active"
+                    @class([
+                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                        'bg-gray-100 font-medium text-gray-900' => $st === 'active',
+                        'text-gray-900' => $st !== 'active',
+                    ])
+                    aria-selected="{{ $st === 'active' ? 'true' : 'false' }}"
+                >Active only</button>
+                <button
+                    type="button"
+                    role="option"
+                    data-value="deleted"
+                    @class([
+                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                        'bg-gray-100 font-medium text-gray-900' => $st === 'deleted',
+                        'text-gray-900' => $st !== 'deleted',
+                    ])
+                    aria-selected="{{ $st === 'deleted' ? 'true' : 'false' }}"
+                >Deleted only</button>
+            </x-reservo-form-select>
         </div>
     @endif
 
@@ -106,31 +146,75 @@
     </div>
 
     <div class="mt-3 space-y-3">
+        @php
+            $locVal = (string) ($f['location'] ?? '');
+            $amVal = (string) ($f['amenity'] ?? '');
+        @endphp
         <div class="min-w-0 w-full">
-            <label for="location" class="block text-xs font-medium text-gray-700">Location</label>
-            <select id="location" name="location" class="app-field mt-1.5">
-                <option value="">Any</option>
+            <x-reservo-form-select
+                name="location"
+                hidden-id="location"
+                trigger-id="admin_room_location_trigger"
+                listbox-id="admin_room_location_listbox"
+                label="Location"
+                placeholder="Any"
+                :value="$locVal"
+            >
+                <button
+                    type="button"
+                    role="option"
+                    data-value=""
+                    class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                    aria-selected="{{ $locVal === '' ? 'true' : 'false' }}"
+                >Any</button>
                 @foreach ($filterOptions['locations'] as $loc)
-                    <option
-                        value="{{ $loc }}"
+                    <button
+                        type="button"
+                        role="option"
+                        data-value="{{ $loc }}"
                         title="{{ $loc }}"
-                        @selected(($f['location'] ?? '') === $loc)
-                    >{{ \App\Support\FilterDisplay::locationLabel($loc) }}</option>
+                        @class([
+                            'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm break-words hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                            'bg-gray-100 font-medium text-gray-900' => $locVal === $loc,
+                            'text-gray-900' => $locVal !== $loc,
+                        ])
+                        aria-selected="{{ $locVal === $loc ? 'true' : 'false' }}"
+                    >{{ \App\Support\FilterDisplay::locationLabel($loc) }}</button>
                 @endforeach
-            </select>
+            </x-reservo-form-select>
         </div>
         <div class="min-w-0 w-full">
-            <label for="amenity" class="block text-xs font-medium text-gray-700">Amenity</label>
-            <select id="amenity" name="amenity" class="app-field mt-1.5">
-                <option value="">Any</option>
+            <x-reservo-form-select
+                name="amenity"
+                hidden-id="amenity"
+                trigger-id="admin_room_amenity_trigger"
+                listbox-id="admin_room_amenity_listbox"
+                label="Amenity"
+                placeholder="Any"
+                :value="$amVal"
+            >
+                <button
+                    type="button"
+                    role="option"
+                    data-value=""
+                    class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                    aria-selected="{{ $amVal === '' ? 'true' : 'false' }}"
+                >Any</button>
                 @foreach ($filterOptions['amenities'] as $am)
-                    <option
-                        value="{{ $am }}"
+                    <button
+                        type="button"
+                        role="option"
+                        data-value="{{ $am }}"
                         title="{{ $am }}"
-                        @selected(($f['amenity'] ?? '') === $am)
-                    >{{ \App\Support\FilterDisplay::amenityLabel($am) }}</option>
+                        @class([
+                            'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm break-words hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                            'bg-gray-100 font-medium text-gray-900' => $amVal === $am,
+                            'text-gray-900' => $amVal !== $am,
+                        ])
+                        aria-selected="{{ $amVal === $am ? 'true' : 'false' }}"
+                    >{{ \App\Support\FilterDisplay::amenityLabel($am) }}</button>
                 @endforeach
-            </select>
+            </x-reservo-form-select>
         </div>
     </div>
 
@@ -153,27 +237,46 @@
         class="mt-4 flex flex-col gap-3 border-t border-gray-200/90 pt-4 max-lg:sticky max-lg:bottom-0 max-lg:z-20 max-lg:rounded-b-none max-lg:border-t max-lg:border-slate-200 max-lg:bg-white max-lg:px-0.5 max-lg:py-2.5 max-lg:pb-[max(0.5rem,env(safe-area-inset-bottom))] max-lg:pt-3 max-lg:shadow-[0_-8px_24px_-8px_rgba(15,23,42,0.06)]"
     >
         <div class="min-w-0 w-full">
-            <label
-                for="sort"
-                class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-gray-500"
+            @php
+                $sortVal = (string) ($f['sort'] ?? 'name');
+                $sortLabels = [
+                    'name' => 'Name (A–Z)',
+                    'capacity_asc' => 'People · low to high',
+                    'capacity_desc' => 'People · high to low',
+                    'size_asc' => 'Size (m²) · small first',
+                    'size_desc' => 'Size (m²) · large first',
+                    'hourly_asc' => 'Price · low to high',
+                    'hourly_desc' => 'Price · high to low',
+                ];
+            @endphp
+            <x-reservo-form-select
+                name="sort"
+                hidden-id="sort"
+                trigger-id="sort_trigger"
+                listbox-id="sort_listbox"
+                label="Sort by"
+                placeholder="Sort by"
+                :value="$sortVal"
             >
-                <x-lucide name="arrow-up-down" class="h-3.5 w-3.5 shrink-0 text-gray-400" aria-hidden="true" />
-                Sort by
-            </label>
-            <select id="sort" name="sort" class="app-field mt-1.5">
-                <option value="name" @selected(($f['sort'] ?? 'name') === 'name')>Name (A–Z)</option>
-                <option value="capacity_asc" @selected(($f['sort'] ?? '') === 'capacity_asc')>People · low to high</option>
-                <option value="capacity_desc" @selected(($f['sort'] ?? '') === 'capacity_desc')>People · high to low</option>
-                <option value="size_asc" @selected(($f['sort'] ?? '') === 'size_asc')>Size (m²) · small first</option>
-                <option value="size_desc" @selected(($f['sort'] ?? '') === 'size_desc')>Size (m²) · large first</option>
-                <option value="hourly_asc" @selected(($f['sort'] ?? '') === 'hourly_asc')>Price · low to high</option>
-                <option value="hourly_desc" @selected(($f['sort'] ?? '') === 'hourly_desc')>Price · high to low</option>
-            </select>
+                @foreach ($sortLabels as $val => $lbl)
+                    <button
+                        type="button"
+                        role="option"
+                        data-value="{{ $val }}"
+                        @class([
+                            'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                            'bg-gray-100 font-medium text-gray-900' => $sortVal === $val,
+                            'text-gray-900' => $sortVal !== $val,
+                        ])
+                        aria-selected="{{ $sortVal === $val ? 'true' : 'false' }}"
+                    >{{ $lbl }}</button>
+                @endforeach
+            </x-reservo-form-select>
         </div>
         <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
             <button
                 type="submit"
-                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35 sm:min-h-10"
+                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/35 sm:min-h-10"
             >
                 <x-lucide name="check" class="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                 Apply

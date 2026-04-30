@@ -1,13 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Admin · Users')
+@section('title', 'Admin Users')
 
 @section('content')
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-xl font-semibold sm:text-2xl">Admin · Users</h1>
+    <div class="flex justify-end">
         <a href="{{ route('demo.hub') }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Sandbox home</a>
     </div>
-
     <div class="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm leading-relaxed text-blue-900">
         <span class="font-medium">Sample directory only.</span>
         These people are not real accounts—filters match the production screen, but you cannot change roles or sign in as them. Profile, security, and settings are not part of the sandbox.
@@ -40,7 +38,7 @@
             <div class="flex flex-row flex-wrap items-end gap-2 xl:flex-nowrap xl:justify-end">
                 <button
                     type="submit"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35"
+                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/35"
                 >
                     <x-lucide name="filter" class="h-4 w-4 shrink-0" aria-hidden="true" />
                     Filter

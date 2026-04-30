@@ -1,6 +1,7 @@
 {{-- Expects: $variant: 'desktop'|'mobile' --}}
 @php
     $isMobile = ($variant ?? 'desktop') === 'mobile';
+    $sidebarRail = ! empty($sidebarRail) && ! $isMobile;
     $iconDesktop = 'h-4 w-4 shrink-0 text-gray-500 transition-colors group-hover:text-gray-800 group-focus-visible:text-gray-800';
     $accountOpen = request()->routeIs('settings.index', 'profile.*', 'security.*');
 
@@ -93,10 +94,11 @@
         </div>
     </section>
 @else
-    <details class="app-account-menu reservo-details relative shrink-0 overflow-visible">
+    <details @class(['app-account-menu reservo-details relative shrink-0 overflow-visible', 'z-[70] admin-sidebar-account-menu' => $sidebarRail])>
         <summary
             class="flex h-8 w-8 cursor-pointer list-none items-center justify-center overflow-visible rounded-full border shadow-sm transition outline-none focus-visible:ring-2 focus-visible:ring-gray-900/25 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden @if ($accountOpen) border-gray-900/30 bg-gray-100 ring-2 ring-gray-900/10 @else border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 @endif"
-            aria-label="Account and settings"
+            aria-label="{{ __('Account and settings') }}"
+            @if ($sidebarRail) title="{{ __('Account and settings') }}" data-sidebar-tooltip="{{ __('Account and settings') }}" @endif
         >
             <span class="relative flex h-7 w-7 items-center justify-center rounded-full bg-gray-100 text-gray-600">
                 <x-lucide name="user" class="h-4 w-4" />
@@ -114,7 +116,11 @@
             </span>
         </summary>
         <div
-            class="reservo-dropdown-panel absolute left-auto right-0 top-full z-[60] mt-1 min-w-[11.5rem] max-w-[min(12rem,calc(100vw-1.25rem))] overflow-hidden rounded-lg border border-gray-200 bg-white px-1.5 py-1.5 shadow-[0_12px_40px_-10px_rgba(15,23,42,0.22)]"
+            @class([
+                'reservo-dropdown-panel min-w-[11.5rem] max-w-[min(12rem,calc(100vw-1.25rem))] overflow-hidden rounded-lg border border-gray-200 bg-white px-1.5 py-1.5 shadow-[0_12px_40px_-10px_rgba(15,23,42,0.22)]',
+                'reservo-sidebar-account-panel' => $sidebarRail,
+                'absolute z-[60] left-auto right-0 top-full mt-1' => ! $sidebarRail,
+            ])
             role="menu"
         >
             <div class="border-b border-gray-100 px-2.5 py-1.5">

@@ -1,5 +1,6 @@
 @php
     $f = $filters ?? [];
+    $filterFormId = $filterFormId ?? null;
 @endphp
 
 <div class="min-w-0 w-full">
@@ -20,6 +21,9 @@
             value="{{ $f['search'] ?? '' }}"
             placeholder="Name, location, description, amenities…"
             class="app-field !mt-0 !box-border !h-12 !min-h-12 w-full !rounded-2xl !border-white/80 !bg-white py-2.5 pl-10 pr-4 shadow-sm ring-1 ring-gray-900/[0.04] transition hover:!border-slate-200/70 focus:!border-slate-300 focus:!bg-white sm:!min-h-12"
+            @if ($filterFormId)
+                form="{{ $filterFormId }}"
+            @endif
         >
     </div>
 </div>

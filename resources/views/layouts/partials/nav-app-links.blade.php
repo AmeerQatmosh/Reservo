@@ -1,6 +1,9 @@
-{{-- Expects: $navLinkClass, $navActiveClass, $navInactiveClass, $variant: 'desktop'|'mobile' --}}
+{{-- Expects: $navLinkClass, $navActiveClass, $navInactiveClass, $variant: 'desktop'|'mobile'|'sidebar' --}}
 @php
-    $isMobile = ($variant ?? 'desktop') === 'mobile';
+    $variant = $variant ?? 'desktop';
+    $isMobile = $variant === 'mobile';
+    $isSidebar = $variant === 'sidebar';
+    $useStackedNav = $isMobile || $isSidebar;
     $iconMobile = 'h-[18px] w-[18px] shrink-0 text-gray-600 transition-colors group-hover:text-gray-900 group-focus-visible:text-gray-900';
     $iconMobileOn = 'h-[18px] w-[18px] shrink-0 text-white/90 transition-colors group-hover:text-white group-focus-visible:text-white';
     $iconMobileGuest = 'h-[18px] w-[18px] shrink-0 text-amber-700 transition-colors group-hover:text-amber-900 group-focus-visible:text-amber-900';
@@ -17,52 +20,126 @@
     $guestModeDesktopActive = $navLinkClass.'border border-yellow-500 bg-yellow-400 rounded-xl text-white';
 @endphp
 
-@if ($isMobile)
+@if ($useStackedNav)
     @auth
-        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? $mOn : $mOff }}">
-            <x-lucide name="layout-grid" :class="request()->routeIs('dashboard') ? $iconMobileOn : $iconMobile" />
-            Dashboard
+        @php
+            $navHomeLabel = auth()->user()->isAdmin() ? __('Dashboard') : __('Home');
+        @endphp
+        <a
+            href="{{ route('dashboard') }}"
+            title="{{ $navHomeLabel }}"
+            @if ($isSidebar) data-sidebar-tooltip="{{ $navHomeLabel }}" @endif
+            class="{{ request()->routeIs('dashboard') ? $mOn : $mOff }}"
+        >
+            <x-lucide
+                :name="auth()->user()->isAdmin() ? 'layout-grid' : 'house'"
+                :class="request()->routeIs('dashboard') ? $iconMobileOn : $iconMobile"
+            />
+            @if ($isSidebar)
+                <span class="admin-sidebar-label min-w-0 truncate">{{ $navHomeLabel }}</span>
+            @else
+                {{ $navHomeLabel }}
+            @endif
         </a>
     @endauth
     @guest
-        <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? $mOn : $mOff }}">
+        <a
+            href="{{ route('home') }}"
+            title="{{ __('Home') }}"
+            @if ($isSidebar) data-sidebar-tooltip="{{ __('Home') }}" @endif
+            class="{{ request()->routeIs('home') ? $mOn : $mOff }}"
+        >
             <x-lucide name="house" :class="request()->routeIs('home') ? $iconMobileOn : $iconMobile" />
-            Home
+            @if ($isSidebar)
+                <span class="admin-sidebar-label min-w-0 truncate">{{ __('Home') }}</span>
+            @else
+                Home
+            @endif
         </a>
     @endguest
-    <a href="{{ route('rooms.index') }}" class="{{ request()->routeIs('rooms.index', 'rooms.show') ? $mOn : $mOff }}">
+    <a
+        href="{{ route('rooms.index') }}"
+        title="{{ __('Rooms') }}"
+        @if ($isSidebar) data-sidebar-tooltip="{{ __('Rooms') }}" @endif
+        class="{{ request()->routeIs('rooms.index', 'rooms.show') ? $mOn : $mOff }}"
+    >
         <x-lucide name="door-open" :class="request()->routeIs('rooms.index', 'rooms.show') ? $iconMobileOn : $iconMobile" />
-        Rooms
+        @if ($isSidebar)
+            <span class="admin-sidebar-label min-w-0 truncate">{{ __('Rooms') }}</span>
+        @else
+            Rooms
+        @endif
     </a>
     @guest
         @if (config('reservo.demo_enabled'))
-            <a href="{{ route('demo.index') }}" class="{{ request()->routeIs('demo.*') ? $mGuestOn : $mGuest }}">
+            <a
+                href="{{ route('demo.index') }}"
+                title="{{ __('Guest Mode') }}"
+                @if ($isSidebar) data-sidebar-tooltip="{{ __('Guest Mode') }}" @endif
+                class="{{ request()->routeIs('demo.*') ? $mGuestOn : $mGuest }}"
+            >
                 <x-lucide name="calendar-plus" :class="request()->routeIs('demo.*') ? $iconMobileGuestOn : $iconMobileGuest" />
-                Guest Mode
+                @if ($isSidebar)
+                    <span class="admin-sidebar-label min-w-0 truncate">{{ __('Guest Mode') }}</span>
+                @else
+                    Guest Mode
+                @endif
             </a>
         @endif
     @endguest
     @auth
-        <a href="{{ route('reservations.my') }}" class="{{ request()->routeIs('reservations.my', 'reservations.edit') ? $mOn : $mOff }}">
+        <a
+            href="{{ route('reservations.my') }}"
+            title="{{ __('My reservations') }}"
+            @if ($isSidebar) data-sidebar-tooltip="{{ __('My reservations') }}" @endif
+            class="{{ request()->routeIs('reservations.my', 'reservations.edit') ? $mOn : $mOff }}"
+        >
             <x-lucide name="calendar-days" :class="request()->routeIs('reservations.my', 'reservations.edit') ? $iconMobileOn : $iconMobile" />
-            My reservations
+            @if ($isSidebar)
+                <span class="admin-sidebar-label min-w-0 truncate">{{ __('My reservations') }}</span>
+            @else
+                My reservations
+            @endif
         </a>
         @if (auth()->user()->isAdmin())
-            <p class="flex items-center gap-1.5 px-2.5 pb-0.5 pt-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                <x-lucide name="shield" class="h-3.5 w-3.5 shrink-0" />
-                Admin
-            </p>
-            <a href="{{ route('admin.rooms.index') }}" class="{{ request()->routeIs('admin.rooms.*') ? $mOn : $mOff }}">
+            <a
+                href="{{ route('admin.rooms.index') }}"
+                title="{{ __('Manage rooms') }}"
+                @if ($isSidebar) data-sidebar-tooltip="{{ __('Manage rooms') }}" @endif
+                class="{{ request()->routeIs('admin.rooms.*') ? $mOn : $mOff }}"
+            >
                 <x-lucide name="building-2" :class="request()->routeIs('admin.rooms.*') ? $iconMobileOn : $iconMobile" />
-                Manage rooms
+                @if ($isSidebar)
+                    <span class="admin-sidebar-label min-w-0 truncate">{{ __('Manage rooms') }}</span>
+                @else
+                    Manage rooms
+                @endif
             </a>
-            <a href="{{ route('admin.reservations.index') }}" class="{{ request()->routeIs('admin.reservations.*') ? $mOn : $mOff }}">
+            <a
+                href="{{ route('admin.reservations.index') }}"
+                title="{{ __('All reservations') }}"
+                @if ($isSidebar) data-sidebar-tooltip="{{ __('All reservations') }}" @endif
+                class="{{ request()->routeIs('admin.reservations.*') ? $mOn : $mOff }}"
+            >
                 <x-lucide name="clipboard-list" :class="request()->routeIs('admin.reservations.*') ? $iconMobileOn : $iconMobile" />
-                All reservations
+                @if ($isSidebar)
+                    <span class="admin-sidebar-label min-w-0 truncate">{{ __('All reservations') }}</span>
+                @else
+                    All reservations
+                @endif
             </a>
-            <a href="{{ route('admin.users.index') }}" class="{{ request()->routeIs('admin.users.*') ? $mOn : $mOff }}">
+            <a
+                href="{{ route('admin.users.index') }}"
+                title="{{ __('Users') }}"
+                @if ($isSidebar) data-sidebar-tooltip="{{ __('Users') }}" @endif
+                class="{{ request()->routeIs('admin.users.*') ? $mOn : $mOff }}"
+            >
                 <x-lucide name="users" :class="request()->routeIs('admin.users.*') ? $iconMobileOn : $iconMobile" />
-                Users
+                @if ($isSidebar)
+                    <span class="admin-sidebar-label min-w-0 truncate">{{ __('Users') }}</span>
+                @else
+                    Users
+                @endif
             </a>
         @endif
     @endauth
@@ -71,9 +148,12 @@
         $linkClass = $navLinkClass;
     @endphp
     @auth
+        @php
+            $navHomeLabelDesktop = auth()->user()->isAdmin() ? __('Dashboard') : __('Home');
+        @endphp
         <a href="{{ route('dashboard') }}" class="{{ $linkClass }} {{ request()->routeIs('dashboard') ? $navActiveClass : $navInactiveClass }}">
-            <x-lucide name="layout-grid" :class="$iconDesktop" />
-            Dashboard
+            <x-lucide :name="auth()->user()->isAdmin() ? 'layout-grid' : 'house'" :class="$iconDesktop" />
+            {{ $navHomeLabelDesktop }}
         </a>
     @endauth
     @guest

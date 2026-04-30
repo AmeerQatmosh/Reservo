@@ -52,7 +52,11 @@
                     <div class="min-w-0">
                         <p class="{{ $fh }}">App</p>
                         <ul class="mt-3 space-y-2.5" role="list">
-                            <li><a href="{{ route('dashboard') }}" class="{{ $f }}">Dashboard</a></li>
+                            <li>
+                                <a href="{{ route('dashboard') }}" class="{{ $f }}">
+                                    {{ auth()->user()->isAdmin() ? __('Dashboard') : __('Home') }}
+                                </a>
+                            </li>
                             <li><a href="{{ route('rooms.index') }}" class="{{ $f }}">Rooms</a></li>
                             <li><a href="{{ route('reservations.my') }}" class="{{ $f }}">My reservations</a></li>
                             <li><a href="{{ route('settings.index') }}" class="{{ $f }}">Settings</a></li>

@@ -5,11 +5,7 @@
 @section('content')
     <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Sandbox</div>
-            <h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Dashboard</h1>
-            <p class="mt-2 max-w-2xl text-sm text-gray-600">
-                Session controls and sandbox navigation stay in the bar above. Here: stats, quick links, and upcoming bookings.
-            </p>
+            <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Dashboard</h1>
         </div>
         @if ($isAdmin)
             <div class="flex flex-wrap items-center gap-2 text-sm text-gray-700">

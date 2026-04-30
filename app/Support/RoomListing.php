@@ -65,18 +65,7 @@ final class RoomListing
         $sort = $request->input('sort', 'name');
 
         if ($search !== '') {
-            $like = '%'.self::escapeLike($search).'%';
-            $likeLower = '%'.self::escapeLike(Str::lower($search)).'%';
-            $cast = $query->getConnection()->getDriverName() === 'sqlite'
-                ? 'CAST(amenities AS TEXT)'
-                : 'CAST(amenities AS CHAR(10000))';
-
-            $query->where(function (Builder $q) use ($like, $likeLower, $cast) {
-                $q->where('name', 'like', $like)
-                    ->orWhere('description', 'like', $like)
-                    ->orWhere('location', 'like', $like)
-                    ->orWhereRaw('LOWER('.$cast.') LIKE ?', [$likeLower]);
-            });
+            self::applySearchFilter($query, $search);
         }
 
         if ($minCap !== null && $minCap !== '') {
@@ -129,6 +118,30 @@ final class RoomListing
             'has_photo' => $hasPhoto,
             'sort' => $sortKey,
         ];
+    }
+
+    /**
+     * @param  Builder<Room>  $query
+     */
+    public static function applySearchFilter(Builder $query, string $search): void
+    {
+        $search = trim($search);
+        if ($search === '') {
+            return;
+        }
+
+        $like = '%'.self::escapeLike($search).'%';
+        $likeLower = '%'.self::escapeLike(Str::lower($search)).'%';
+        $cast = $query->getConnection()->getDriverName() === 'sqlite'
+            ? 'CAST(amenities AS TEXT)'
+            : 'CAST(amenities AS CHAR(10000))';
+
+        $query->where(function (Builder $q) use ($like, $likeLower, $cast) {
+            $q->where('name', 'like', $like)
+                ->orWhere('description', 'like', $like)
+                ->orWhere('location', 'like', $like)
+                ->orWhereRaw('LOWER('.$cast.') LIKE ?', [$likeLower]);
+        });
     }
 
     /**

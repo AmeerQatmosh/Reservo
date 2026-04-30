@@ -1,6 +1,20 @@
 {{-- Expects: $filters, $filterOptions, $action (for form context — buttons use parent form) --}}
 @php
     $f = $filters ?? [];
+    $sortLabels = [
+        'name' => 'Name (A–Z)',
+        'capacity_asc' => 'People · low → high',
+        'capacity_desc' => 'People · high → low',
+        'size_asc' => 'Size (m²) · small first',
+        'size_desc' => 'Size (m²) · large first',
+        'hourly_asc' => 'Price · low → high',
+        'hourly_desc' => 'Price · high → low',
+    ];
+    $sortKey = (string) ($f['sort'] ?? 'name');
+    if (! array_key_exists($sortKey, $sortLabels)) {
+        $sortKey = 'name';
+    }
+    $sortLabel = $sortLabels[$sortKey];
 @endphp
 
 <div class="rounded-2xl border border-white/70 bg-white/90 p-4 shadow-sm ring-1 ring-gray-900/[0.04] sm:p-5 max-lg:rounded-none max-lg:border-0 max-lg:bg-white max-lg:shadow-none max-lg:ring-0 max-lg:p-3 sm:max-lg:p-4">
@@ -139,24 +153,58 @@
         class="mt-4 flex flex-col gap-3 border-t border-gray-200/90 pt-4 max-lg:sticky max-lg:bottom-0 max-lg:z-20 max-lg:-mx-0 max-lg:rounded-b-none max-lg:border-t max-lg:border-slate-200 max-lg:bg-white max-lg:px-0.5 max-lg:py-2.5 max-lg:pb-[max(0.5rem,env(safe-area-inset-bottom))] max-lg:pt-3 max-lg:shadow-[0_-8px_24px_-8px_rgba(15,23,42,0.06)]"
     >
         <div class="min-w-0 w-full">
-            <label for="sort" class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">
+            <p id="room-filter-sort-label" class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">
                 <x-lucide name="arrow-up-down" class="h-3.5 w-3.5 shrink-0 text-gray-400" aria-hidden="true" />
                 Sort by
-            </label>
-            <select id="sort" name="sort" class="app-field mt-1.5">
-                <option value="name" @selected(($f['sort'] ?? 'name') === 'name')>Name (A–Z)</option>
-                <option value="capacity_asc" @selected(($f['sort'] ?? '') === 'capacity_asc')>People · low → high</option>
-                <option value="capacity_desc" @selected(($f['sort'] ?? '') === 'capacity_desc')>People · high → low</option>
-                <option value="size_asc" @selected(($f['sort'] ?? '') === 'size_asc')>Size (m²) · small first</option>
-                <option value="size_desc" @selected(($f['sort'] ?? '') === 'size_desc')>Size (m²) · large first</option>
-                <option value="hourly_asc" @selected(($f['sort'] ?? '') === 'hourly_asc')>Price · low → high</option>
-                <option value="hourly_desc" @selected(($f['sort'] ?? '') === 'hourly_desc')>Price · high → low</option>
-            </select>
+            </p>
+            {{-- Custom listbox (blade-ui.ts): same cross-browser pattern as Location / Amenity comboboxes. --}}
+            <div class="relative mt-1.5 min-w-0" data-reservo-room-sort>
+                <input type="hidden" name="sort" value="{{ $sortKey }}" data-reservo-room-sort-input>
+                <button
+                    type="button"
+                    id="sort"
+                    class="app-field mt-0 flex min-h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl py-2.5 pl-3.5 pr-3.5 text-left text-base text-gray-900 sm:min-h-0 sm:py-2 sm:text-sm"
+                    data-reservo-room-sort-trigger
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="sort-listbox"
+                    aria-labelledby="room-filter-sort-label"
+                >
+                    <span data-reservo-room-sort-label class="min-w-0 truncate">{{ $sortLabel }}</span>
+                    <x-lucide
+                        name="chevron-down"
+                        class="reservo-combobox-chevron h-4 w-4 shrink-0 text-gray-500 transition-transform duration-200"
+                        aria-hidden="true"
+                    />
+                </button>
+                <div
+                    id="sort-listbox"
+                    role="listbox"
+                    class="reservo-combobox-panel absolute left-0 right-0 z-[60] mt-1 max-h-[min(55vh,18rem)] overflow-y-auto overscroll-contain rounded-xl border border-gray-200 bg-white p-1 shadow-lg ring-1 ring-black/[0.06]"
+                    data-reservo-room-sort-panel
+                    hidden
+                >
+                    @foreach ($sortLabels as $value => $label)
+                        <button
+                            type="button"
+                            role="option"
+                            data-value="{{ $value }}"
+                            @class([
+                                'reservo-room-sort__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                'bg-gray-100 font-medium' => $value === $sortKey,
+                            ])
+                            aria-selected="{{ $value === $sortKey ? 'true' : 'false' }}"
+                        >
+                            {{ $label }}
+                        </button>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <div class="flex w-full flex-col gap-2 sm:flex-row sm:items-stretch">
             <button
                 type="submit"
-                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35 sm:min-h-10"
+                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/35 sm:min-h-10"
             >
                 <x-lucide name="check" class="h-4 w-4 shrink-0 opacity-90" aria-hidden="true" />
                 Apply

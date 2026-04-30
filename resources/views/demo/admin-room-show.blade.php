@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Admin · '.$room['name'])
+@section('title', 'Admin Rooms: '.$room['name'])
 
 @section('content')
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-            <a href="{{ route('demo.admin.rooms') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">← Admin rooms</a>
+            <a href="{{ route('demo.admin.rooms') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">← Admin Rooms</a>
             <div class="mt-3 flex flex-wrap items-center gap-3">
                 <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room['name'] }}</h1>
                 <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">Sandbox</span>

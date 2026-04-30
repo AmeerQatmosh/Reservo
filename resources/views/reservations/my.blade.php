@@ -24,26 +24,28 @@
             $calendarTabParams['month'] = request()->query('month');
         }
         $calendarTabUrl = route('reservations.my', $calendarTabParams);
+
+        $selectedRoomHourlyForInput = null;
+        if ((string) $selectedRoomId !== '') {
+            $pickRoom = $rooms->firstWhere('id', (int) $selectedRoomId);
+            $selectedRoomHourlyForInput = $pickRoom && $pickRoom->hourly_rate !== null
+                ? (string) $pickRoom->hourly_rate
+                : '';
+        }
     @endphp
 
     <x-page-breadcrumbs
         class="mb-6"
         :items="[
-            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => auth()->user()->isAdmin() ? __('Dashboard') : __('Home'), 'url' => route('dashboard')],
             ['label' => 'My reservations'],
         ]"
     />
 
-    <div class="flex flex-col gap-8 lg:flex-row">
-        <div class="w-full lg:w-[24rem] lg:flex-none">
-            <div>
-                <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Reservations</div>
-                <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">My Reservations</h1>
-                <p class="mt-2 text-sm text-gray-600">
-                    Create a reservation by selecting a room, date, and time range. If the room has an hourly rate, you’ll see an estimated total—there is no checkout in Reservo.
-                </p>
-            </div>
-
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <div
+            class="w-full min-w-0 lg:w-[24rem] lg:flex-none lg:sticky lg:top-[calc(5rem+env(safe-area-inset-top,0px))] lg:z-10 lg:self-start"
+        >
             <script type="application/json" id="rooms-booking-summary-meta">@json($roomsBookingSummaryMeta ?? [])</script>
 
             <div
@@ -128,17 +130,38 @@
                     @csrf
 
                     <div>
-                        <label for="room_id" class="block text-sm font-medium text-gray-900">Room</label>
-                        <select id="room_id" name="room_id" class="app-field">
-                            <option value="">Select a room</option>
+                        <x-reservo-form-select
+                            name="room_id"
+                            hidden-id="room_id"
+                            trigger-id="room_id_trigger"
+                            listbox-id="room_id_listbox"
+                            label="Room"
+                            placeholder="Select a room"
+                            :value="(string) $selectedRoomId"
+                            :hourly-rate="$selectedRoomHourlyForInput"
+                        >
+                            <button
+                                type="button"
+                                role="option"
+                                data-value=""
+                                class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                                aria-selected="{{ (string) $selectedRoomId === '' ? 'true' : 'false' }}"
+                            >Select a room</button>
                             @foreach ($rooms as $room)
-                                <option
-                                    value="{{ $room->id }}"
+                                <button
+                                    type="button"
+                                    role="option"
+                                    data-value="{{ $room->id }}"
                                     data-hourly-rate="{{ $room->hourly_rate ?? '' }}"
-                                    @selected((string) $selectedRoomId === (string) $room->id)
-                                >{{ $room->name }}@if ($room->hourly_rate !== null) ({{ $room->hourlyRateLabel() }})@endif</option>
+                                    @class([
+                                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm break-words hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                        'bg-gray-100 font-medium text-gray-900' => (string) $selectedRoomId === (string) $room->id,
+                                        'text-gray-900' => (string) $selectedRoomId !== (string) $room->id,
+                                    ])
+                                    aria-selected="{{ (string) $selectedRoomId === (string) $room->id ? 'true' : 'false' }}"
+                                >{{ $room->name }}@if ($room->hourly_rate !== null) ({{ $room->hourlyRateLabel() }})@endif</button>
                             @endforeach
-                        </select>
+                        </x-reservo-form-select>
                         @error('room_id')
                             <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                         @enderror
@@ -157,25 +180,69 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label for="start_time" class="block text-sm font-medium text-gray-900">Start</label>
-                            <select id="start_time" name="start_time" class="app-field">
-                                <option value="">Select start</option>
+                            <x-reservo-form-select
+                                name="start_time"
+                                hidden-id="start_time"
+                                trigger-id="start_time_trigger"
+                                listbox-id="start_time_listbox"
+                                label="Start"
+                                placeholder="Select start"
+                                :value="(string) old('start_time', '')"
+                            >
+                                <button
+                                    type="button"
+                                    role="option"
+                                    data-value=""
+                                    class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                                    aria-selected="{{ (string) old('start_time', '') === '' ? 'true' : 'false' }}"
+                                >Select start</button>
                                 @foreach ($timeSlots as $slot)
-                                    <option value="{{ $slot }}" @selected(old('start_time') === $slot)>{{ $slot }}</option>
+                                    <button
+                                        type="button"
+                                        role="option"
+                                        data-value="{{ $slot }}"
+                                        @class([
+                                            'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                            'bg-gray-100 font-medium' => (string) old('start_time', '') === (string) $slot,
+                                        ])
+                                        aria-selected="{{ (string) old('start_time', '') === (string) $slot ? 'true' : 'false' }}"
+                                    >{{ $slot }}</button>
                                 @endforeach
-                            </select>
+                            </x-reservo-form-select>
                             @error('start_time')
                                 <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                             @enderror
                         </div>
                         <div>
-                            <label for="end_time" class="block text-sm font-medium text-gray-900">End</label>
-                            <select id="end_time" name="end_time" class="app-field">
-                                <option value="">Select end</option>
+                            <x-reservo-form-select
+                                name="end_time"
+                                hidden-id="end_time"
+                                trigger-id="end_time_trigger"
+                                listbox-id="end_time_listbox"
+                                label="End"
+                                placeholder="Select end"
+                                :value="(string) old('end_time', '')"
+                            >
+                                <button
+                                    type="button"
+                                    role="option"
+                                    data-value=""
+                                    class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                                    aria-selected="{{ (string) old('end_time', '') === '' ? 'true' : 'false' }}"
+                                >Select end</button>
                                 @foreach ($timeSlots as $slot)
-                                    <option value="{{ $slot }}" @selected(old('end_time') === $slot)>{{ $slot }}</option>
+                                    <button
+                                        type="button"
+                                        role="option"
+                                        data-value="{{ $slot }}"
+                                        @class([
+                                            'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                            'bg-gray-100 font-medium' => (string) old('end_time', '') === (string) $slot,
+                                        ])
+                                        aria-selected="{{ (string) old('end_time', '') === (string) $slot ? 'true' : 'false' }}"
+                                    >{{ $slot }}</button>
                                 @endforeach
-                            </select>
+                            </x-reservo-form-select>
                             @error('end_time')
                                 <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                             @enderror
@@ -192,7 +259,7 @@
 
                     <p id="reservationEstimate" class="hidden rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-sm text-emerald-950" role="status"></p>
 
-                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50" id="reservationSubmit">
+                    <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50" id="reservationSubmit">
                         <x-lucide name="calendar-plus" class="h-4 w-4 shrink-0 opacity-90" />
                         Create reservation
                     </button>
@@ -203,17 +270,9 @@
         <div class="min-w-0 flex-1">
             <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
                 <div>
-                    <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">{{ __('Overview') }}</div>
-                    <h2 id="bookings-overview" class="mt-2 text-xl font-semibold text-gray-900">{{ __('Bookings') }}</h2>
-                    @if (($viewMode ?? 'list') === 'calendar')
-                        <p class="mt-1 max-w-xl text-sm text-gray-600">
-                            {{ __('Your reservations by month. Select a booking to review or edit.') }}
-                            @if (! empty($calendarSubtitle))
-                                <span class="mt-2 block font-medium text-gray-800">{{ $calendarSubtitle }}</span>
-                            @endif
-                        </p>
-                    @else
-                        <p class="mt-1 text-sm text-gray-600">{{ __('Review, edit, or cancel your existing reservations.') }}</p>
+                    <h1 id="bookings-overview" class="text-xl font-semibold text-gray-900 sm:text-2xl">{{ __('My Reservations') }}</h1>
+                    @if (($viewMode ?? 'list') === 'calendar' && ! empty($calendarSubtitle))
+                        <p class="mt-1 max-w-xl text-sm font-medium text-gray-800">{{ $calendarSubtitle }}</p>
                     @endif
                 </div>
                 <div class="flex flex-wrap items-center gap-2 sm:justify-end">
@@ -225,7 +284,7 @@
                     @if (($viewMode ?? 'list') === 'calendar')
                         <a
                             href="{{ $browseRoomsUrl ?? route('rooms.index') }}"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/35"
                         >
                             <x-lucide name="door-open" class="h-4 w-4 opacity-90" aria-hidden="true" />
                             {{ __('Browse rooms') }}
@@ -267,10 +326,12 @@
                                         @endif
                                     </div>
                                     <div class="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                                        <a href="{{ route('reservations.edit', $reservation->id) }}" class="app-table-action">
-                                            <x-lucide name="square-pen" class="h-4 w-4 shrink-0" />
-                                            Edit booking
-                                        </a>
+                                        @if (! $reservation->isBeforeToday())
+                                            <a href="{{ route('reservations.edit', $reservation->id) }}" class="app-table-action">
+                                                <x-lucide name="square-pen" class="h-4 w-4 shrink-0" />
+                                                Edit booking
+                                            </a>
+                                        @endif
                                         <form method="POST" action="{{ route('reservations.destroy', $reservation->id) }}" class="inline-flex" data-confirm-message="Are you sure you want to cancel this reservation?" data-confirm-variant="danger" data-confirm-button-label="Cancel reservation">
                                             @csrf
                                             @method('DELETE')
@@ -590,9 +651,8 @@
             };
 
             const selectedHourlyRate = () => {
-                const opt = room.selectedOptions[0];
-                const raw = opt?.dataset?.hourlyRate;
-                if (raw === undefined || raw === '') return null;
+                const raw = room.getAttribute('data-hourly-rate');
+                if (raw === null || raw === '') return null;
                 const n = Number.parseFloat(raw);
                 return Number.isFinite(n) ? n : null;
             };
@@ -628,14 +688,28 @@
                 const currentEnd = end.value;
                 let hasValidEnd = false;
 
-                for (const opt of end.options) {
-                    if (!opt.value) continue;
-                    opt.disabled = !!startValue && opt.value <= startValue;
-                    if (!opt.disabled && opt.value === currentEnd) hasValidEnd = true;
+                const panel = document.getElementById('end_time_listbox');
+                if (!panel) return;
+
+                for (const btn of panel.querySelectorAll('button.reservo-form-select__opt')) {
+                    if (!(btn instanceof HTMLButtonElement)) continue;
+                    const v = btn.dataset.value ?? '';
+                    if (!v) {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-45', 'pointer-events-none', 'cursor-not-allowed');
+                        continue;
+                    }
+                    const disabled = !!startValue && v <= startValue;
+                    btn.disabled = disabled;
+                    btn.classList.toggle('opacity-45', disabled);
+                    btn.classList.toggle('pointer-events-none', disabled);
+                    btn.classList.toggle('cursor-not-allowed', disabled);
+                    if (!disabled && v === currentEnd) hasValidEnd = true;
                 }
 
                 if (currentEnd && !hasValidEnd) {
                     end.value = '';
+                    end.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             };
 

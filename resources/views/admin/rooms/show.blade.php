@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
-@section('title', 'Admin · '.$room->name)
+@section('title', 'Admin Rooms: '.$room->name)
 
 @section('content')
     <x-page-breadcrumbs
         class="mb-4"
         :items="[
             ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Admin · Rooms', 'url' => route('admin.rooms.index')],
+            ['label' => 'Admin'],
+            ['label' => 'Rooms', 'url' => route('admin.rooms.index')],
             ['label' => $room->name],
         ]"
     />
@@ -21,7 +22,6 @@
                     <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">Active</span>
                 @endif
             </div>
-            <p class="mt-2 text-sm text-gray-600">Full room record: photo, location, capacity, amenities, and description.</p>
         </div>
         <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
             @if (! $room->trashed())
@@ -29,7 +29,7 @@
                     Public room page
                 </a>
             @endif
-            <a href="{{ route('admin.rooms.edit', $room->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-gray-800 sm:w-auto">
+            <a href="{{ route('admin.rooms.edit', $room->id) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-teal-700 sm:w-auto">
                 Edit room
             </a>
             @if ($room->trashed())

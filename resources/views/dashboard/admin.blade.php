@@ -5,9 +5,9 @@
 @section('content')
     @php
         $statStyles = [
-            'indigo' => [
-                'icon' => 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100/90',
-                'card' => 'hover:border-indigo-200/90 hover:ring-indigo-500/15',
+            'teal' => [
+                'icon' => 'bg-teal-50 text-teal-600 ring-1 ring-teal-100/90',
+                'card' => 'hover:border-teal-200/90 hover:ring-teal-500/15',
             ],
             'emerald' => [
                 'icon' => 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100/90',
@@ -25,22 +25,23 @@
                 'icon' => 'bg-rose-50 text-rose-600 ring-1 ring-rose-100/90',
                 'card' => 'hover:border-rose-200/90 hover:ring-rose-500/15',
             ],
+            'yellow' => [
+                'icon' => 'bg-yellow-50 text-yellow-600 ring-1 ring-yellow-100/90',
+                'card' => 'hover:border-yellow-200/90 hover:ring-yellow-500/15',
+            ],
         ];
         $linkTones = [
-            'indigo' => 'from-indigo-500/12 to-indigo-500/0 border-indigo-200/60 hover:border-indigo-300/90',
+            'teal' => 'from-teal-500/12 to-teal-500/0 border-teal-200/60 hover:border-teal-300/90',
             'emerald' => 'from-emerald-500/12 to-emerald-500/0 border-emerald-200/60 hover:border-emerald-300/90',
             'amber' => 'from-amber-500/12 to-amber-500/0 border-amber-200/60 hover:border-amber-300/90',
             'violet' => 'from-violet-500/12 to-violet-500/0 border-violet-200/60 hover:border-violet-300/90',
             'rose' => 'from-rose-500/12 to-rose-500/0 border-rose-200/60 hover:border-rose-300/90',
+            'yellow' => 'from-yellow-500/12 to-yellow-500/0 border-yellow-200/60 hover:border-yellow-300/90',
         ];
     @endphp
 
     <div class="reservo-dashboard-in">
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Overview</div>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Dashboard</h1>
-        <p class="mt-2 max-w-2xl text-sm text-gray-600">
-            Reservations, rooms, and shortcuts.
-        </p>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Dashboard</h1>
     </div>
 
     <div
@@ -49,8 +50,8 @@
     >
         @foreach ($stats as $stat)
             @php
-                $accent = $stat['accent'] ?? 'indigo';
-                $s = $statStyles[$accent] ?? $statStyles['indigo'];
+                $accent = $stat['accent'] ?? 'teal';
+                $s = $statStyles[$accent] ?? $statStyles['teal'];
             @endphp
             <a
                 href="{{ $stat['href'] }}"
@@ -81,7 +82,7 @@
             </div>
             <div class="mt-4 grid gap-3 sm:grid-cols-2">
                 @foreach ($quickLinks as $link)
-                    @php $tone = $link['tone'] ?? 'indigo'; $grad = $linkTones[$tone] ?? $linkTones['indigo']; @endphp
+                    @php $tone = $link['tone'] ?? 'teal'; $grad = $linkTones[$tone] ?? $linkTones['teal']; @endphp
                     <a
                         href="{{ $link['href'] }}"
                         class="group relative flex flex-col overflow-hidden rounded-2xl border bg-gradient-to-b p-4 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 {{ $grad }}"
@@ -111,7 +112,7 @@
                 <h2 class="text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">Upcoming</h2>
                 <a
                     href="{{ route('reservations.my') }}"
-                    class="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition hover:text-indigo-800"
+                    class="inline-flex items-center gap-1 text-sm font-medium text-teal-600 transition hover:text-teal-800"
                 >
                     View all
                     <x-lucide name="chevron-right" class="h-3.5 w-3.5" />
@@ -129,7 +130,7 @@
                     <p class="mt-1 max-w-xs text-xs text-gray-500">When you book a room, the next few visits will show up here.</p>
                     <a
                         href="{{ route('rooms.index') }}"
-                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-xs font-medium text-white transition hover:bg-gray-800"
+                        class="mt-4 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-teal-700"
                     >Find a room</a>
                 </div>
             @else
@@ -144,7 +145,7 @@
                                     : $d->format('D, M j'));
                         @endphp
                         <li
-                            class="group flex gap-3 rounded-2xl border border-gray-200/80 bg-white p-3 shadow-sm ring-1 ring-gray-900/[0.03] transition hover:border-indigo-200/90 hover:shadow-md hover:ring-indigo-500/10"
+                            class="group flex gap-3 rounded-2xl border border-gray-200/80 bg-white p-3 shadow-sm ring-1 ring-gray-900/[0.03] transition hover:border-teal-200/90 hover:shadow-md hover:ring-teal-500/10"
                         >
                             @if ($reservation->room)
                                 <a
@@ -174,13 +175,13 @@
                                     @if ($reservation->room)
                                         <a
                                             href="{{ route('rooms.show', $reservation->room->id) }}"
-                                            class="text-sm font-semibold text-gray-900 transition hover:text-indigo-800"
+                                            class="text-sm font-semibold text-gray-900 transition hover:text-teal-800"
                                         >{{ $reservation->room->name }}</a>
                                     @else
                                         <span class="text-sm font-semibold text-gray-900">Room</span>
                                     @endif
                                     <span
-                                        class="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-indigo-800"
+                                        class="shrink-0 rounded-full bg-teal-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-teal-800"
                                     >{{ $dateLabel }}</span>
                                 </div>
                                 @if ($reservation->room?->location)
@@ -196,13 +197,15 @@
                                     <span class="text-gray-300" aria-hidden="true">·</span>
                                     <span>{{ substr($reservation->start_time, 0, 5) }} – {{ substr($reservation->end_time, 0, 5) }}</span>
                                 </div>
-                                <a
-                                    href="{{ route('reservations.edit', $reservation->id) }}"
-                                    class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-indigo-600 transition hover:text-indigo-800"
-                                >
-                                    Edit booking
-                                    <x-lucide name="chevron-right" class="h-3.5 w-3.5" />
-                                </a>
+                                @if (! $reservation->isBeforeToday())
+                                    <a
+                                        href="{{ route('reservations.edit', $reservation->id) }}"
+                                        class="mt-2 inline-flex items-center gap-1 text-xs font-medium text-teal-600 transition hover:text-teal-800"
+                                    >
+                                        Edit booking
+                                        <x-lucide name="chevron-right" class="h-3.5 w-3.5" />
+                                    </a>
+                                @endif
                             </div>
                         </li>
                     @endforeach

@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Admin · Reservations')
+@section('title', 'Admin Reservations')
 
 @section('content')
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-xl font-semibold sm:text-2xl">Admin · Reservations</h1>
+    <div class="flex justify-end">
         <a href="{{ route('demo.hub') }}" class="text-sm font-medium text-gray-700 hover:text-gray-900">Sandbox home</a>
     </div>
 
@@ -33,7 +32,7 @@
             <div class="flex flex-row flex-wrap items-end gap-2 xl:flex-nowrap xl:justify-end">
                 <button
                     type="submit"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/35"
+                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/35"
                 >
                     <x-lucide name="filter" class="h-4 w-4 shrink-0" aria-hidden="true" />
                     Filter
@@ -62,10 +61,9 @@
                             <th class="w-24 px-4 py-3">Room</th>
                             <th class="px-4 py-3">Room details</th>
                             <th class="px-4 py-3">Guest label</th>
-                            <th class="px-4 py-3">Date</th>
-                            <th class="px-4 py-3">Time</th>
+                            <th class="whitespace-nowrap px-4 py-3">{{ __('Date & time') }}</th>
                             <th class="w-24 px-4 py-3">Est.</th>
-                            <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -105,15 +103,19 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-gray-800">{{ $r['label'] ?? '—' }}</td>
-                                <td class="px-4 py-3">{{ $r['date'] }}</td>
-                                <td class="px-4 py-3">{{ substr($r['start_time'], 0, 5) }}–{{ substr($r['end_time'], 0, 5) }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-900">{{ $r['date'] }}</div>
+                                    <div class="text-xs tabular-nums text-gray-600">{{ substr($r['start_time'], 0, 5) }}–{{ substr($r['end_time'], 0, 5) }}</div>
+                                </td>
                                 <td class="px-4 py-3 text-gray-700">{{ \App\Support\DemoState::reservationEstimateLabel($r, $dRoom) ?? '—' }}</td>
                                 <td class="px-4 py-3">
-                                    <form method="POST" action="{{ route('demo.reservations.destroy', $r['id']) }}" class="inline-flex" data-confirm-message="Remove this sandbox reservation?" data-confirm-variant="danger" data-confirm-button-label="Remove">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="app-table-action app-table-action-danger">Cancel</button>
-                                    </form>
+                                    <div class="app-table-actions">
+                                        <form method="POST" action="{{ route('demo.reservations.destroy', $r['id']) }}" class="inline-flex shrink-0" data-confirm-message="Remove this sandbox reservation?" data-confirm-variant="danger" data-confirm-button-label="Remove">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="app-table-action app-table-action-danger">{{ __('Cancel') }}</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

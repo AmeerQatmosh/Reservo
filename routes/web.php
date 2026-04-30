@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingController;
+use App\Http\Controllers\NavLayoutController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomBrowseController;
 use App\Http\Controllers\RoomController;
@@ -39,6 +40,8 @@ Route::middleware(['auth', 'verified', 'blade_full_page'])->group(function () {
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
     Route::put('/reservations/{id}', [ReservationController::class, 'update'])->name('reservations.update');
     Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])->name('reservations.destroy');
+
+    Route::put('/preferences/nav-layout', [NavLayoutController::class, 'update'])->name('preferences.nav-layout');
 });
 
 Route::middleware(['auth', 'admin', 'blade_full_page'])->prefix('admin')->name('admin.')->group(function () {
