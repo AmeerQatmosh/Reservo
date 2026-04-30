@@ -21,6 +21,9 @@
             </button>
         </form>
     @else
+        @if (auth()->user()->isAdmin())
+            @include('layouts.partials.nav-layout-toggle', ['variant' => 'header'])
+        @endif
         @include('layouts.partials.account-menu', ['variant' => 'desktop'])
 
         <!-- <form method="POST" action="{{ route('logout') }}">
@@ -48,7 +51,7 @@
             <x-lucide name="log-in" :class="$iconDesktop" />
             Login
         </a>
-        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-sky-200 px-4 py-2 text-sm font-medium text-sky-600 transition hover:bg-sky-300">
+        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-green-200 px-4 py-2 text-sm font-medium text-green-600 transition hover:bg-green-400 hover:text-white">
             <x-lucide name="user-plus" :class="$iconDesktop" />
             Register
         </a>

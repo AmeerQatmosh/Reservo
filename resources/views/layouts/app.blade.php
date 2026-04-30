@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="turbo-prefetch" content="false">
 
         @hasSection('title')
             <title>{{ config('app.name') }} - @yield('title')</title>
@@ -26,29 +27,75 @@
             } catch (e) {}
         </script>
 
+        @auth
+            @if (auth()->user()->usesVerticalNav())
+        <script>
+            try {
+                if (localStorage.getItem('reservo_admin_sidebar_rail') === '1') {
+                    document.documentElement.classList.add('admin-sidebar-rail-collapsed');
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var t = document.getElementById('reservo-admin-sidebar-toggle');
+                        if (t) {
+                            t.setAttribute('aria-expanded', 'false');
+                            var ex = t.getAttribute('data-sidebar-label-expand');
+                            if (ex) {
+                                t.setAttribute('aria-label', ex);
+                            }
+                        }
+                    });
+                }
+            } catch (e) {}
+        </script>
+            @endif
+        @endauth
+
         @vite(['resources/css/app.css', 'resources/js/blade-ui.ts'])
     </head>
-    <body class="flex min-h-dvh w-full max-w-none flex-col bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.04),transparent_32%),linear-gradient(to_bottom,#f8fafc,#eef2ff_42%,#f8fafc)] text-gray-900 antialiased [color-scheme:light]">
+    <body class="flex min-h-dvh w-full max-w-none flex-col bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.04),transparent_32%),linear-gradient(to_bottom,#f8fafc,#eef2ff_42%,#f8fafc)] text-gray-900 antialiased [color-scheme:light] @auth @if (auth()->user()->usesVerticalNav()) lg:flex-row lg:items-start @endif @endauth">
         <div id="reservo-progress" data-state="idle" aria-hidden="true"></div>
         @include('layouts.partials.page-skeleton')
         @php
             $navLinkClass = 'nav-link inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-sm font-semibold transition';
             $navInactiveClass = 'text-gray-500 hover:text-gray-900';
             $navActiveClass = 'text-gray-900 active text-lg';
+            $adminVerticalNav = auth()->check() && auth()->user()->usesVerticalNav();
+            $headerNavRowClass = 'flex w-full items-center justify-between gap-x-2 gap-y-2 sm:gap-x-3 lg:items-center lg:gap-x-6';
+            if ($adminVerticalNav) {
+                $headerNavRowClass .= ' lg:justify-end';
+            } else {
+                $headerNavRowClass .= ' lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]';
+            }
         @endphp
-        <header class="sticky top-0 z-40 overflow-visible shadow-[0_1px_0_rgba(15,23,42,0.06)]">
-        {{-- z-30: must stack above demo strip. Frosted bar is a non-wrapping layer so the mobile `fixed` panel is not trapped by `backdrop-filter` (would jank / shake the whole view). --}}
-        <nav class="relative z-30 overflow-visible border-b border-gray-200">
+        @if ($adminVerticalNav)
+            @include('layouts.partials.nav-admin-sidebar', [
+                'navLinkClass' => $navLinkClass,
+                'navActiveClass' => $navActiveClass,
+                'navInactiveClass' => $navInactiveClass,
+            ])
+            <div class="flex min-h-dvh min-w-0 flex-1 flex-col">
+        @endif
+        <header @class([
+            'sticky top-0 z-40 overflow-visible shadow-[0_1px_0_rgba(15,23,42,0.06)]',
+            'lg:shadow-none' => $adminVerticalNav,
+        ])>
+        {{-- z-30: stack above demo strip. Vertical nav (lg+): rail holds nav; keep this row for mobile only. --}}
+        <nav @class([
+            'relative z-30 overflow-visible border-b border-gray-200',
+            'lg:hidden' => $adminVerticalNav,
+        ])>
             <div
                 class="pointer-events-none absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85"
                 aria-hidden="true"
             ></div>
             <div class="relative mx-auto max-w-[min(100%,85rem)] px-2.5 sm:px-3.5 lg:px-6 py-3 sm:py-3.5">
                 {{-- Mobile: logo | menu. Desktop: 1fr | auto | 1fr so primary nav stays visually centered. --}}
-                <div class="flex w-full items-center justify-between gap-x-2 gap-y-2 sm:gap-x-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-x-6">
+                <div class="{{ $headerNavRowClass }}">
                     <a
                         href="{{ auth()->check() ? route('dashboard') : route('home') }}"
-                        class="inline-flex min-w-0 max-w-[min(100%,16rem)] shrink-0 items-center gap-2.5 rounded-lg border-0 bg-transparent py-0.5 shadow-none transition hover:opacity-90 focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 sm:max-w-none sm:gap-3 lg:justify-self-start"
+                        @class([
+                            'inline-flex min-w-0 max-w-[min(100%,16rem)] shrink-0 items-center gap-2.5 rounded-lg border-0 bg-transparent py-0.5 shadow-none transition hover:opacity-90 focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 sm:max-w-none sm:gap-3 lg:justify-self-start',
+                            'lg:hidden' => $adminVerticalNav,
+                        ])
                         aria-label="{{ config('app.name') }} — home"
                     >
                         {{-- SVG is very tall (332 viewBox); cap height to match wordmark, not vice versa --}}
@@ -67,7 +114,12 @@
                         </span>
                     </a>
 
-                    <div class="hidden min-w-0 max-w-full justify-self-center lg:flex">
+                    <div
+                        @class([
+                            'hidden min-w-0 max-w-full justify-self-center lg:flex',
+                            'lg:hidden' => $adminVerticalNav,
+                        ])
+                    >
                         <div class="flex flex-wrap items-center justify-center gap-2">
                             @include('layouts.partials.nav-app-links', [
                                 'navLinkClass' => $navLinkClass,
@@ -79,14 +131,16 @@
                     </div>
 
                     <div class="flex shrink-0 items-center justify-end gap-2 overflow-visible lg:justify-self-end">
-                        <div class="hidden items-center gap-2 lg:flex">
-                            @include('layouts.partials.nav-auth-links', [
-                                'navLinkClass' => $navLinkClass,
-                                'navActiveClass' => $navActiveClass,
-                                'navInactiveClass' => $navInactiveClass,
-                                'variant' => 'desktop',
-                            ])
-                        </div>
+                        @if (! $adminVerticalNav)
+                            <div class="hidden items-center gap-2 lg:flex">
+                                @include('layouts.partials.nav-auth-links', [
+                                    'navLinkClass' => $navLinkClass,
+                                    'navActiveClass' => $navActiveClass,
+                                    'navInactiveClass' => $navInactiveClass,
+                                    'variant' => 'desktop',
+                                ])
+                            </div>
+                        @endif
 
                         <details class="reservo-details reservo-mobile-menu group relative shrink-0 overflow-visible lg:hidden">
                         <summary
@@ -114,18 +168,25 @@
                                 class="reservo-mobile-menu__sheet flex h-full min-h-0 w-full min-w-0 max-w-full flex-col overflow-hidden rounded-l-2xl border-l border-slate-200/60 bg-white shadow-[-10px_0_48px_-16px_rgba(15,23,42,0.2)]"
                             >
                                 <div
-                                    class="reservo-mobile-menu__header flex shrink-0 items-center justify-between border-b border-slate-200/80 bg-slate-50/80 px-3 pb-2.5 pl-3.5 pr-2.5 pt-[max(0.6rem,env(safe-area-inset-top))]"
+                                    class="reservo-mobile-menu__header flex shrink-0 items-center justify-between gap-2 border-b border-slate-200/80 bg-slate-50/80 px-3 pb-2.5 pl-3.5 pr-2.5 pt-[max(0.6rem,env(safe-area-inset-top))]"
                                 >
                                     <span class="font-brand min-w-0 flex-1 truncate text-base font-bold tracking-[-0.02em] text-slate-900">
                                         {{ config('app.name') }}
                                     </span>
-                                    <button
-                                        type="button"
-                                        class="reservo-mobile-menu__close -mr-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-600 transition [touch-action:manipulation] duration-200 ease-out hover:bg-slate-200/60 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400/40 active:scale-[0.97]"
-                                        aria-label="Close menu"
-                                    >
-                                        <x-lucide name="x" class="h-5 w-5" />
-                                    </button>
+                                    <div class="flex shrink-0 items-center gap-1.5">
+                                        @auth
+                                            @if (auth()->user()->isAdmin())
+                                                @include('layouts.partials.nav-layout-toggle', ['variant' => 'mobile-drawer'])
+                                            @endif
+                                        @endauth
+                                        <button
+                                            type="button"
+                                            class="reservo-mobile-menu__close -mr-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-600 transition [touch-action:manipulation] duration-200 ease-out hover:bg-slate-200/60 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400/40 active:scale-[0.97]"
+                                            aria-label="Close menu"
+                                        >
+                                            <x-lucide name="x" class="h-5 w-5" />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="reservo-mobile-menu__body flex min-h-0 flex-1 flex-col">
                                     @auth
@@ -209,6 +270,10 @@
         </main>
 
         @include('layouts.partials.footer')
+
+        @if ($adminVerticalNav)
+        </div>
+        @endif
 
         <div id="confirmModal" class="fixed inset-0 z-50 hidden p-3 sm:p-4">
             <div class="absolute inset-0 bg-black/40" data-confirm-close></div>

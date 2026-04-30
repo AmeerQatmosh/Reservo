@@ -9,6 +9,15 @@
         $currentStart = old('start_time', substr($reservation->start_time, 0, 5));
         $currentEnd = old('end_time', substr($reservation->end_time, 0, 5));
         $timeSlots = \App\Support\ReservationBookingWindow::selectOptions([$currentStart, $currentEnd]);
+
+        $editRoomHourlyForInput = null;
+        if ((string) $currentRoomId !== '') {
+            $er = $rooms->firstWhere('id', (int) $currentRoomId);
+            $editRoomHourlyForInput = $er && $er->hourly_rate !== null ? (string) $er->hourly_rate : '';
+        }
+
+        $minDateStr = now()->toDateString();
+        $displayDate = $currentDate !== '' ? max($currentDate, $minDateStr) : '';
     @endphp
 
     <x-page-breadcrumbs
@@ -20,9 +29,7 @@
     />
 
     <div>
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Reservation</div>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
-        <p class="mt-2 text-sm text-gray-600">Review the current booking details, then update the date, room, or time.</p>
+        <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -65,25 +72,46 @@
                 @method('PUT')
 
                 <div>
-                    <label for="room_id" class="block text-sm font-medium text-gray-900">Room</label>
-                    <select id="room_id" name="room_id" class="app-field">
-                        <option value="">Select a room</option>
+                    <x-reservo-form-select
+                        name="room_id"
+                        hidden-id="room_id"
+                        trigger-id="room_id_trigger"
+                        listbox-id="room_id_listbox"
+                        label="Room"
+                        placeholder="Select a room"
+                        :value="(string) $currentRoomId"
+                        :hourly-rate="$editRoomHourlyForInput"
+                    >
+                        <button
+                            type="button"
+                            role="option"
+                            data-value=""
+                            class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                            aria-selected="{{ (string) $currentRoomId === '' ? 'true' : 'false' }}"
+                        >Select a room</button>
                         @foreach ($rooms as $room)
-                            <option
-                                value="{{ $room->id }}"
+                            <button
+                                type="button"
+                                role="option"
+                                data-value="{{ $room->id }}"
                                 data-hourly-rate="{{ $room->hourly_rate ?? '' }}"
-                                @selected((string) $currentRoomId === (string) $room->id)
-                            >{{ $room->name }}@if ($room->hourly_rate !== null) ({{ $room->hourlyRateLabel() }})@endif</option>
+                                @class([
+                                    'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm break-words hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                    'bg-gray-100 font-medium text-gray-900' => (string) $currentRoomId === (string) $room->id,
+                                    'text-gray-900' => (string) $currentRoomId !== (string) $room->id,
+                                ])
+                                aria-selected="{{ (string) $currentRoomId === (string) $room->id ? 'true' : 'false' }}"
+                            >{{ $room->name }}@if ($room->hourly_rate !== null) ({{ $room->hourlyRateLabel() }})@endif</button>
                         @endforeach
-                    </select>
+                    </x-reservo-form-select>
                     @error('room_id')
                         <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="date" class="block text-sm font-medium text-gray-900">Date</label>
-                    <input id="date" name="date" type="date" value="{{ $currentDate }}" class="app-field">
+                    <label for="date" class="mb-2 block text-sm font-medium text-gray-900">Date</label>
+                    <x-reservation-date-mini-calendar :value="$displayDate" :min="$minDateStr" :bookings="$miniCalendarBookings ?? []" />
                     @error('date')
                         <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                     @enderror
@@ -91,25 +119,69 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label for="start_time" class="block text-sm font-medium text-gray-900">Start</label>
-                        <select id="start_time" name="start_time" class="app-field">
-                            <option value="">Select start</option>
+                        <x-reservo-form-select
+                            name="start_time"
+                            hidden-id="start_time"
+                            trigger-id="start_time_trigger"
+                            listbox-id="start_time_listbox"
+                            label="Start"
+                            placeholder="Select start"
+                            :value="(string) $currentStart"
+                        >
+                            <button
+                                type="button"
+                                role="option"
+                                data-value=""
+                                class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                                aria-selected="{{ (string) $currentStart === '' ? 'true' : 'false' }}"
+                            >Select start</button>
                             @foreach ($timeSlots as $slot)
-                                <option value="{{ $slot }}" @selected($currentStart === $slot)>{{ $slot }}</option>
+                                <button
+                                    type="button"
+                                    role="option"
+                                    data-value="{{ $slot }}"
+                                    @class([
+                                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                        'bg-gray-100 font-medium' => (string) $currentStart === (string) $slot,
+                                    ])
+                                    aria-selected="{{ (string) $currentStart === (string) $slot ? 'true' : 'false' }}"
+                                >{{ $slot }}</button>
                             @endforeach
-                        </select>
+                        </x-reservo-form-select>
                         @error('start_time')
                             <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                         @enderror
                     </div>
                     <div>
-                        <label for="end_time" class="block text-sm font-medium text-gray-900">End</label>
-                        <select id="end_time" name="end_time" class="app-field">
-                            <option value="">Select end</option>
+                        <x-reservo-form-select
+                            name="end_time"
+                            hidden-id="end_time"
+                            trigger-id="end_time_trigger"
+                            listbox-id="end_time_listbox"
+                            label="End"
+                            placeholder="Select end"
+                            :value="(string) $currentEnd"
+                        >
+                            <button
+                                type="button"
+                                role="option"
+                                data-value=""
+                                class="reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2"
+                                aria-selected="{{ (string) $currentEnd === '' ? 'true' : 'false' }}"
+                            >Select end</button>
                             @foreach ($timeSlots as $slot)
-                                <option value="{{ $slot }}" @selected($currentEnd === $slot)>{{ $slot }}</option>
+                                <button
+                                    type="button"
+                                    role="option"
+                                    data-value="{{ $slot }}"
+                                    @class([
+                                        'reservo-form-select__opt w-full rounded-lg px-3 py-2.5 text-left text-sm text-gray-900 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none sm:py-2',
+                                        'bg-gray-100 font-medium' => (string) $currentEnd === (string) $slot,
+                                    ])
+                                    aria-selected="{{ (string) $currentEnd === (string) $slot ? 'true' : 'false' }}"
+                                >{{ $slot }}</button>
                             @endforeach
-                        </select>
+                        </x-reservo-form-select>
                         @error('end_time')
                             <div class="mt-1 text-xs text-red-700">{{ $message }}</div>
                         @enderror
@@ -124,7 +196,7 @@
 
                 <p id="editReservationEstimate" class="hidden rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-sm text-emerald-950" role="status"></p>
 
-                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50" id="editReservationSubmit">
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50" id="editReservationSubmit">
                     <x-lucide name="square-pen" class="h-4 w-4 shrink-0 opacity-90" />
                     Save changes
                 </button>
@@ -145,9 +217,8 @@
             if (!form || !submit || !room || !date || !start || !end) return;
 
             const selectedHourlyRate = () => {
-                const opt = room.selectedOptions[0];
-                const raw = opt?.dataset?.hourlyRate;
-                if (raw === undefined || raw === '') return null;
+                const raw = room.getAttribute('data-hourly-rate');
+                if (raw === null || raw === '') return null;
                 const n = Number.parseFloat(raw);
                 return Number.isFinite(n) ? n : null;
             };
@@ -183,14 +254,28 @@
                 const currentEnd = end.value;
                 let hasValidEnd = false;
 
-                for (const opt of end.options) {
-                    if (!opt.value) continue;
-                    opt.disabled = !!startValue && opt.value <= startValue;
-                    if (!opt.disabled && opt.value === currentEnd) hasValidEnd = true;
+                const panel = document.getElementById('end_time_listbox');
+                if (!panel) return;
+
+                for (const btn of panel.querySelectorAll('button.reservo-form-select__opt')) {
+                    if (!(btn instanceof HTMLButtonElement)) continue;
+                    const v = btn.dataset.value ?? '';
+                    if (!v) {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-45', 'pointer-events-none', 'cursor-not-allowed');
+                        continue;
+                    }
+                    const disabled = !!startValue && v <= startValue;
+                    btn.disabled = disabled;
+                    btn.classList.toggle('opacity-45', disabled);
+                    btn.classList.toggle('pointer-events-none', disabled);
+                    btn.classList.toggle('cursor-not-allowed', disabled);
+                    if (!disabled && v === currentEnd) hasValidEnd = true;
                 }
 
                 if (currentEnd && !hasValidEnd) {
                     end.value = '';
+                    end.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             };
 

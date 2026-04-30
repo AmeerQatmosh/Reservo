@@ -32,24 +32,12 @@
         class="mb-4"
         :items="[
             ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Admin · Rooms'],
+            ['label' => 'Admin'],
+            ['label' => 'Rooms'],
         ]"
     />
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h1 class="text-xl font-semibold sm:text-2xl">Admin · Rooms</h1>
-        <a
-            href="{{ route('admin.rooms.create') }}"
-            class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-2.5 text-center text-sm font-medium text-white transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/40 sm:rounded-md sm:py-2"
-        >
-            <x-lucide name="plus" class="h-4 w-4 shrink-0" aria-hidden="true" />
-            Add room
-        </a>
-    </div>
-
-    <form
-        method="GET"
-        action="{{ route('admin.rooms.index') }}"
-        class="relative mt-6 flex w-full min-w-0 flex-col gap-4 lg:grid lg:grid-cols-12 lg:items-start lg:gap-6"
+    <div
+        class="relative mt-4 flex w-full min-w-0 flex-col gap-4 lg:grid lg:grid-cols-12 lg:items-start lg:gap-6"
         id="admin-rooms-browse-filters"
     >
         <input
@@ -59,31 +47,6 @@
             aria-label="Show or hide room filters"
             aria-controls="admin-room-browse-filters-aside"
         />
-        <div
-            class="min-w-0 w-full self-start lg:col-span-9 lg:col-start-4 lg:row-start-1"
-        >
-            <div
-                class="min-w-0 max-lg:flex max-lg:min-w-0 max-lg:items-center max-lg:gap-2"
-            >
-                <div class="min-w-0 max-lg:flex-1">
-                    @include('rooms.partials.room-filters-search', [
-                        'filters' => $filters,
-                    ])
-                </div>
-                <label
-                    for="admin-room-browse-filters-toggle"
-                    class="relative inline-flex h-12 min-w-0 shrink-0 cursor-pointer select-none items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 text-sm font-medium text-slate-800 shadow-sm ring-1 ring-slate-100 transition hover:border-slate-300 hover:bg-slate-50/80 lg:hidden"
-                >
-                    <x-lucide name="filter" class="h-4 w-4 shrink-0 text-slate-600" aria-hidden="true" />
-                    <span class="whitespace-nowrap">Filters</span>
-                    @if ($activeAdminFilterCount > 0)
-                        <span
-                            class="inline-flex min-h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-slate-900 px-1 text-[10px] font-semibold leading-none text-white"
-                        >{{ $activeAdminFilterCount > 9 ? '9+' : $activeAdminFilterCount }}</span>
-                    @endif
-                </label>
-            </div>
-        </div>
         <label
             for="admin-room-browse-filters-toggle"
             class="pointer-events-none fixed inset-0 z-40 cursor-default bg-slate-950/75 opacity-0 transition duration-200 ease-out max-lg:peer-checked:pointer-events-auto max-lg:peer-checked:opacity-100 lg:hidden"
@@ -91,7 +54,7 @@
         ></label>
         <aside
             id="admin-room-browse-filters-aside"
-            class="min-w-0 self-start max-lg:pointer-events-none max-lg:fixed max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:z-50 max-lg:flex max-lg:max-h-[min(92vh,40rem)] max-lg:w-full max-lg:translate-y-full max-lg:bg-white max-lg:opacity-0 max-lg:transition max-lg:duration-300 max-lg:ease-out max-lg:peer-checked:translate-y-0 max-lg:peer-checked:opacity-100 max-lg:peer-checked:pointer-events-auto max-lg:flex-col max-lg:overflow-hidden max-lg:rounded-t-3xl max-lg:shadow-[0_-8px_40px_rgba(15,23,42,0.18)] max-lg:ring-1 max-lg:ring-slate-200/90 max-lg:pb-[env(safe-area-inset-bottom)] lg:col-start-1 lg:col-span-3 lg:row-start-1 lg:row-span-2 lg:static lg:max-h-none lg:w-auto lg:translate-y-0 lg:bg-transparent lg:opacity-100 lg:overflow-y-visible lg:pb-0 lg:shadow-none lg:ring-0 lg:peer-checked:translate-y-0 lg:sticky lg:top-24 lg:z-10"
+            class="min-w-0 self-start max-lg:pointer-events-none max-lg:fixed max-lg:bottom-0 max-lg:left-0 max-lg:right-0 max-lg:z-50 max-lg:flex max-lg:max-h-[min(92vh,40rem)] max-lg:w-full max-lg:translate-y-full max-lg:bg-white max-lg:opacity-0 max-lg:transition max-lg:duration-300 max-lg:ease-out max-lg:peer-checked:translate-y-0 max-lg:peer-checked:opacity-100 max-lg:peer-checked:pointer-events-auto max-lg:flex-col max-lg:overflow-hidden max-lg:rounded-t-3xl max-lg:shadow-[0_-8px_40px_rgba(15,23,42,0.18)] max-lg:ring-1 max-lg:ring-slate-200/90 max-lg:pb-[env(safe-area-inset-bottom)] lg:col-start-1 lg:col-span-3 lg:row-start-1 lg:static lg:max-h-none lg:w-auto lg:translate-y-0 lg:bg-transparent lg:opacity-100 lg:overflow-y-visible lg:pb-0 lg:shadow-none lg:ring-0 lg:peer-checked:translate-y-0 lg:sticky lg:top-[calc(5rem+env(safe-area-inset-top,0px))] lg:z-10 lg:self-start"
             aria-labelledby="admin-room-browse-filters-title"
         >
             <div
@@ -115,18 +78,57 @@
                 <div
                     class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain bg-white px-2 pb-2 pt-2 max-lg:max-h-full sm:px-3 lg:min-h-0 lg:overflow-visible lg:bg-transparent lg:px-0 lg:pb-0 lg:pt-0"
                 >
-                    @include('admin.rooms.partials.filters-panel', [
-                        'filters' => $filters,
-                        'filterOptions' => $filterOptions,
-                        'resetUrl' => route('admin.rooms.index'),
-                        'includeStatus' => true,
-                    ])
+                    <form
+                        method="GET"
+                        action="{{ route('admin.rooms.index') }}"
+                        id="admin-rooms-filters"
+                    >
+                        @include('admin.rooms.partials.filters-panel', [
+                            'filters' => $filters,
+                            'filterOptions' => $filterOptions,
+                            'resetUrl' => route('admin.rooms.index'),
+                            'includeStatus' => true,
+                        ])
+                    </form>
                 </div>
             </div>
         </aside>
         <div
-            class="flex min-w-0 flex-col gap-4 lg:col-span-9 lg:col-start-4 lg:row-start-2"
+            class="flex min-w-0 flex-col gap-4 lg:col-span-9 lg:col-start-4 lg:row-start-1"
         >
+            <div
+                class="flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3 lg:flex-nowrap lg:justify-between lg:pb-1"
+            >
+                <div class="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+                    <div class="min-w-0 flex-1">
+                        @include('rooms.partials.room-filters-search', [
+                            'filters' => $filters,
+                            'filterFormId' => 'admin-rooms-filters',
+                        ])
+                    </div>
+                    <label
+                        for="admin-room-browse-filters-toggle"
+                        class="relative inline-flex h-12 min-w-0 shrink-0 cursor-pointer select-none items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-3.5 text-sm font-medium text-slate-800 shadow-sm ring-1 ring-slate-100 transition hover:border-slate-300 hover:bg-slate-50/80 lg:hidden"
+                    >
+                        <x-lucide name="filter" class="h-4 w-4 shrink-0 text-slate-600" aria-hidden="true" />
+                        <span class="whitespace-nowrap">Filters</span>
+                        @if ($activeAdminFilterCount > 0)
+                            <span
+                                class="inline-flex min-h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-slate-900 px-1 text-[10px] font-semibold leading-none text-white"
+                            >{{ $activeAdminFilterCount > 9 ? '9+' : $activeAdminFilterCount }}</span>
+                        @endif
+                    </label>
+                </div>
+                <div class="flex shrink-0 items-center max-sm:w-full max-sm:justify-end">
+                    <a
+                        href="{{ route('admin.rooms.create') }}"
+                        class="inline-flex h-12 min-h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-teal-600 px-3.5 text-center text-sm font-medium text-white shadow-sm ring-1 ring-teal-600/20 transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40"
+                    >
+                        <x-lucide name="plus" class="h-4 w-4 shrink-0" aria-hidden="true" />
+                        Add room
+                    </a>
+                </div>
+            </div>
             @if ($rooms->count() === 0)
                 @include('rooms.partials.room-list-empty-state', [
                     'isFiltered' => $roomListIsFiltered,
@@ -194,20 +196,20 @@
                                             @endif
                                         </td>
                                         <td class="px-3 py-3">
-                                            <div class="flex flex-wrap justify-end gap-2">
+                                            <div class="app-table-actions">
                                                 <a
                                                     href="{{ route('admin.rooms.show', $room->id) }}"
                                                     class="app-table-action"
-                                                >View</a>
+                                                >{{ __('View') }}</a>
                                                 <a
                                                     href="{{ route('admin.rooms.edit', $room->id) }}"
                                                     class="app-table-action"
-                                                >Edit</a>
+                                                >{{ __('Edit') }}</a>
                                                 @if ($room->trashed())
                                                     <form
                                                         method="POST"
                                                         action="{{ route('admin.rooms.restore', $room->id) }}"
-                                                        class="inline-flex"
+                                                        class="inline-flex shrink-0"
                                                         data-confirm-message="Are you sure you want to restore this room?"
                                                         data-confirm-variant="success"
                                                         data-confirm-button-label="Restore"
@@ -218,14 +220,14 @@
                                                             type="submit"
                                                             class="app-table-action app-table-action-success"
                                                         >
-                                                            Restore
+                                                            {{ __('Restore') }}
                                                         </button>
                                                     </form>
                                                 @else
                                                     <form
                                                         method="POST"
                                                         action="{{ route('admin.rooms.destroy', $room->id) }}"
-                                                        class="inline-flex"
+                                                        class="inline-flex shrink-0"
                                                         data-confirm-message="Are you sure you want to delete this room?"
                                                         data-confirm-variant="danger"
                                                         data-confirm-button-label="Delete"
@@ -236,7 +238,7 @@
                                                             type="submit"
                                                             class="app-table-action app-table-action-danger"
                                                         >
-                                                            Delete
+                                                            {{ __('Delete') }}
                                                         </button>
                                                     </form>
                                                 @endif
@@ -254,5 +256,5 @@
                 </div>
             @endif
         </div>
-    </form>
+    </div>
 @endsection

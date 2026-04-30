@@ -34,7 +34,37 @@ final class ReservationDatePickerBookings
                 startTimeStr: (string) $reservation->start_time,
                 endTimeStr: (string) $reservation->end_time,
                 roomName: $reservation->room?->name ?? __('Room'),
-                href: route('reservations.edit', $reservation->getKey()),
+                href: $reservation->isBeforeToday() ? '' : route('reservations.edit', $reservation->getKey()),
+                timezone: $tz,
+            );
+        }
+
+        return array_values($out);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection<int, Reservation>|iterable<Reservation>  $reservations
+     * @return list<array<string, mixed>>
+     */
+    public static function forAdminReservationModels(iterable $reservations): array
+    {
+        /** @var Collection<int, Reservation> $c */
+        $c = collect($reservations)
+            ->sortBy(fn (Reservation $r): string => (string) ($r->date ?? '').' '.(string) ($r->start_time ?? ''))
+            ->values();
+
+        /** @var array<int, array<string, mixed>> $out */
+        $out = [];
+        $tz = (string) config('app.timezone');
+
+        foreach ($c as $reservation) {
+            $out[] = self::payloadFromParts(
+                id: (string) $reservation->getKey(),
+                dateValue: $reservation->date,
+                startTimeStr: (string) $reservation->start_time,
+                endTimeStr: (string) $reservation->end_time,
+                roomName: $reservation->room?->name ?? __('Room'),
+                href: route('admin.reservations.edit', $reservation->getKey()),
                 timezone: $tz,
             );
         }
@@ -90,7 +120,7 @@ final class ReservationDatePickerBookings
     }
 
     /**
-     * @return array{date: string, id: string, start: string, end: string, room_name: string, href: string, kind: 'past'|'upcoming'}
+     * @return array{date: string, id: string, start: string, end: string, room_name: string, href: string, kind: 'past'|'upcoming'} href empty when the booking cannot be opened (e.g. user past-day).
      */
     private static function payloadFromParts(
         string $id,

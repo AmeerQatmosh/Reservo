@@ -86,7 +86,7 @@ class ReservationController extends Controller
 
             $reservationsByDate = $monthWindow->groupBy(fn (Reservation $r): string => Carbon::parse($r->date)->format('Y-m-d'))
                 ->map(fn ($group) => $group->map(fn (Reservation $r) => [
-                    'href' => route('reservations.edit', $r->id),
+                    'href' => $r->isBeforeToday() ? null : route('reservations.edit', $r->id),
                     'start' => substr((string) $r->start_time, 0, 5),
                     'end' => substr((string) $r->end_time, 0, 5),
                     'room_name' => $r->room?->name ?? __('Room'),
@@ -184,20 +184,37 @@ class ReservationController extends Controller
         ], fn ($v) => $v !== null && $v !== '');
     }
 
-    public function edit(Request $request, int $id): View
+    public function edit(Request $request, int $id): View|RedirectResponse
     {
         $reservation = Reservation::query()
             ->where('user_id', $request->user()->id)
             ->with('room')
             ->findOrFail($id);
 
+        if ($reservation->isBeforeToday()) {
+            return redirect()
+                ->route('reservations.my')
+                ->withErrors([
+                    'booking' => __('Past reservations cannot be changed. You can still view them in your history.'),
+                ]);
+        }
+
         $rooms = Room::query()
             ->orderBy('name')
+            ->get();
+
+        $miniPickerReservationRows = Reservation::query()
+            ->where('user_id', $request->user()->id)
+            ->with(['room' => fn ($q) => $q->withTrashed()])
+            ->orderByDesc('date')
+            ->orderByDesc('start_time')
+            ->limit(500)
             ->get();
 
         return view('reservations.edit', [
             'reservation' => $reservation,
             'rooms' => $rooms,
+            'miniCalendarBookings' => ReservationDatePickerBookings::forUserReservationModels($miniPickerReservationRows),
         ]);
     }
 
@@ -255,6 +272,14 @@ class ReservationController extends Controller
         $reservation = Reservation::query()
             ->where('user_id', $request->user()->id)
             ->findOrFail($id);
+
+        if ($reservation->isBeforeToday()) {
+            return redirect()
+                ->route('reservations.my')
+                ->withErrors([
+                    'booking' => __('Past reservations cannot be changed.'),
+                ]);
+        }
 
         $validated = $this->validateReservationData($request, $reservation);
 
@@ -340,9 +365,25 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
+        $miniCalReservations = Reservation::query()
+            ->with(['room' => fn ($q) => $q->withTrashed()])
+            ->when($roomId, fn (Builder $query) => $query->where('room_id', $roomId))
+            ->when($userSearch !== '', function (Builder $query) use ($userSearch) {
+                $query->whereHas('user', function (Builder $userQuery) use ($userSearch) {
+                    $userQuery
+                        ->where('name', 'like', "%{$userSearch}%")
+                        ->orWhere('email', 'like', "%{$userSearch}%");
+                });
+            })
+            ->orderByDesc('date')
+            ->orderByDesc('start_time')
+            ->limit(500)
+            ->get();
+
         return view('admin.reservations.index', [
             'reservations' => $reservations,
             'rooms' => $rooms,
+            'miniCalendarBookings' => ReservationDatePickerBookings::forAdminReservationModels($miniCalReservations),
             'filters' => [
                 'room_id' => $roomId,
                 'date' => $date,

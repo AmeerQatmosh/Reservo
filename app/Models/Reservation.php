@@ -63,5 +63,16 @@ class Reservation extends Model
 
         return $total === null ? null : '$'.number_format($total, 2);
     }
-}
 
+    /**
+     * Whether the booking's calendar day is strictly before today (app timezone).
+     * Used to block normal users from editing completed / past-day reservations.
+     */
+    public function isBeforeToday(?Carbon $reference = null): bool
+    {
+        $reference = ($reference ?? now())->copy()->startOfDay();
+        $bookingDay = Carbon::parse($this->date)->startOfDay();
+
+        return $bookingDay->lt($reference);
+    }
+}

@@ -5,13 +5,19 @@
     'name' => 'date',
     /** Rows for marking days + tooltip: date, kind, href, … */
     'bookings' => [],
+    'allowEmpty' => false,
 ])
 
 @php
     $minDay = $min ?? now()->toDateString();
     $incoming = trim((string) ($value ?? ''));
-    $initialDate = ($incoming !== '' && $incoming >= $minDay) ? $incoming : $minDay;
-    $weekCursor = \Illuminate\Support\Carbon::parse($minDay)->startOfWeek(\Illuminate\Support\Carbon::SUNDAY);
+    if ($allowEmpty) {
+        $initialDate = ($incoming !== '' && $incoming >= $minDay) ? $incoming : '';
+    } else {
+        $initialDate = ($incoming !== '' && $incoming >= $minDay) ? $incoming : $minDay;
+    }
+    $weekAnchor = ($allowEmpty && $initialDate === '') ? now()->toDateString() : $minDay;
+    $weekCursor = \Illuminate\Support\Carbon::parse($weekAnchor)->startOfWeek(\Illuminate\Support\Carbon::SUNDAY);
     $bookingJsonId = 'mini-cal-json-'.$inputId;
 @endphp
 
@@ -40,6 +46,7 @@
         data-mini-cal-book-json="{{ $bookingJsonId }}"
         data-mini-cal-min="{{ $minDay }}"
         data-mini-cal-selected="{{ $initialDate }}"
+        data-mini-cal-allow-empty="{{ $allowEmpty ? '1' : '0' }}"
         data-mini-cal-heading-locale="{{ str_replace('_', '-', app()->getLocale()) }}"
         data-tip-kind-past="{{ __('Past booking') }}"
         data-tip-kind-up="{{ __('Upcoming') }}"
@@ -78,6 +85,15 @@
             @endforeach
         </div>
         <div class="mt-2 grid grid-cols-7 gap-1.5" data-mini-cal-grid></div>
+        @if ($allowEmpty)
+            <p class="mt-3 text-center">
+                <button
+                    type="button"
+                    class="text-sm font-medium text-slate-600 underline decoration-slate-300 underline-offset-2 transition hover:text-slate-900 hover:decoration-slate-500"
+                    data-mini-cal-clear
+                >{{ __('Any date') }}</button>
+            </p>
+        @endif
     </div>
 </div>
 
@@ -267,17 +283,24 @@
             var linkWrap = document.createElement('div');
             linkWrap.className = 'mt-1.5 border-t border-slate-100/90 pt-1.5';
 
-            var link = document.createElement('a');
-            link.href = b.href || '#';
-            link.className =
-                'inline-flex items-center gap-1 text-[0.8rem] font-semibold text-emerald-700 transition hover:text-emerald-900';
-            link.textContent = (b.room_name || '') + ' · ' + openText;
-            link.setAttribute('rel', 'noopener noreferrer');
-            link.addEventListener('mousedown', function (e) {
-                e.stopPropagation();
-            });
-
-            linkWrap.appendChild(link);
+            var href = (b.href || '').trim();
+            if (href) {
+                var link = document.createElement('a');
+                link.href = href;
+                link.className =
+                    'inline-flex items-center gap-1 text-[0.8rem] font-semibold text-emerald-700 transition hover:text-emerald-900';
+                link.textContent = (b.room_name || '') + ' · ' + openText;
+                link.setAttribute('rel', 'noopener noreferrer');
+                link.addEventListener('mousedown', function (e) {
+                    e.stopPropagation();
+                });
+                linkWrap.appendChild(link);
+            } else {
+                var span = document.createElement('span');
+                span.className = 'text-[0.8rem] font-medium text-slate-600';
+                span.textContent = (b.room_name || '') + ' — ' + (b.kind === 'past' ? labelPast : labelUp);
+                linkWrap.appendChild(span);
+            }
             row.appendChild(linkWrap);
             tip.appendChild(row);
         });
@@ -299,6 +322,7 @@
             document.documentElement.lang ||
             'en-US';
         var minStr = wrap.getAttribute('data-mini-cal-min') || formatYMD(new Date());
+        var allowEmpty = wrap.getAttribute('data-mini-cal-allow-empty') === '1';
 
         if (!inputEl || !gridEl) return;
 
@@ -320,7 +344,12 @@
             return { y: d.getFullYear(), mo: d.getMonth() + 1 };
         }
 
-        var view = viewFrom(selected || minStr);
+        function defaultViewAnchor() {
+            if (selected) return selected;
+            return allowEmpty ? formatYMD(new Date()) : minStr;
+        }
+
+        var view = viewFrom(defaultViewAnchor());
 
         function renderHeading() {
             if (!heading) return;
@@ -458,8 +487,29 @@
             paint();
         });
 
+        var clearBtn = wrap.querySelector('[data-mini-cal-clear]');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                if (!allowEmpty) return;
+                tipHideImmediate();
+                selected = '';
+                inputEl.value = '';
+                wrap.setAttribute('data-mini-cal-selected', '');
+                view = viewFrom(allowEmpty ? formatYMD(new Date()) : minStr);
+                triggerChange(inputEl);
+                paint();
+            });
+        }
+
         inputEl.addEventListener('change', function () {
             var v = (inputEl.value || '').trim();
+            if (allowEmpty && !v) {
+                selected = '';
+                wrap.setAttribute('data-mini-cal-selected', '');
+                view = viewFrom(allowEmpty ? formatYMD(new Date()) : minStr);
+                paint();
+                return;
+            }
             if (!v || cmpYMD(v, minStr) < 0) return;
             selected = v;
             wrap.setAttribute('data-mini-cal-selected', selected);

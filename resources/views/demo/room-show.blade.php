@@ -16,8 +16,7 @@
     />
 
     <header class="max-w-4xl">
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Room details</div>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room['name'] }}</h1>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room['name'] }}</h1>
         @if (! empty($room['location']))
             <p class="mt-2 text-sm text-gray-600">{{ $room['location'] }}</p>
         @endif
@@ -45,7 +44,7 @@
                     @if (! empty($room['image_url']))
                         <img src="{{ $room['image_url'] }}" alt="{{ $room['name'] }}" class="h-full w-full object-cover" loading="eager">
                     @else
-                        <div class="flex h-full min-h-[12rem] w-full items-center justify-center bg-gradient-to-br from-slate-100 to-indigo-50 text-sm text-gray-500">
+                        <div class="flex h-full min-h-[12rem] w-full items-center justify-center bg-gradient-to-br from-slate-100 to-teal-50 text-sm text-gray-500">
                             No photo for this room
                         </div>
                     @endif
@@ -92,7 +91,7 @@
                                 input-id="availability_date"
                                 name="date"
                             />
-                            <button type="submit" class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
+                            <button type="submit" class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700">
                                 <x-lucide name="calendar-search" class="h-4 w-4 shrink-0 opacity-90" />
                                 Check availability
                             </button>
@@ -134,7 +133,7 @@
                             </div>
                         @endif
                     </div>
-                    <a href="{{ route('demo.reservations.my', ['room_id' => $room['id'], 'date' => $selectedDate]) }}" class="reservo-loading-link inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
+                    <a href="{{ route('demo.reservations.my', ['room_id' => $room['id'], 'date' => $selectedDate]) }}" class="reservo-loading-link inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700">
                         <x-lucide name="calendar-check" class="h-4 w-4 shrink-0 opacity-90" />
                         Book this room
                     </a>

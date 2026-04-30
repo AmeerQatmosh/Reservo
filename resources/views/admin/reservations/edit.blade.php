@@ -15,14 +15,13 @@
         class="mb-4"
         :items="[
             ['label' => 'Dashboard', 'url' => route('dashboard')],
-            ['label' => 'Admin · Reservations', 'url' => route('admin.reservations.index')],
+            ['label' => 'Admin'],
+            ['label' => 'Reservations', 'url' => route('admin.reservations.index')],
             ['label' => 'Edit reservation'],
         ]"
     />
     <div>
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Admin</div>
-        <h1 class="mt-2 text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
-        <p class="mt-2 text-sm text-gray-600">Update this reservation while keeping the same validation and conflict rules.</p>
+        <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Edit Reservation</h1>
     </div>
 
     <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:items-start">
@@ -132,7 +131,7 @@
 
                 <p id="adminEditReservationEstimate" class="hidden rounded-lg border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-sm text-emerald-950" role="status"></p>
 
-                <button type="submit" class="w-full rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50" id="adminEditReservationSubmit">
+                <button type="submit" class="w-full rounded-2xl bg-teal-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50" id="adminEditReservationSubmit">
                     Save changes
                 </button>
             </form>

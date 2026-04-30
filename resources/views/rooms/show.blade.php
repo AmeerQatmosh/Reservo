@@ -17,8 +17,7 @@
 
     {{-- Full-width heading above the split so calendar aligns with photo (not title) --}}
     <header class="max-w-4xl">
-        <div class="text-sm font-medium uppercase tracking-[0.2em] text-gray-500">Room details</div>
-        <h1 class="mt-2 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room->name }}</h1>
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">{{ $room->name }}</h1>
         @if ($room->location)
             <p class="mt-2 text-sm text-gray-600">{{ $room->location }}</p>
         @endif
@@ -93,7 +92,7 @@
                                 input-id="availability_date"
                                 name="date"
                             />
-                            <button type="submit" class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-gray-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
+                            <button type="submit" class="inline-flex w-full shrink-0 items-center justify-center gap-2 rounded-2xl bg-teal-600 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700">
                                 <x-lucide name="calendar-search" class="h-4 w-4 shrink-0 opacity-90" />
                                 Check Availability
                             </button>
@@ -136,7 +135,7 @@
                                 </div>
                             @endif
                         </div>
-                        <a href="{{ route('reservations.my', ['room_id' => $room->id, 'date' => $selectedDate]) }}" class="reservo-loading-link inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800">
+                        <a href="{{ route('reservations.my', ['room_id' => $room->id, 'date' => $selectedDate]) }}" class="reservo-loading-link inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-teal-700">
                             <x-lucide name="calendar-check" class="h-4 w-4 shrink-0 opacity-90" />
                             Book this Room
                         </a>

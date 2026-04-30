@@ -78,17 +78,32 @@
                                     <ul class="mt-2 flex min-h-0 flex-1 flex-col gap-1.5">
                                         @foreach ($dayRows->take($showLimit) as $row)
                                             <li class="min-w-0">
-                                                <a
-                                                    href="{{ $row['href'] }}"
-                                                    class="group block rounded-xl border border-slate-200/90 bg-gradient-to-br from-white to-slate-50/90 px-2.5 py-2 text-xs shadow-[0_1px_2px_rgba(15,23,42,0.05)] transition hover:border-emerald-300/70 hover:shadow-md hover:shadow-emerald-900/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45"
-                                                >
-                                                    <span class="block tabular-nums text-[0.78rem] font-semibold text-slate-800 group-hover:text-emerald-900">
-                                                        {{ $row['start'] }}–{{ $row['end'] }}
-                                                    </span>
-                                                    <span class="mt-0.5 line-clamp-2 block text-[0.68rem] font-medium leading-snug text-slate-500 group-hover:text-slate-700">
-                                                        {{ $row['room_name'] }}
-                                                    </span>
-                                                </a>
+                                                @if (! empty($row['href']))
+                                                    <a
+                                                        href="{{ $row['href'] }}"
+                                                        class="group block rounded-xl border border-slate-200/90 bg-gradient-to-br from-white to-slate-50/90 px-2.5 py-2 text-xs shadow-[0_1px_2px_rgba(15,23,42,0.05)] transition hover:border-emerald-300/70 hover:shadow-md hover:shadow-emerald-900/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/45"
+                                                    >
+                                                        <span class="block tabular-nums text-[0.78rem] font-semibold text-slate-800 group-hover:text-emerald-900">
+                                                            {{ $row['start'] }}–{{ $row['end'] }}
+                                                        </span>
+                                                        <span class="mt-0.5 line-clamp-2 block text-[0.68rem] font-medium leading-snug text-slate-500 group-hover:text-slate-700">
+                                                            {{ $row['room_name'] }}
+                                                        </span>
+                                                    </a>
+                                                @else
+                                                    <div
+                                                        class="block rounded-xl border border-slate-200/60 bg-slate-50/90 px-2.5 py-2 text-xs text-slate-600"
+                                                        role="group"
+                                                        aria-label="{{ __('Past booking (read-only)') }}"
+                                                    >
+                                                        <span class="block tabular-nums text-[0.78rem] font-semibold text-slate-700">
+                                                            {{ $row['start'] }}–{{ $row['end'] }}
+                                                        </span>
+                                                        <span class="mt-0.5 line-clamp-2 block text-[0.68rem] font-medium leading-snug text-slate-500">
+                                                            {{ $row['room_name'] }}
+                                                        </span>
+                                                    </div>
+                                                @endif
                                             </li>
                                         @endforeach
                                         @if ($dayRows->count() > $showLimit)

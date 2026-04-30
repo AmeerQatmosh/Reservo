@@ -53,6 +53,9 @@ class Room extends Model
     }
 
     /**
+     * Parse amenities from a comma- or line-separated textarea. Comma is the primary delimiter;
+     * newlines are also treated as separators so older "one per line" values still round-trip.
+     *
      * @return list<string>|null
      */
     public static function parseAmenitiesText(?string $raw): ?array
@@ -61,7 +64,12 @@ class Room extends Model
             return null;
         }
 
-        $lines = collect(preg_split('/\r\n|\r|\n/', $raw))
+        $parts = preg_split('/\s*[\n,]+\s*/', trim($raw), -1, PREG_SPLIT_NO_EMPTY);
+        if ($parts === false) {
+            return null;
+        }
+
+        $lines = collect($parts)
             ->map(fn ($line) => trim((string) $line))
             ->filter()
             ->take(30)
