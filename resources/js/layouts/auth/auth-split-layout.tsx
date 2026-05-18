@@ -40,7 +40,7 @@ export default function AuthSplitLayout({
             {/* Left: form card */}
             <div className="flex flex-col justify-center px-4 py-10 sm:px-6 sm:py-12 lg:px-10 lg:py-14 xl:px-12">
                 <div className="mx-auto w-full max-w-md">
-                    <div className="rounded-2xl border border-white/80 bg-white/95 p-7 shadow-[0_24px_64px_-28px_rgba(15,23,42,0.22)] ring-1 ring-gray-900/[0.04] backdrop-blur-md sm:p-9">
+                    <div className="rounded-2xl border border-gray-200/80 bg-white p-7 shadow-[0_24px_64px_-28px_rgba(15,23,42,0.22)] ring-1 ring-gray-900/[0.04] sm:p-9">
                         <div className="mb-8 flex flex-col gap-6">
                             <Link
                                 href={home()}
@@ -68,17 +68,17 @@ export default function AuthSplitLayout({
             </div>
 
             {/* Right: welcome / brand (desktop) */}
-            <aside className="relative hidden flex-col justify-between overflow-hidden border-l border-white/60 bg-white/40 p-10 backdrop-blur-[2px] lg:flex xl:p-14">
+            <aside className="relative hidden flex-col justify-between overflow-hidden border-l border-gray-200/70 bg-[#eef2ff]/80 p-10 lg:flex xl:p-14">
                 <div
                     className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(99,102,241,0.12),transparent_42%),radial-gradient(circle_at_88%_72%,rgba(14,165,233,0.08),transparent_38%),linear-gradient(165deg,rgba(248,250,252,0.95)_0%,rgba(238,242,255,0.85)_48%,rgba(248,250,252,0.98)_100%)]"
                     aria-hidden
                 />
                 <div
-                    className="pointer-events-none absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-indigo-400/15 blur-3xl"
+                    className="pointer-events-none absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-indigo-400/16"
                     aria-hidden
                 />
                 <div
-                    className="pointer-events-none absolute -left-16 bottom-1/4 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl"
+                    className="pointer-events-none absolute -left-16 bottom-1/4 h-64 w-64 rounded-full bg-sky-400/12"
                     aria-hidden
                 />
 

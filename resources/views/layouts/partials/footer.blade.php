@@ -7,7 +7,7 @@
     }
 @endphp
 
-<footer class="mt-auto border-t border-slate-200/80 bg-white/60 py-10 text-slate-600 backdrop-blur-sm supports-[backdrop-filter]:bg-white/50" aria-label="Site footer">
+<footer class="mt-auto border-t border-slate-200/80 bg-white/90 py-10 text-slate-600" aria-label="Site footer">
     <div class="mx-auto max-w-[min(100%,85rem)] px-2.5 sm:px-3.5 lg:px-6">
         <div class="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
             <a

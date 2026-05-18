@@ -184,7 +184,7 @@
                             @csrf
                             <button
                                 type="submit"
-                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-gray-600 shadow-sm ring-1 ring-gray-200/90 backdrop-blur-sm transition hover:bg-yellow-50 hover:text-yellow-600 hover:ring-yellow-200 {{ $isFavorited ? '!text-yellow-400 !ring-yellow-200 hover:!text-yellow-400' : '' }}"
+                                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-600 shadow-sm ring-1 ring-gray-200/90 transition hover:bg-yellow-50 hover:text-yellow-600 hover:ring-yellow-200 {{ $isFavorited ? '!text-yellow-400 !ring-yellow-200 hover:!text-yellow-400' : '' }}"
                                 title="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                 aria-label="{{ $isFavorited ? __('Remove from favourites') : __('Add to favourites') }}"
                                 aria-pressed="{{ $isFavorited ? 'true' : 'false' }}"
@@ -205,7 +205,7 @@
                     @else
                         <a
                             href="{{ route('login') }}"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-gray-600 shadow-sm ring-1 ring-gray-200/90 backdrop-blur-sm transition hover:bg-white hover:text-gray-900"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-600 shadow-sm ring-1 ring-gray-200/90 transition hover:bg-gray-50 hover:text-gray-900"
                             title="{{ __('Sign in to save favourites') }}"
                             aria-label="{{ __('Sign in to save favourites') }}"
                         >

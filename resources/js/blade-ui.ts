@@ -1,7 +1,16 @@
 /**
  * Blade layouts: Turbo Drive (in-app visits), navigation progress, form busy state.
+ * Firefox (Gecko): Turbo Drive navigations cost far more here than WebKit/Chromium; disable Drive so links/forms use full loads.
  */
-import '@hotwired/turbo';
+import { session as turboSession } from '@hotwired/turbo';
+
+if (
+    typeof navigator !== 'undefined' &&
+    /Firefox\//u.test(navigator.userAgent) &&
+    !/Seamonkey/iu.test(navigator.userAgent)
+) {
+    turboSession.drive = false;
+}
 
 const NAV_KEY = 'reservo_nav';
 
@@ -184,6 +193,96 @@ function restoreAllLoadingUi(): void {
             clearAnchorLoading(a);
         }
     });
+
+    syncReservoGlobalFormBusyClass();
+}
+
+/** Avoid `html:has(...)` — expensive style recalculation on Firefox while forms submit. */
+function syncReservoGlobalFormBusyClass(): void {
+    document.documentElement.classList.toggle(
+        'reservo-form-busy-active',
+        document.querySelector('form.reservo-form-busy') !== null,
+    );
+}
+
+/** Fortify/Inertia auth pages: full document load so Turbo does not stay active alongside Inertia.js. */
+function pathNeedsFullDocumentNavigation(pathname: string): boolean {
+    return (
+        pathname === '/login' ||
+        pathname === '/register' ||
+        pathname === '/forgot-password' ||
+        pathname === '/two-factor-challenge' ||
+        pathname.startsWith('/reset-password/') ||
+        pathname === '/email/verify' ||
+        pathname.startsWith('/email/verify/') ||
+        pathname === '/user/confirm-password' ||
+        pathname === '/user/confirmed-password-status'
+    );
+}
+
+/** When leaving Blade+Turbo pages, force normal navigation to auth routes (Inertia + Turbo conflict). */
+function bindTurboFortifyFullDocumentVisits(): void {
+    document.addEventListener('turbo:before-visit', (event: Event) => {
+        const detail = (event as CustomEvent<{ url?: string }>).detail;
+        const raw = detail?.url;
+
+        if (!raw) {
+            return;
+        }
+
+        let pathname: string;
+
+        try {
+            pathname = new URL(raw, window.location.origin).pathname;
+        } catch {
+            return;
+        }
+
+        if (!pathNeedsFullDocumentNavigation(pathname)) {
+            return;
+        }
+
+        event.preventDefault();
+        window.location.assign(raw);
+    });
+}
+
+function bindReservoAnchorLoadingLinks(): void {
+    document.addEventListener(
+        'click',
+        (e: MouseEvent) => {
+            if (e.button !== 0) {
+                return;
+            }
+
+            const t = (e.target as Element | null)?.closest?.('a.reservo-loading-link');
+
+            if (!(t instanceof HTMLAnchorElement)) {
+                return;
+            }
+
+            if (t.dataset.noLoading !== undefined) {
+                return;
+            }
+
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+                return;
+            }
+
+            if (t.target === '_blank') {
+                return;
+            }
+
+            const href = t.getAttribute('href');
+
+            if (!href || href === '#' || href.startsWith('#')) {
+                return;
+            }
+
+            applyAnchorLoading(t);
+        },
+        true,
+    );
 }
 
 function turboFetchLooksLikePrefetch(event: Event): boolean {
@@ -211,6 +310,8 @@ function turboFetchLooksLikePrefetch(event: Event): boolean {
 }
 
 function bindTurboNavigation(): void {
+    bindTurboFortifyFullDocumentVisits();
+
     document.addEventListener('turbo:before-fetch-request', (event: Event) => {
         if (turboFetchLooksLikePrefetch(event)) {
             return;
@@ -280,6 +381,7 @@ function bindFormBusy(): void {
 
             startNavProgress();
             form.classList.add('reservo-form-busy');
+            syncReservoGlobalFormBusyClass();
             form.querySelectorAll('button[type="submit"]').forEach((btn) => {
                 if (!(btn instanceof HTMLButtonElement)) {
                     return;
@@ -586,7 +688,9 @@ function bindReservoFormSelect(root: HTMLElement): void {
         if (!isRoomField) {
             return;
         }
+
         const raw = btn?.dataset.hourlyRate;
+
         if (raw === undefined || raw === '') {
             hidden.removeAttribute('data-hourly-rate');
         } else {
@@ -596,20 +700,26 @@ function bindReservoFormSelect(root: HTMLElement): void {
 
     const syncLabelFromValue = (): void => {
         const v = hidden.value;
+
         if (!v) {
             labelEl.textContent = placeholder;
+
             if (isRoomField) {
                 hidden.removeAttribute('data-hourly-rate');
             }
+
             return;
         }
+
         let matched: HTMLButtonElement | null = null;
+
         for (const b of panel.querySelectorAll<HTMLButtonElement>(RESERVO_FORM_SELECT_OPT)) {
             if ((b.dataset.value ?? '') === v) {
                 matched = b;
                 break;
             }
         }
+
         if (matched) {
             labelEl.textContent = (matched.textContent ?? '').trim();
             syncHourlyFromButton(matched);
@@ -799,11 +909,13 @@ function sidebarNavTooltipShouldShow(target: HTMLElement): boolean {
 
 function formatHourlyRateLabel(raw: string): string | null {
     const t = raw.trim();
+
     if (!t) {
         return null;
     }
 
     const n = Number.parseFloat(t.replace(',', '.'));
+
     if (!Number.isFinite(n) || n < 0) {
         return null;
     }
@@ -869,9 +981,11 @@ function bindAdminRoomFormPreview(): void {
 
     const syncImage = (url: string): void => {
         const u = url.trim();
+
         if (!u) {
             lastImgUrl = '';
             showPlaceholder();
+
             return;
         }
 
@@ -901,6 +1015,7 @@ function bindAdminRoomFormPreview(): void {
         const span = document.createElement('span');
         span.className = classes;
         span.textContent = text;
+
         return span;
     };
 
@@ -909,6 +1024,7 @@ function bindAdminRoomFormPreview(): void {
         nameEl.textContent = name || defaultName;
 
         const loc = locIn?.value.trim() ?? '';
+
         if (loc) {
             locEl.textContent = loc;
             locEl.classList.remove('hidden');
@@ -919,6 +1035,7 @@ function bindAdminRoomFormPreview(): void {
 
         const capRaw = capIn?.value ?? '1';
         let cap = Number.parseInt(capRaw, 10);
+
         if (!Number.isFinite(cap) || cap < 1) {
             cap = 1;
         }
@@ -935,6 +1052,7 @@ function bindAdminRoomFormPreview(): void {
 
         const sizeRaw = sizeIn?.value.trim() ?? '';
         const sizeNum = sizeRaw === '' ? Number.NaN : Number.parseInt(sizeRaw, 10);
+
         if (sizeRaw !== '' && Number.isFinite(sizeNum) && sizeNum > 0) {
             metaEl.appendChild(
                 makePill(
@@ -945,6 +1063,7 @@ function bindAdminRoomFormPreview(): void {
         }
 
         const hrLabel = hourlyIn ? formatHourlyRateLabel(hourlyIn.value) : null;
+
         if (hrLabel) {
             metaEl.appendChild(
                 makePill(
@@ -956,9 +1075,11 @@ function bindAdminRoomFormPreview(): void {
 
         const amenities = amenIn ? parseAmenityLines(amenIn.value) : [];
         amenEl.textContent = '';
+
         if (amenities.length > 0) {
             amenEl.classList.remove('hidden');
             const show = amenities.slice(0, 3);
+
             for (const a of show) {
                 amenEl.appendChild(
                     makePill(
@@ -967,6 +1088,7 @@ function bindAdminRoomFormPreview(): void {
                     ),
                 );
             }
+
             if (amenities.length > 3) {
                 amenEl.appendChild(
                     makePill(
@@ -980,6 +1102,7 @@ function bindAdminRoomFormPreview(): void {
         }
 
         const desc = descIn?.value.trim() ?? '';
+
         if (desc) {
             descEl.textContent = desc;
             descEl.classList.remove('hidden');
@@ -1024,6 +1147,7 @@ function bindAdminSidebarNavTooltips(): void {
     const showAtTarget = (target: HTMLElement, text: string): void => {
         if (!sidebarNavTooltipShouldShow(target)) {
             hideSidebarNavTooltip();
+
             return;
         }
 
@@ -1137,6 +1261,7 @@ function bindAdminSidebarAccountPopovers(): void {
         details.addEventListener('toggle', () => {
             if (!details.open) {
                 clearAdminSidebarAccountPanelPosition(panel);
+
                 return;
             }
 
@@ -1275,6 +1400,7 @@ function bindReservoMobileMenu(): void {
 }
 
 function boot(): void {
+    bindReservoAnchorLoadingLinks();
     bindTurboNavigation();
     bindNavigationProgress();
     bindFormBusy();

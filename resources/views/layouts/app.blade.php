@@ -4,6 +4,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="turbo-prefetch" content="false">
+        <script>
+            (function () {
+                try {
+                    var ua = navigator.userAgent || '';
+                    if (/Firefox\//.test(ua) && !/Seamonkey/i.test(ua)) {
+                        document.documentElement.setAttribute('data-turbo', 'false');
+                    }
+                } catch (e) {}
+            })();
+        </script>
 
         @hasSection('title')
             <title>{{ config('app.name') }} - @yield('title')</title>
@@ -17,6 +27,10 @@
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap"
+            rel="stylesheet"
+        />
 
         {{-- Before paint on navigated pages: same key as blade-ui startNavProgress() --}}
         <script>
@@ -84,7 +98,7 @@
             'lg:hidden' => $adminVerticalNav,
         ])>
             <div
-                class="pointer-events-none absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85"
+                class="pointer-events-none absolute inset-0 -z-10 bg-white/95"
                 aria-hidden="true"
             ></div>
             <div class="relative mx-auto max-w-[min(100%,85rem)] px-2.5 sm:px-3.5 lg:px-6 py-3 sm:py-3.5">
@@ -144,7 +158,7 @@
 
                         <details class="reservo-details reservo-mobile-menu group relative shrink-0 overflow-visible lg:hidden">
                         <summary
-                            class="relative flex h-11 w-11 min-h-[2.75rem] min-w-[2.75rem] cursor-pointer list-none select-none items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 text-slate-800 shadow-sm ring-1 ring-slate-900/[0.04] backdrop-blur-sm transition [touch-action:manipulation] outline-none supports-[backdrop-filter]:bg-white/80 hover:border-slate-300/90 hover:bg-white focus-visible:ring-2 focus-visible:ring-slate-400/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8fafc] active:scale-[0.97] [&::-webkit-details-marker]:hidden"
+                            class="relative flex h-11 w-11 min-h-[2.75rem] min-w-[2.75rem] cursor-pointer list-none select-none items-center justify-center overflow-hidden rounded-2xl border border-slate-200/90 bg-white text-slate-800 shadow-sm ring-1 ring-slate-900/[0.04] transition [touch-action:manipulation] outline-none hover:border-slate-300/90 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-slate-400/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f8fafc] active:scale-[0.97] [&::-webkit-details-marker]:hidden"
                             aria-label="Open menu"
                             aria-controls="reservo-mobile-menu-panel"
                         >

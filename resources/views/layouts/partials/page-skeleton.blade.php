@@ -13,7 +13,7 @@
     <header class="sticky top-0 z-40 shrink-0 shadow-[0_1px_0_rgba(15,23,42,0.06)]">
         <nav class="relative z-30 overflow-visible border-b border-gray-200">
             <div
-                class="pointer-events-none absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/85"
+                class="pointer-events-none absolute inset-0 -z-10 bg-white/95"
                 aria-hidden="true"
             ></div>
             <div class="relative mx-auto max-w-[min(100%,85rem)] px-2.5 py-3 sm:px-3.5 sm:py-3.5 lg:px-6">

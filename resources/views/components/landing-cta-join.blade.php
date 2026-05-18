@@ -3,8 +3,8 @@
     data-reservo-reveal
     aria-labelledby="reservo-landing-join-heading"
 >
-    <div class="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl"></div>
-    <div class="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-cyan-400/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-full bg-indigo-500/[0.14]"></div>
+    <div class="pointer-events-none absolute -bottom-14 -left-14 h-52 w-52 rounded-full bg-cyan-400/[0.09]"></div>
     <div class="relative">
         <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-indigo-200/75">Your account</p>
         <h2 id="reservo-landing-join-heading" class="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">

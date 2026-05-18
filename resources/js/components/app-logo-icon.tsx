@@ -1,5 +1,6 @@
-import { cn } from '@/lib/utils';
 import type { ImgHTMLAttributes } from 'react';
+
+import { cn } from '@/lib/utils';
 
 /**
  * Full-color mark (#101828) — use on light backgrounds only.
