@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap');
-
 @import 'tailwindcss';
 
 @import 'tw-animate-css';
@@ -149,11 +147,6 @@
     }
 
     body {
-        @apply min-h-dvh;
-    }
-
-    /* Inertia root template only — Blade layouts use their own body background/text */
-    body:has(#app) {
         @apply min-h-dvh;
     }
 
@@ -323,8 +316,7 @@
 
     .reservo-shell [data-sidebar='sidebar'] {
         border-right: 1px solid rgb(255 255 255 / 0.55);
-        background-color: rgb(255 255 255 / 0.85);
-        backdrop-filter: blur(20px);
+        background-color: rgb(255 255 255 / 0.96);
     }
 
     .reservo-shell [data-slot='sidebar-inset'] {
@@ -332,7 +324,7 @@
     }
 
     .reservo-shell-header {
-        @apply border-b border-white/60 bg-white/40 backdrop-blur-md;
+        @apply border-b border-white/60 bg-white/92;
     }
 
     .app-field {
@@ -461,32 +453,21 @@
             #6366f1,
             #4f46e5
         );
-        background-size: 200% 100%;
+        background-size: 100% 100%;
     }
 
+    /* Static bar: infinite background-position animation hurt Firefox compositor during navigations. */
     #reservo-progress[data-state='pending'] {
         transform: scaleX(1);
         opacity: 1;
-        animation: reservo-progress-shimmer 1s linear infinite;
     }
 
     #reservo-progress[data-state='finishing'] {
         transform: scaleX(1);
         opacity: 1;
-        animation: none;
     }
 
-    @keyframes reservo-progress-shimmer {
-        0% {
-            background-position: 200% 0;
-        }
-
-        100% {
-            background-position: -200% 0;
-        }
-    }
-
-    html:has(form.reservo-form-busy) {
+    html.reservo-form-busy-active {
         cursor: wait;
     }
 

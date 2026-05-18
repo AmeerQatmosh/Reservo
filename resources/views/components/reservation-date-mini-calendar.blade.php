@@ -175,7 +175,7 @@
             var d = document.createElement('div');
             d.setAttribute('role', 'tooltip');
             d.className =
-                'mini-cal-tip fixed z-[110] hidden w-[min(18.5rem,calc(100vw-1.75rem))] overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 p-3.5 text-[0.8125rem] leading-snug text-slate-800 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.18)] ring-1 ring-slate-950/[0.06] backdrop-blur-sm';
+                'mini-cal-tip fixed z-[110] hidden w-[min(18.5rem,calc(100vw-1.75rem))] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-3.5 text-[0.8125rem] leading-snug text-slate-800 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.18)] ring-1 ring-slate-950/[0.06]';
             d.addEventListener('mouseenter', function () {
                 tipCancelHide();
             });

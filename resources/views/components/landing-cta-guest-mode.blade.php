@@ -8,8 +8,8 @@
         data-reservo-reveal
         aria-labelledby="reservo-landing-guest-mode-heading"
     >
-        <div class="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-amber-400/15 blur-3xl"></div>
-        <div class="pointer-events-none absolute -bottom-12 -left-10 h-40 w-40 rounded-full bg-orange-500/10 blur-3xl"></div>
+        <div class="pointer-events-none absolute -right-14 -top-16 h-56 w-56 rounded-full bg-amber-400/[0.12]"></div>
+        <div class="pointer-events-none absolute -bottom-10 -left-8 h-44 w-44 rounded-full bg-orange-500/[0.08]"></div>
         <div class="relative">
             <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-200/80">Guest sandbox</p>
             <h2 id="reservo-landing-guest-mode-heading" class="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">

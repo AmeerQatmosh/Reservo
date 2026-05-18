@@ -91,13 +91,14 @@
         data-reservo-reveal="eager"
     >
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_0%_0%,rgba(255,255,255,0.07),transparent_55%)]"></div>
-        <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/22 blur-3xl"></div>
-        <div class="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-cyan-400/14 blur-3xl"></div>
-        <div class="pointer-events-none absolute right-1/4 top-1/2 h-40 w-40 -translate-y-1/2 rounded-full bg-violet-500/10 blur-2xl"></div>
+        {{-- Soft halos without filter:blur — Firefox GPU cost on large filtered layers --}}
+        <div class="pointer-events-none absolute -right-20 -top-16 h-80 w-80 rounded-full bg-indigo-500/[0.12]"></div>
+        <div class="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-cyan-400/[0.08]"></div>
+        <div class="pointer-events-none absolute right-1/4 top-1/2 h-48 w-48 -translate-y-1/2 rounded-full bg-violet-500/[0.07]"></div>
 
         <div class="reservo-landing-hero-grid relative grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-12 xl:gap-16">
             <div class="reservo-landing-hero-col relative max-w-xl">
-                <div class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.07] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-100/95 shadow-sm shadow-slate-950/20 backdrop-blur-sm">
+                <div class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.09] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-100/95 shadow-sm shadow-slate-950/20">
                     <x-lucide name="building-2" class="h-3.5 w-3.5 text-cyan-200/90" />
                     Room &amp; space reservations
                 </div>
@@ -126,18 +127,18 @@
                         Browse rooms
                     </a>
                     @guest
-                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/12 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/18">
                             Create an account
                         </a>
                     @else
-                        <a href="{{ route('reservations.my') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10">
+                        <a href="{{ route('reservations.my') }}" class="inline-flex items-center justify-center rounded-2xl border border-white/30 bg-white/12 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/18">
                             My reservations
                         </a>
                     @endguest
                     @if (! empty($demoEnabled))
                         <a
                             href="{{ route('demo.index') }}"
-                            class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/15 px-6 py-3.5 text-sm font-semibold text-amber-50 backdrop-blur transition hover:bg-amber-400/25"
+                            class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/22 px-6 py-3.5 text-sm font-semibold text-amber-50 transition hover:bg-amber-400/30"
                         >
                             Guest Mode (Demo)
                         </a>
@@ -147,9 +148,9 @@
 
             {{-- Interactive schedule board: drag bookings; overlaps mirror Reservo’s interval rule --}}
             <div class="reservo-landing-hero-col relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
-                <div class="absolute -inset-px rounded-[1.15rem] bg-gradient-to-br from-indigo-400/25 via-cyan-400/12 to-transparent opacity-90 blur-xl sm:rounded-3xl"></div>
+                <div class="absolute -inset-px rounded-[1.15rem] bg-gradient-to-br from-indigo-400/35 via-cyan-400/14 to-transparent opacity-80 sm:rounded-3xl"></div>
                 <div
-                    class="relative overflow-hidden rounded-[1.15rem] border border-white/18 bg-gradient-to-b from-white/[0.12] to-white/[0.05] p-5 shadow-[0_24px_48px_-12px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:rounded-3xl sm:p-6"
+                    class="relative overflow-hidden rounded-[1.15rem] border border-white/22 bg-gradient-to-b from-white/[0.16] to-white/[0.08] p-5 shadow-[0_24px_48px_-12px_rgba(15,23,42,0.55)] sm:rounded-3xl sm:p-6"
                     data-reservo-schedule-demo
                     role="region"
                     aria-label="Interactive demo: drag booking blocks. Overlapping times highlight in red, like blocked saves in the app."
@@ -417,8 +418,8 @@
         data-reservo-reveal
         aria-labelledby="reservo-how-it-works-heading"
     >
-        <div class="pointer-events-none absolute -right-16 top-0 h-48 w-48 rounded-full bg-indigo-400/10 blur-3xl"></div>
-        <div class="pointer-events-none absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl"></div>
+        <div class="pointer-events-none absolute -right-16 top-0 h-52 w-52 rounded-full bg-indigo-400/[0.09]"></div>
+        <div class="pointer-events-none absolute -left-12 bottom-0 h-44 w-44 rounded-full bg-cyan-400/[0.08]"></div>
         <div class="relative text-center">
             <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">How it works</p>
             <h2 id="reservo-how-it-works-heading" class="mt-3 text-xl font-semibold tracking-tight text-slate-900 sm:text-2xl md:text-[1.65rem] md:leading-tight">
@@ -441,7 +442,7 @@
 
             <div class="grid gap-10 sm:gap-8 lg:grid-cols-3 lg:gap-6">
                 <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/70 p-6 text-center shadow-sm shadow-indigo-950/5 backdrop-blur-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
+                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
                 >
                     <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30 lg:mx-0">
                         <x-lucide name="layout-grid" class="h-6 w-6 opacity-95" />
@@ -457,7 +458,7 @@
                 </div>
 
                 <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/70 p-6 text-center shadow-sm shadow-indigo-950/5 backdrop-blur-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
+                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
                 >
                     <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 lg:mx-0">
                         <x-lucide name="calendar-plus" class="h-6 w-6 opacity-95" />
@@ -473,7 +474,7 @@
                 </div>
 
                 <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/70 p-6 text-center shadow-sm shadow-indigo-950/5 backdrop-blur-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
+                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
                 >
                     <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-700/25 lg:mx-0">
                         <x-lucide name="calendar-check" class="h-6 w-6 opacity-95" />

@@ -17,7 +17,7 @@
     $pillOn = $pill.' border border-amber-900 bg-amber-900 text-white shadow-sm';
 @endphp
 
-<div class="relative z-10 border-b border-amber-200/60 bg-amber-50/90 backdrop-blur-sm">
+<div class="relative z-10 border-b border-amber-200/60 bg-amber-50/95">
     <div class="mx-auto max-w-[min(100%,85rem)] px-2.5 py-2.5 sm:px-3.5 lg:px-6 lg:py-2">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-3">
             {{-- Mobile: Demo + Exit on one row; desktop: badge only in this cell --}}
