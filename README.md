@@ -1,6 +1,6 @@
 # Reservo
 
-Lightweight **room reservation** system built with **Laravel**. Users browse spaces, book time slots with **overlap protection**; admins manage rooms and reservations; super admins can assign admin access.
+**Reservo** is a MVP Lightweight **room reservation** system built with **Laravel**. Users browse spaces, book time slots with **overlap protection**; admins manage rooms and reservations; super admins can assign admin access.
 
 ## Quick start (local)
 
