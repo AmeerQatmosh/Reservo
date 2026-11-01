@@ -34,7 +34,7 @@
             </button>
         </form> -->
     @endif
-@else
+@elseif (! config('reservo.portfolio_mode'))
     @if ($isMobile)
         <div class="flex flex-col gap-2">
             <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? $mOn : $mOff }}">

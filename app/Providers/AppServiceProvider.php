@@ -18,7 +18,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if (! config('reservo.portfolio_mode')) {
+            return;
+        }
+
+        $this->app['config']->set([
+            'session.driver' => 'file',
+            'cache.default' => 'file',
+            'queue.default' => 'sync',
+            'reservo.demo_enabled' => false,
+        ]);
     }
 
     /**
