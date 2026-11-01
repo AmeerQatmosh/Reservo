@@ -35,12 +35,15 @@
                         <p class="{{ $fh }}">Explore</p>
                         <ul class="mt-3 space-y-2.5" role="list">
                             <li><a href="{{ route('home') }}" class="{{ $f }}">Home</a></li>
+                            @unless (config('reservo.portfolio_mode'))
                             <li><a href="{{ route('rooms.index') }}" class="{{ $f }}">Rooms</a></li>
-                            @if (config('reservo.demo_enabled'))
+                            @endunless
+                            @if (config('reservo.demo_enabled') && ! config('reservo.portfolio_mode'))
                                 <li><a href="{{ route('demo.index') }}" class="text-sm font-medium text-amber-800 transition hover:text-amber-950">Guest Mode</a></li>
                             @endif
                         </ul>
                     </div>
+                    @unless (config('reservo.portfolio_mode'))
                     <div class="min-w-0">
                         <p class="{{ $fh }}">Account</p>
                         <ul class="mt-3 space-y-2.5" role="list">
@@ -48,6 +51,7 @@
                             <li><a href="{{ route('register') }}" class="{{ $f }} font-medium text-slate-800">Register</a></li>
                         </ul>
                     </div>
+                    @endunless
                 @else
                     <div class="min-w-0">
                         <p class="{{ $fh }}">App</p>

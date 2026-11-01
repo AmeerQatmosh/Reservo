@@ -15,3 +15,14 @@ test('authenticated users are redirected away from the landing page', function (
 
     $response->assertRedirect(route('dashboard', absolute: false));
 });
+
+test('portfolio mode serves the landing page without auth or rooms', function () {
+    config(['reservo.portfolio_mode' => true]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertDontSee('Create an account', false)
+        ->assertDontSee('Join Reservo', false);
+
+    $this->get(route('rooms.index'))->assertRedirect(route('home', absolute: false));
+});

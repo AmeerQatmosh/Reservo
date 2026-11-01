@@ -10,8 +10,12 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if (config('reservo.portfolio_mode')) {
+            return redirect()->route('home');
+        }
+
         $query = Room::query();
         $filters = RoomListing::applyRequestFilters($query, $request);
         $filterOptions = RoomListing::filterOptions();
@@ -40,8 +44,12 @@ class RoomController extends Controller
         ]);
     }
 
-    public function show(int $id): View
+    public function show(int $id): View|RedirectResponse
     {
+        if (config('reservo.portfolio_mode')) {
+            return redirect()->route('home');
+        }
+
         $room = Room::query()->findOrFail($id);
 
         $selectedDate = request('date') ?: now()->toDateString();

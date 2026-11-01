@@ -122,6 +122,7 @@
                     </li>
                 </ul>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                    @unless (config('reservo.portfolio_mode'))
                     <a href="{{ route('rooms.index') }}" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-slate-900 shadow-lg transition hover:bg-slate-100">
                         <x-lucide name="search" class="h-4 w-4" />
                         Browse rooms
@@ -135,6 +136,7 @@
                             My reservations
                         </a>
                     @endguest
+                    @endunless
                     @if (! empty($demoEnabled))
                         <a
                             href="{{ route('demo.index') }}"
@@ -586,7 +588,9 @@
 
     <div class="mt-14 flex flex-col gap-6 sm:mt-16 sm:gap-7">
         <x-landing-cta-guest-mode :enabled="! empty($demoEnabled)" />
-        <x-landing-cta-join />
+        @unless (config('reservo.portfolio_mode'))
+            <x-landing-cta-join />
+        @endunless
     </div>
 
     <p class="mt-12 text-center text-xs leading-relaxed text-gray-500" data-reservo-reveal>

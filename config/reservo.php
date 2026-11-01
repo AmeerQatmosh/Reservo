@@ -20,6 +20,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Portfolio static landing (no database)
+    |--------------------------------------------------------------------------
+    |
+    | When true, the public site is landing-only: no room queries, no login
+    | or register. Session/cache/queue are forced onto the filesystem so the
+    | page still boots after RDS (or any DB) is removed.
+    |
+    */
+    'portfolio_mode' => filter_var(env('RESERVO_PORTFOLIO_MODE', false), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+    |--------------------------------------------------------------------------
     | Booking day window
     |--------------------------------------------------------------------------
     |

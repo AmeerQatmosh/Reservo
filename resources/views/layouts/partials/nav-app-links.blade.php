@@ -57,6 +57,7 @@
             @endif
         </a>
     @endguest
+    @unless (config('reservo.portfolio_mode'))
     <a
         href="{{ route('rooms.index') }}"
         title="{{ __('Rooms') }}"
@@ -70,6 +71,7 @@
             Rooms
         @endif
     </a>
+    @endunless
     @guest
         @if (config('reservo.demo_enabled'))
             <a
@@ -163,10 +165,12 @@
         </a>
     @endguest
 
+    @unless (config('reservo.portfolio_mode'))
     <a href="{{ route('rooms.index') }}" class="{{ $linkClass }} {{ request()->routeIs('rooms.index', 'rooms.show') ? $navActiveClass : $navInactiveClass }}">
         <x-lucide name="door-open" :class="$iconDesktop" />
         Rooms
     </a>
+    @endunless
 
     @guest
         @if (config('reservo.demo_enabled'))
