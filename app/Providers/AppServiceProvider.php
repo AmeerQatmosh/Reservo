@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app['config']->set([
-            'session.driver' => 'file',
-            'cache.default' => 'file',
+            'session.driver' => 'cookie',
+            'cache.default' => 'array',
             'queue.default' => 'sync',
             'reservo.demo_enabled' => false,
         ]);
@@ -49,9 +49,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Date::use(CarbonImmutable::class);
 
-        DB::prohibitDestructiveCommands(
-            app()->isProduction(),
-        );
+        if (! config('reservo.portfolio_mode')) {
+            DB::prohibitDestructiveCommands(
+                app()->isProduction(),
+            );
+        }
 
         Password::defaults(fn (): ?Password => app()->isProduction()
             ? Password::min(12)

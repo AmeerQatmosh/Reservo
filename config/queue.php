@@ -13,7 +13,9 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'database'),
+    'default' => filter_var(env('RESERVO_PORTFOLIO_MODE', false), FILTER_VALIDATE_BOOLEAN)
+        ? 'sync'
+        : env('QUEUE_CONNECTION', 'database'),
 
     /*
     |--------------------------------------------------------------------------

@@ -42,7 +42,7 @@
         </script>
 
         @auth
-            @if (auth()->user()->usesVerticalNav())
+            @if (! config('reservo.portfolio_mode') && auth()->user()->usesVerticalNav())
         <script>
             try {
                 if (localStorage.getItem('reservo_admin_sidebar_rail') === '1') {
@@ -65,14 +65,14 @@
 
         @vite(['resources/css/app.css', 'resources/js/blade-ui.ts'])
     </head>
-    <body class="flex min-h-dvh w-full max-w-none flex-col bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.04),transparent_32%),linear-gradient(to_bottom,#f8fafc,#eef2ff_42%,#f8fafc)] text-gray-900 antialiased [color-scheme:light] @auth @if (auth()->user()->usesVerticalNav()) lg:flex-row lg:items-start @endif @endauth">
+    <body class="flex min-h-dvh w-full max-w-none flex-col bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.04),transparent_32%),linear-gradient(to_bottom,#f8fafc,#eef2ff_42%,#f8fafc)] text-gray-900 antialiased [color-scheme:light] @auth @if (! config('reservo.portfolio_mode') && auth()->user()->usesVerticalNav()) lg:flex-row lg:items-start @endif @endauth">
         <div id="reservo-progress" data-state="idle" aria-hidden="true"></div>
         @include('layouts.partials.page-skeleton')
         @php
             $navLinkClass = 'nav-link inline-flex items-center gap-2 whitespace-nowrap px-3 py-2 text-sm font-semibold transition';
             $navInactiveClass = 'text-gray-500 hover:text-gray-900';
             $navActiveClass = 'text-gray-900 active text-lg';
-            $adminVerticalNav = auth()->check() && auth()->user()->usesVerticalNav();
+            $adminVerticalNav = ! config('reservo.portfolio_mode') && auth()->check() && auth()->user()->usesVerticalNav();
             $headerNavRowClass = 'flex w-full items-center justify-between gap-x-2 gap-y-2 sm:gap-x-3 lg:items-center lg:gap-x-6';
             if ($adminVerticalNav) {
                 $headerNavRowClass .= ' lg:justify-end';

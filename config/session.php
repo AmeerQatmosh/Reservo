@@ -18,7 +18,9 @@ return [
     |
     */
 
-    'driver' => env('SESSION_DRIVER', 'database'),
+    'driver' => filter_var(env('RESERVO_PORTFOLIO_MODE', false), FILTER_VALIDATE_BOOLEAN)
+        ? 'cookie'
+        : env('SESSION_DRIVER', 'database'),
 
     /*
     |--------------------------------------------------------------------------

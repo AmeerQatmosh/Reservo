@@ -15,7 +15,9 @@ return [
     |
     */
 
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => filter_var(env('RESERVO_PORTFOLIO_MODE', false), FILTER_VALIDATE_BOOLEAN)
+        ? 'array'
+        : env('CACHE_STORE', 'database'),
 
     /*
     |--------------------------------------------------------------------------
