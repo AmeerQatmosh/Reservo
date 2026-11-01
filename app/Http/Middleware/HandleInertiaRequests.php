@@ -23,6 +23,10 @@ class HandleInertiaRequests extends Middleware
      */
     public function version(Request $request): ?string
     {
+        if (config('reservo.portfolio_mode')) {
+            return null;
+        }
+
         return parent::version($request);
     }
 
@@ -35,6 +39,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        if (config('reservo.portfolio_mode')) {
+            return [
+                'name' => config('app.name'),
+                'auth' => ['user' => null],
+                'sidebarOpen' => false,
+            ];
+        }
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
