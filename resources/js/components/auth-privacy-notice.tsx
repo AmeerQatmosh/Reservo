@@ -37,21 +37,8 @@ export function AuthPrivacyNotice({ variant = 'register', className }: Props) {
         >
             <AlertTriangle className="size-4 shrink-0" aria-hidden />
             <AlertTitle className="text-sm font-semibold text-amber-950">
-                Before you create an account
+                Register is no longer available
             </AlertTitle>
-            <AlertDescription className="text-sm leading-relaxed text-amber-900/90">
-                <p>
-                    Reservo here is a <strong className="font-semibold">demonstration</strong>{' '}
-                    project, not a commercial product. Please do{' '}
-                    <strong className="font-semibold">not</strong> enter real personal
-                    information, a real email address, or any password you reuse on other
-                    sites.
-                </p>
-                <p className="mt-2">
-                    We do not promise production-grade security or privacy; treat anything
-                    you submit as non-confidential.
-                </p>
-            </AlertDescription>
         </Alert>
     );
 }
