@@ -135,12 +135,23 @@
                         ])
                     >
                         <div class="flex flex-wrap items-center justify-center gap-2">
-                            @include('layouts.partials.nav-app-links', [
-                                'navLinkClass' => $navLinkClass,
-                                'navActiveClass' => $navActiveClass,
-                                'navInactiveClass' => $navInactiveClass,
-                                'variant' => 'desktop',
-                            ])
+                            @if (request()->routeIs('home'))
+                                @foreach (['how-it-works' => 'How it works', 'features' => 'Features', 'plans' => 'Plans', 'about' => 'About', 'faq' => 'FAQ'] as $section => $label)
+                                    <a
+                                        href="#{{ $section }}"
+                                        class="rounded-lg px-2.5 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                    >
+                                        {{ $label }}
+                                    </a>
+                                @endforeach
+                            @else
+                                @include('layouts.partials.nav-app-links', [
+                                    'navLinkClass' => $navLinkClass,
+                                    'navActiveClass' => $navActiveClass,
+                                    'navInactiveClass' => $navInactiveClass,
+                                    'variant' => 'desktop',
+                                ])
+                            @endif
                         </div>
                     </div>
 
@@ -217,19 +228,34 @@
                                             <p
                                                 class="mb-2.5 text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-slate-400"
                                             >
-                                                @auth
-                                                    Main
+                                                @if (request()->routeIs('home'))
+                                                    Explore
                                                 @else
-                                                    Menu
-                                                @endauth
+                                                    @auth
+                                                        Main
+                                                    @else
+                                                        Menu
+                                                    @endauth
+                                                @endif
                                             </p>
                                             <nav class="flex flex-col gap-1.5" aria-label="Primary">
-                                                @include('layouts.partials.nav-app-links', [
-                                                    'navLinkClass' => $navLinkClass,
-                                                    'navActiveClass' => $navActiveClass,
-                                                    'navInactiveClass' => $navInactiveClass,
-                                                    'variant' => 'mobile',
-                                                ])
+                                                @if (request()->routeIs('home'))
+                                                    @foreach (['how-it-works' => 'How it works', 'features' => 'Features', 'plans' => 'Plans & pricing', 'about' => 'About', 'faq' => 'FAQ'] as $section => $label)
+                                                        <a
+                                                            href="#{{ $section }}"
+                                                            class="group flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-[15px] font-medium text-gray-900 transition outline-none hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-900/15"
+                                                        >
+                                                            {{ $label }}
+                                                        </a>
+                                                    @endforeach
+                                                @else
+                                                    @include('layouts.partials.nav-app-links', [
+                                                        'navLinkClass' => $navLinkClass,
+                                                        'navActiveClass' => $navActiveClass,
+                                                        'navInactiveClass' => $navInactiveClass,
+                                                        'variant' => 'mobile',
+                                                    ])
+                                                @endif
                                             </nav>
                                         </div>
                                     </div>

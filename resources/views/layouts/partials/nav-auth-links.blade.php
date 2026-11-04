@@ -39,21 +39,21 @@
         <div class="flex flex-col gap-2">
             <a href="{{ route('login') }}" class="{{ request()->routeIs('login') ? $mOn : $mOff }}">
                 <x-lucide name="log-in" :class="request()->routeIs('login') ? $iconMobileOn : $iconMobile" />
-                Log in
+                {{ request()->routeIs('home') ? 'Sign in' : 'Log in' }}
             </a>
             <a href="{{ route('register') }}" class="group flex w-full items-center justify-center gap-2 rounded-md bg-gray-900 px-2.5 py-2 text-[15px] font-semibold text-white transition hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/30">
                 <x-lucide name="user-plus" :class="$iconMobileLight" />
-                Create account
+                {{ request()->routeIs('home') ? 'Sign up' : 'Create account' }}
             </a>
         </div>
     @else
         <a href="{{ route('login') }}" class="{{ $navLinkClass }} {{ request()->routeIs('login') ? $navActiveClass : $navInactiveClass }}">
             <x-lucide name="log-in" :class="$iconDesktop" />
-            Login
+            {{ request()->routeIs('home') ? 'Sign in' : 'Login' }}
         </a>
         <a href="{{ route('register') }}" class="inline-flex items-center gap-2 whitespace-nowrap rounded-xl bg-green-200 px-4 py-2 text-sm font-medium text-green-600 transition hover:bg-green-400 hover:text-white">
             <x-lucide name="user-plus" :class="$iconDesktop" />
-            Register
+            {{ request()->routeIs('home') ? 'Sign up' : 'Register' }}
         </a>
     @endif
 @endauth

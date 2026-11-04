@@ -4,6 +4,37 @@
 
 @section('content')
     <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 6rem;
+        }
+        [id]:target {
+            animation: reservo-anchor-arrive 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        a[href="#features"],
+        a[href="#plans"],
+        a[href="#how-it-works"],
+        a[href="#about"],
+        a[href="#faq"] {
+            transition: transform 160ms ease;
+        }
+        a[href="#features"]:active,
+        a[href="#plans"]:active,
+        a[href="#how-it-works"]:active,
+        a[href="#about"]:active,
+        a[href="#faq"]:active {
+            transform: scale(0.97);
+        }
+        @keyframes reservo-anchor-arrive {
+            from {
+                opacity: 0.72;
+                transform: translateY(0.75rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         @media (prefers-reduced-motion: no-preference) {
             [data-reservo-reveal]:not(.reservo-reveal--visible) {
                 opacity: 0;
@@ -74,6 +105,12 @@
             }
         }
         @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+            [id]:target {
+                animation: none;
+            }
             [data-reservo-reveal],
             [data-reservo-reveal-stagger],
             [data-reservo-reveal-stagger] > [data-reservo-reveal-item],
@@ -137,14 +174,6 @@
                         </a>
                     @endguest
                     @endunless
-                    @if (! empty($demoEnabled))
-                        <a
-                            href="{{ route('demo.index') }}"
-                            class="inline-flex items-center justify-center rounded-2xl border border-amber-200/80 bg-amber-400/22 px-6 py-3.5 text-sm font-semibold text-amber-50 transition hover:bg-amber-400/30"
-                        >
-                            Guest Mode (Demo)
-                        </a>
-                    @endif
                 </div>
             </div>
 
@@ -416,7 +445,8 @@
 
     {{-- How it works --}}
     <section
-        class="relative mt-10 overflow-hidden rounded-2xl border border-indigo-200/40 bg-gradient-to-b from-white via-white to-indigo-50/50 p-6 shadow-[0_20px_40px_-20px_rgba(79,70,229,0.15)] sm:mt-14 sm:rounded-3xl sm:p-8 md:p-10"
+        id="how-it-works"
+        class="relative mt-10 scroll-mt-24 overflow-hidden rounded-2xl border border-indigo-200/40 bg-gradient-to-b from-white via-white to-indigo-50/50 p-6 shadow-[0_20px_40px_-20px_rgba(79,70,229,0.15)] sm:mt-14 sm:rounded-3xl sm:p-8 md:p-10"
         data-reservo-reveal
         aria-labelledby="reservo-how-it-works-heading"
     >
@@ -428,110 +458,231 @@
                 From browse to booked in three steps
             </h2>
             <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-600 sm:text-[0.9375rem]">
-                Find a space, lock your window, and relax — the system keeps the calendar honest so your team never double-books a room.
+                Follow a simple path from discovering a space to seeing your reservation on the calendar.
             </p>
         </div>
 
-        <div class="relative mt-10 md:mt-12">
-            <div
-                class="pointer-events-none absolute left-0 right-0 top-[2.125rem] hidden h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent lg:block"
-                aria-hidden="true"
-            ></div>
-            <div
-                class="pointer-events-none absolute bottom-0 left-6 top-10 w-px bg-gradient-to-b from-indigo-200 via-indigo-100 to-transparent lg:hidden"
-                aria-hidden="true"
-            ></div>
-
-            <div class="grid gap-10 sm:gap-8 lg:grid-cols-3 lg:gap-6">
-                <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
-                >
-                    <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30 lg:mx-0">
-                        <x-lucide name="layout-grid" class="h-6 w-6 opacity-95" />
-                    </div>
-                    <span class="mt-4 inline-flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-600 lg:justify-start">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[12px] text-indigo-700">1</span>
+        <div class="relative mx-auto mt-9 max-w-6xl space-y-5 sm:mt-11 sm:space-y-6">
+            <div class="pointer-events-none absolute bottom-8 left-7 top-8 hidden w-px bg-gradient-to-b from-indigo-200 via-violet-200 to-emerald-200 sm:block" aria-hidden="true"></div>
+            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-64">
+                    <img src="{{ asset('images/demo/rooms/space-view.png') }}" alt="Example view of a shared creative workspace" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example workspace view</span>
+                </div>
+                <div class="flex flex-col justify-center p-5 sm:p-8">
+                    <span class="inline-flex w-fit items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-700">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-xs text-white">1</span>
                         Browse spaces
                     </span>
-                    <p class="mt-2 text-base font-semibold text-slate-900">See what fits your team</p>
-                    <p class="mt-1.5 text-sm leading-relaxed text-slate-600">
-                        Filter by capacity, location, and amenities until the shortlist feels right.
-                    </p>
+                    <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">Find a space that fits</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-600">Explore room details, capacity, and amenities to find the right setting for your next meeting.</p>
                 </div>
-
-                <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
-                >
-                    <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/30 lg:mx-0">
-                        <x-lucide name="calendar-plus" class="h-6 w-6 opacity-95" />
-                    </div>
-                    <span class="mt-4 inline-flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-600 lg:justify-start">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[12px] text-indigo-700">2</span>
-                        Choose your time
+            </article>
+            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-120">
+                    <img src="{{ asset('images/demo/rooms/booking-view.png') }}" alt="Example boardroom ready for a scheduled meeting" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example booking view</span>
+                </div>
+                <div class="flex flex-col justify-center p-5 sm:p-8">
+                    <span class="inline-flex w-fit items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-xs text-white">2</span>
+                        Choose a time
                     </span>
-                    <p class="mt-2 text-base font-semibold text-slate-900">Pick start and end</p>
-                    <p class="mt-1.5 text-sm leading-relaxed text-slate-600">
-                        Set your slot on the room; overlapping times are rejected before they hit the calendar.
-                    </p>
+                    <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">Pick your reservation window</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-600">Choose a start and end time. Reservo checks availability and helps prevent scheduling conflicts.</p>
                 </div>
-
-                <div
-                    class="relative flex flex-col rounded-2xl border border-white/80 bg-white/[0.88] p-6 text-center shadow-sm shadow-indigo-950/5 transition duration-300 ease-out hover:-translate-y-0.5 hover:border-indigo-200/80 hover:shadow-md lg:text-left"
-                >
-                    <div class="relative z-[1] mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-700/25 lg:mx-0">
-                        <x-lucide name="calendar-check" class="h-6 w-6 opacity-95" />
-                    </div>
-                    <span class="mt-4 inline-flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-600 lg:justify-start">
-                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[12px] text-indigo-700">3</span>
+            </article>
+            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-64">
+                    <img src="{{ asset('images/demo/rooms/reservation-sync.png') }}" alt="Example quiet room available for focused work" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example confirmation view</span>
+                </div>
+                <div class="flex flex-col justify-center p-5 sm:p-8">
+                    <span class="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
+                        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs text-white">3</span>
                         You’re confirmed
                     </span>
-                    <p class="mt-2 text-base font-semibold text-slate-900">On the calendar for everyone</p>
-                    <p class="mt-1.5 text-sm leading-relaxed text-slate-600">
-                        Your reservation shows in your list and in admin tools — ready for the day of the meeting.
-                    </p>
+                    <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900 sm:text-xl">Keep your team in sync</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-600">Your reservation is easy to find later, while your team can see which spaces are booked.</p>
                 </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="features" class="mt-10 scroll-mt-24 sm:mt-14" aria-labelledby="reservo-features-heading">
+        <div class="mb-6 text-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">Features</p>
+            <h2 id="reservo-features-heading" class="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                Everything your team needs to stay in sync
+            </h2>
+            <p class="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                Keep room schedules clear, make reservations easy to manage, and give everyone a better view of shared spaces.
+            </p>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-3 sm:gap-6" data-reservo-reveal-stagger>
+            <div
+                data-reservo-reveal-item
+                class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
+            >
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
+                    <x-lucide name="circle-x" class="h-5 w-5" />
+                </div>
+                <div class="mt-4 text-sm font-semibold text-gray-900">No double bookings</div>
+                <p class="mt-2 text-sm leading-6 text-gray-600">
+                    If an interval overlaps an existing reservation, the save is blocked—partial overlaps included, back-to-back still fine.
+                </p>
+            </div>
+            <div
+                data-reservo-reveal-item
+                class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
+            >
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
+                    <x-lucide name="clipboard-list" class="h-5 w-5" />
+                </div>
+                <div class="mt-4 text-sm font-semibold text-gray-900">Built for admins</div>
+                <p class="mt-2 text-sm leading-6 text-gray-600">
+                    Manage spaces, review reservations, and archive rooms cleanly with soft delete when history matters.
+                </p>
+            </div>
+            <div
+                data-reservo-reveal-item
+                class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
+            >
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
+                    <x-lucide name="users" class="h-5 w-5" />
+                </div>
+                <div class="mt-4 text-sm font-semibold text-gray-900">Simple for the whole team</div>
+                <p class="mt-2 text-sm leading-6 text-gray-600">
+                    Straightforward forms and navigation—easy to adopt without training docs.
+                </p>
             </div>
         </div>
     </section>
 
-    <div class="mt-10 grid gap-5 sm:mt-14 sm:grid-cols-3 sm:gap-6" data-reservo-reveal-stagger>
-        <div
-            data-reservo-reveal-item
-            class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
-        >
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
-                <x-lucide name="circle-x" class="h-5 w-5" />
-            </div>
-            <div class="mt-4 text-sm font-semibold text-gray-900">No double bookings</div>
-            <p class="mt-2 text-sm leading-6 text-gray-600">
-                If an interval overlaps an existing reservation, the save is blocked—partial overlaps included, back-to-back still fine.
+    <section
+        id="plans"
+        class="mt-14 scroll-mt-24 sm:mt-16"
+        aria-labelledby="reservo-plans-heading"
+    >
+        <div class="text-center" data-reservo-reveal>
+            <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">Plans &amp; pricing</p>
+            <h2 id="reservo-plans-heading" class="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                A plan for every kind of team
+            </h2>
+            <p class="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                Sample plans to show how Reservo could scale with your spaces and your team.
             </p>
+            <p class="mt-2 text-xs font-medium text-slate-500">Illustrative pricing for demonstration purposes.</p>
         </div>
-        <div
-            data-reservo-reveal-item
-            class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
-        >
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
-                <x-lucide name="clipboard-list" class="h-5 w-5" />
+        <div class="mt-7 grid gap-5 md:grid-cols-3 md:gap-6" data-reservo-reveal-stagger>
+            <article data-reservo-reveal-item class="flex flex-col rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-7">
+                <p class="text-sm font-semibold text-slate-900">Starter</p>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-950">$0<span class="text-sm font-medium text-slate-500"> / month</span></p>
+                <p class="mt-2 min-h-10 text-sm leading-relaxed text-slate-600">A simple way for a small team to get organized.</p>
+                <ul class="mt-5 space-y-3 text-sm text-slate-700">
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Up to 3 spaces</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Shared availability</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Basic reservations</li>
+                </ul>
+                <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">Explore Reservo</a>
+            </article>
+            <article data-reservo-reveal-item class="relative flex flex-col rounded-3xl border border-indigo-500 bg-slate-950 p-6 text-white shadow-xl shadow-indigo-950/15 transition duration-300 hover:-translate-y-0.5 sm:p-7">
+                <span class="absolute right-5 top-5 rounded-full bg-indigo-400/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-200">Popular</span>
+                <p class="text-sm font-semibold text-indigo-100">Team</p>
+                <p class="mt-3 text-3xl font-semibold tracking-tight">$29<span class="text-sm font-medium text-slate-400"> / month</span></p>
+                <p class="mt-2 min-h-10 text-sm leading-relaxed text-slate-300">More room to grow for busy teams.</p>
+                <ul class="mt-5 space-y-3 text-sm text-slate-200">
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />Up to 15 spaces</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />Team reservation views</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />Admin management tools</li>
+                </ul>
+                <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-indigo-50">Choose Team</a>
+            </article>
+            <article data-reservo-reveal-item class="flex flex-col rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:p-7">
+                <p class="text-sm font-semibold text-slate-900">Business</p>
+                <p class="mt-3 text-3xl font-semibold tracking-tight text-slate-950">$79<span class="text-sm font-medium text-slate-500"> / month</span></p>
+                <p class="mt-2 min-h-10 text-sm leading-relaxed text-slate-600">Flexible space management for larger organizations.</p>
+                <ul class="mt-5 space-y-3 text-sm text-slate-700">
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Unlimited spaces</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Advanced administration</li>
+                    <li class="flex gap-2"><x-lucide name="check" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />Priority support</li>
+                </ul>
+                <a href="{{ route('login') }}" class="mt-7 inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800 transition hover:bg-slate-50">Contact us</a>
+            </article>
+        </div>
+    </section>
+
+    <section
+        id="about"
+        class="mt-14 scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200/80 bg-white/90 shadow-sm sm:mt-16"
+        aria-labelledby="reservo-about-heading"
+        data-reservo-reveal
+    >
+        <div class="grid sm:grid-cols-2 sm:items-stretch">
+            <div class="relative min-h-64 overflow-hidden bg-slate-100 sm:min-w-128 sm:min-h-96">
+                <img src="{{ asset('images/demo/rooms/about.png') }}" alt="Bright shared meeting room with a long conference table" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
+                <span class="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm">Spaces made easier to share</span>
             </div>
-            <div class="mt-4 text-sm font-semibold text-gray-900">Built for admins</div>
-            <p class="mt-2 text-sm leading-6 text-gray-600">
-                Manage spaces, review reservations, and archive rooms cleanly with soft delete when history matters.
-            </p>
-        </div>
-        <div
-            data-reservo-reveal-item
-            class="rounded-3xl border border-slate-200/90 bg-white/90 p-6 shadow-sm transition duration-300 ease-out hover:-translate-y-0.5 hover:border-slate-300/90 hover:shadow-md"
-        >
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-md">
-                <x-lucide name="users" class="h-5 w-5" />
+            <div class="flex flex-col justify-center p-6 sm:p-10">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">About Reservo</p>
+                <h2 id="reservo-about-heading" class="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                    Better use of every shared space
+                </h2>
+                <p class="mt-4 text-sm leading-7 text-slate-600 sm:text-base">
+                    Reservo helps teams coordinate shared rooms and workspaces with a clear, reliable booking experience. Browse the spaces that fit, check availability, and keep everyone on the same schedule—all from one simple place.
+                </p>
+                @unless (config('reservo.portfolio_mode'))
+                    <a href="{{ route('rooms.index') }}" class="mt-6 inline-flex w-fit items-center gap-2 text-sm font-semibold text-indigo-700 transition hover:text-indigo-900">
+                        Explore available rooms
+                        <x-lucide name="arrow-right" class="h-4 w-4" />
+                    </a>
+                @endunless
             </div>
-            <div class="mt-4 text-sm font-semibold text-gray-900">Simple for the whole team</div>
-            <p class="mt-2 text-sm leading-6 text-gray-600">
-                Straightforward forms and navigation—easy to adopt without training docs.
-            </p>
         </div>
-    </div>
+    </section>
+
+    <section
+        id="faq"
+        class="mt-14 scroll-mt-24 sm:mt-16"
+        aria-labelledby="reservo-faq-heading"
+        data-reservo-reveal
+    >
+        <div class="text-center">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">FAQ</p>
+            <h2 id="reservo-faq-heading" class="mt-2 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+                A few things you might be wondering
+            </h2>
+        </div>
+        <div class="mx-auto mt-7 grid max-w-3xl gap-4">
+            <details class="group rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md sm:p-6">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
+                    How do I find an available room?
+                    <x-lucide name="chevron-down" class="h-4 w-4 shrink-0 text-slate-500 transition group-open:rotate-180" />
+                </summary>
+                <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
+                    Browse the available spaces and review their details to find a room that works for your group and schedule.
+                </p>
+            </details>
+            <details class="group rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md sm:p-6">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
+                    Can two teams book the same room at once?
+                    <x-lucide name="chevron-down" class="h-4 w-4 shrink-0 text-slate-500 transition group-open:rotate-180" />
+                </summary>
+                <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
+                    Reservo checks for overlapping reservations and prevents conflicting time slots for the same room.
+                </p>
+            </details>
+            <details class="group rounded-2xl border border-slate-200/90 bg-white/90 p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md sm:p-6">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-sm font-semibold text-slate-900 [&::-webkit-details-marker]:hidden">
+                    Where can I see my reservations?
+                    <x-lucide name="chevron-down" class="h-4 w-4 shrink-0 text-slate-500 transition group-open:rotate-180" />
+                </summary>
+                <p class="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
+                    Sign in to view and manage your reservations from your account.
+                </p>
+            </details>
+        </div>
+    </section>
 
     @if ($featuredRooms->isNotEmpty())
         <div class="mt-14" data-reservo-reveal>
@@ -586,23 +737,47 @@
         </div>
     @endif
 
-    <div class="mt-14 flex flex-col gap-6 sm:mt-16 sm:gap-7">
-        <x-landing-cta-guest-mode :enabled="! empty($demoEnabled)" />
-        @unless (config('reservo.portfolio_mode'))
-            <x-landing-cta-join />
-        @endunless
-    </div>
-
-    <p class="mt-12 text-center text-xs leading-relaxed text-gray-500" data-reservo-reveal>
-        Room names, copy, and availability in this demo are sample data loaded from the app seeders.
-        Photos are served from
-        <a href="https://unsplash.com" class="font-medium text-gray-700 underline hover:text-gray-900" target="_blank" rel="noopener noreferrer">Unsplash</a>
-        under the
-        <a href="https://unsplash.com/license" class="font-medium text-gray-700 underline hover:text-gray-900" target="_blank" rel="noopener noreferrer">Unsplash License</a>
-        (free to use with their guidelines).
-    </p>
+    <section
+        class="relative mt-14 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 px-6 py-10 text-center text-white shadow-[0_24px_54px_-18px_rgba(15,23,42,0.5)] sm:mt-16 sm:px-10 sm:py-14"
+        aria-labelledby="reservo-final-cta-heading"
+        data-reservo-reveal
+    >
+        <div class="pointer-events-none absolute -right-10 -top-20 h-56 w-56 rounded-full bg-indigo-400/15"></div>
+        <div class="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-cyan-300/10"></div>
+        <div class="relative mx-auto max-w-2xl">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.24em] text-indigo-200">Make room for what matters</p>
+            <h2 id="reservo-final-cta-heading" class="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+                Ready to make room bookings simpler?
+            </h2>
+            <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-indigo-100/85 sm:text-base">
+                Find a space, check the schedule, and bring your team together with Reservo.
+            </p>
+            <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+                @unless (config('reservo.portfolio_mode'))
+                    <a href="{{ route('rooms.index') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-indigo-50">
+                        Browse spaces
+                        <x-lucide name="arrow-right" class="h-4 w-4" />
+                    </a>
+                @endunless
+                @guest
+                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10">
+                        Sign in
+                    </a>
+                @endguest
+            </div>
+        </div>
+    </section>
 
     <script>
+        document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+            link.addEventListener('click', function () {
+                var menu = document.querySelector('.reservo-mobile-menu');
+                if (menu && menu.open) {
+                    menu.removeAttribute('open');
+                }
+            });
+        });
+
         (function () {
             function trackInnerWidthPx(track) {
                 var s = window.getComputedStyle(track);
