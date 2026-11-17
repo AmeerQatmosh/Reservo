@@ -480,7 +480,7 @@
             </article>
             <article class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                 <div class="w-full overflow-hidden bg-slate-100">
-                    <img src="{{ asset('images/demo/rooms/booking-view.png') }}" alt="Example boardroom ready for a scheduled meeting" class="block h-auto w-full" loading="lazy">
+                    <img src="{{ asset('images/demo/rooms/reservation-view.png') }}" alt="Example boardroom ready for a scheduled meeting" class="block h-auto w-full" loading="lazy">
                     <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Example booking view</p>
                 </div>
                 <div class="flex flex-col justify-center p-5 sm:p-8">
@@ -494,7 +494,7 @@
             </article>
             <article class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
                 <div class="w-full overflow-hidden bg-slate-100">
-                    <img src="{{ asset('images/demo/rooms/reservation-sync.png') }}" alt="Example quiet room available for focused work" class="block h-auto w-full" loading="lazy">
+                    <img src="{{ asset('images/demo/rooms/reservations-booked.png') }}" alt="Example quiet room available for focused work" class="block h-auto w-full" loading="lazy">
                     <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Example confirmation view</p>
                 </div>
                 <div class="flex flex-col justify-center p-5 sm:p-8">
