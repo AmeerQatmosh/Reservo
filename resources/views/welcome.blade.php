@@ -464,10 +464,10 @@
 
         <div class="relative mx-auto mt-9 max-w-6xl space-y-5 sm:mt-11 sm:space-y-6">
             <div class="pointer-events-none absolute bottom-8 left-7 top-8 hidden w-px bg-gradient-to-b from-indigo-200 via-violet-200 to-emerald-200 sm:block" aria-hidden="true"></div>
-            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-64">
-                    <img src="{{ asset('images/demo/rooms/space-view.png') }}" alt="Example view of a shared creative workspace" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example workspace view</span>
+            <article class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="w-full overflow-hidden bg-slate-100">
+                    <img src="{{ asset('images/demo/rooms/space-view.png') }}" alt="Example view of a shared creative workspace" class="block h-auto w-full" loading="lazy">
+                    <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Example workspace view</p>
                 </div>
                 <div class="flex flex-col justify-center p-5 sm:p-8">
                     <span class="inline-flex w-fit items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-indigo-700">
@@ -478,10 +478,10 @@
                     <p class="mt-2 text-sm leading-relaxed text-slate-600">Explore room details, capacity, and amenities to find the right setting for your next meeting.</p>
                 </div>
             </article>
-            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-120">
-                    <img src="{{ asset('images/demo/rooms/booking-view.png') }}" alt="Example boardroom ready for a scheduled meeting" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example booking view</span>
+            <article class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="w-full overflow-hidden bg-slate-100">
+                    <img src="{{ asset('images/demo/rooms/booking-view.png') }}" alt="Example boardroom ready for a scheduled meeting" class="block h-auto w-full" loading="lazy">
+                    <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Example booking view</p>
                 </div>
                 <div class="flex flex-col justify-center p-5 sm:p-8">
                     <span class="inline-flex w-fit items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-violet-700">
@@ -492,10 +492,10 @@
                     <p class="mt-2 text-sm leading-relaxed text-slate-600">Choose a start and end time. Reservo checks availability and helps prevent scheduling conflicts.</p>
                 </div>
             </article>
-            <article class="relative grid overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md sm:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-                <div class="relative min-h-48 overflow-hidden bg-slate-100 sm:min-h-64">
-                    <img src="{{ asset('images/demo/rooms/reservation-sync.png') }}" alt="Example quiet room available for focused work" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-                    <span class="absolute bottom-3 left-3 rounded-full border border-white/60 bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-700 shadow-sm">Example confirmation view</span>
+            <article class="relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <div class="w-full overflow-hidden bg-slate-100">
+                    <img src="{{ asset('images/demo/rooms/reservation-sync.png') }}" alt="Example quiet room available for focused work" class="block h-auto w-full" loading="lazy">
+                    <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Example confirmation view</p>
                 </div>
                 <div class="flex flex-col justify-center p-5 sm:p-8">
                     <span class="inline-flex w-fit items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-700">
@@ -618,10 +618,10 @@
         aria-labelledby="reservo-about-heading"
         data-reservo-reveal
     >
-        <div class="grid sm:grid-cols-2 sm:items-stretch">
-            <div class="relative min-h-64 overflow-hidden bg-slate-100 sm:min-w-128 sm:min-h-96">
-                <img src="{{ asset('images/demo/rooms/about.png') }}" alt="Bright shared meeting room with a long conference table" class="absolute inset-0 h-full w-full object-cover" loading="lazy">
-                <span class="absolute bottom-4 left-4 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm">Spaces made easier to share</span>
+        <div class="flex flex-col">
+            <div class="w-full overflow-hidden bg-slate-100">
+                <img src="{{ asset('images/demo/rooms/about.png') }}" alt="Bright shared meeting room with a long conference table" class="block h-auto w-full" loading="lazy">
+                <p class="border-t border-slate-200/80 bg-white px-4 py-2 text-xs font-medium text-slate-500">Spaces made easier to share</p>
             </div>
             <div class="flex flex-col justify-center p-6 sm:p-10">
                 <p class="text-[11px] font-semibold uppercase tracking-[0.26em] text-indigo-600/80">About Reservo</p>
